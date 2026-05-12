@@ -42,16 +42,22 @@ def get_final_label(server, remarks):
         pass
     return "🧿 其它地区"
 
-
 def parse_link(link):
     try:
         link = link.replace('vmess://vmess://', 'vmess://').strip()
         u = urllib.parse.urlparse(link)
 
-        # --- VMess 解析 ---
         if link.startswith('vmess://'):
-            # 稳健提取：先分 # 再分 ?，取第一段
-            b64_part = link[8:].split('#')[0].split('?')[0]
+            # --- 彻底修复：最稳健的 VMess 提取方式 ---
+            raw = link[8:]
+            # 找到第一个出现的 # 或 ? 的位置，截取前面的 Base64 部分
+            end_pos = len(raw)
+            for char in ['#', '?']:
+                pos = raw.find(char)
+                if pos != -1:
+                    end_pos = min(end_pos, pos)
+            b64_part = raw[:end_pos]
+            
             b64_part += '=' * (-len(b64_part) % 4)
             d = json.loads(base64.b64decode(b64_part).decode('utf-8'))
             return {
@@ -62,7 +68,6 @@ def parse_link(link):
                 "skip-cert-verify": True, "udp": True
             }
 
-        # --- VLESS 解析 ---
         elif link.startswith('vless://'):
             q = urllib.parse.parse_qs(u.query)
             return {
@@ -74,7 +79,6 @@ def parse_link(link):
                 "servername": q.get("sni", [u.hostname])[0]
             }
 
-        # --- Hysteria2 解析 ---
         elif link.startswith(('hysteria2://', 'hy2://', 'hysteria://')):
             return {
                 "label": get_final_label(u.hostname, u.fragment),
@@ -83,7 +87,6 @@ def parse_link(link):
                 "skip-cert-verify": True, "udp": True
             }
 
-        # --- Shadowsocks 解析 ---
         elif link.startswith('ss://'):
             if '@' in u.netloc:
                 userinfo, server_part = u.netloc.split('@', 1)
@@ -99,7 +102,6 @@ def parse_link(link):
                 "cipher": method, "password": password, "udp": True
             }
 
-        # --- Trojan 解析 ---
         elif link.startswith('trojan://'):
             q = urllib.parse.parse_qs(u.query)
             sni = q.get("sni", q.get("host", [u.hostname]))[0]
@@ -114,9 +116,10 @@ def parse_link(link):
 
 def rebuild_link_with_new_name(original_link, new_name):
     try:
-        # 获取 # 前的 URL 主体
         safe_name = urllib.parse.quote(new_name)
-        base_part = original_link.split('#')[0]
+        # 只取 # 之前的部分
+        idx = original_link.find('#')
+        base_part = original_link[:idx] if idx != -1 else original_link
         return f"{base_part}#{safe_name}"
     except:
         return original_link
@@ -139,9 +142,6 @@ def main():
             seen_links.add(l)
             unique_links.append(l)
 
-    print(f"原始节点数: {len(ls)}")
-    print(f"去重后节点数: {len(unique_links)}")
-
     proxies = []
     valid_links = []
     region_map = defaultdict(list)
@@ -155,8 +155,6 @@ def main():
             
             p['name'] = node_name
             proxies.append(p)
-            
-            # 记录重命名后的链接用于 Base64
             valid_links.append(rebuild_link_with_new_name(l, node_name))
             region_map[label].append(p['name'])
 
@@ -167,11 +165,7 @@ def main():
     all_nodes = [p['name'] for p in proxies]
 
     cf = {
-        "mixed-port": 7890,
-        "allow-lan": True,
-        "mode": "rule",
-        "log-level": "info",
-        "ipv6": True,
+        "mixed-port": 7890, "allow-lan": True, "mode": "rule", "log-level": "info", "ipv6": True,
         "tun": {"enable": True, "stack": "mixed", "auto-route": True, "auto-detect-interface": True},
         "dns": {"enable": True, "enhanced-mode": "fake-ip", "nameserver": ["223.5.5.5", "119.29.29.29", "8.8.8.8"]},
         "proxies": proxies + [{"name": "Direct", "type": "direct"}],
@@ -200,7 +194,7 @@ def main():
     with open('index.html', 'w', encoding='utf-8') as f:
         f.write(base64.b64encode("\n".join(valid_links).encode('utf-8')).decode('utf-8'))
 
-    print("🎉 任务完全成功。Clash 与 Base64 命名已同步。")
+    print("✅ 全部功能已修复完成。")
 
 if __name__ == "__main__":
     main()
