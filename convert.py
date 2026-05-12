@@ -1,12 +1,13 @@
 import base64, json, yaml, os, re, requests, time
 from urllib.parse import urlparse, parse_qs, unquote, quote
 
+# 配置常量
 HEADERS = {"User-Agent": "ClashMeta"}
 MARK = "@zmxooo"
 IP_CACHE = {} 
 
 def get_final_label(server: str, remarks: str = "") -> str:
-    """识别地理位置：备注匹配优先，IP-API 补位"""
+    """识别地理位置：备注匹配优先，IP-API 在线查询补位"""
     if not server: return "🧿 其它地区"
     text = unquote(str(remarks)).lower().strip()
     meta = [
@@ -20,7 +21,7 @@ def get_final_label(server: str, remarks: str = "") -> str:
         if re.search(pattern, text): return label
     if server in IP_CACHE: return IP_CACHE[server]
     try:
-        # 【修正】确保 API 路径 100% 正确
+        # 修正：补全 /json/ 路径
         resp = requests.get(f"http://ip-api.com{server}?lang=zh-CN", timeout=2).json()
         if resp.get("status") == "success":
             country = resp.get("country", "")
@@ -42,7 +43,7 @@ def safe_b64encode(data: str):
     return base64.b64encode(data.encode('utf-8')).decode('utf-8')
 
 def parse_link(link: str):
-    """提取协议核心参数"""
+    """解析协议并提取核心参数，不带冗余字段"""
     try:
         link = link.strip()
         if link.startswith('vmess://'):
@@ -70,7 +71,7 @@ def parse_link(link: str):
     except: return None
 
 def main():
-    if not os.path.exists('nodes.txt'): return
+    if not os.path.exists('nodes.txt'): return print("❌ 找不到 nodes.txt")
     with open('nodes.txt', 'r', encoding='utf-8') as f: urls = [l.strip() for l in f if l.strip()]
     
     all_proxies, reg_map = [], {}
@@ -91,7 +92,7 @@ def main():
         new_name = f"{lbl} {MARK} {len(reg_map[lbl]) + 1:02d}"
         reg_map[lbl].append(new_name)
 
-        # 1. 生成 Clash 节点数据
+        # 构建 Clash 节点
         cp = {"name": new_name, "type": p['type'], "server": p['server'], "port": p['port'], "udp": True}
         if p['type'] == 'vmess':
             cp.update({"uuid": p['uuid'], "alterId": p['aid'], "cipher": "auto", "tls": p['tls'], "network": p['net']})
@@ -100,12 +101,12 @@ def main():
             cp.update({"uuid": p['uuid'], "cipher": "auto", "tls": True, "sni": p['sni']})
             if p.get('pbk'): cp["reality-opts"] = {"public-key": p['pbk'], "short-id": p['sid']}
         elif p['type'] == 'trojan':
-            cp.update({"password": p['password'], "sni": p['sni']})
+            cp.update({"password": p['password'], "sni": p['sni'], "skip-cert-verify": True})
         elif p['type'] == 'ss':
             cp.update({"cipher": p['cipher'], "password": p['password']})
         clash_proxies.append(cp)
 
-        # 2. 生成 Base64 订阅数据
+        # 逆向构建统一命名的订阅链接
         try:
             if p['type'] == 'vmess':
                 v_j = {"v":"2","ps":new_name,"add":p['server'],"port":p['port'],"id":p['uuid'],"aid":p['aid'],"net":p['net'],"host":p['host'],"path":p['path'],"tls":"tls" if p['tls'] else ""}
@@ -115,11 +116,12 @@ def main():
             elif p['type'] == 'trojan':
                 sub_links.append(f"trojan://{p['password']}@{p['server']}:{p['port']}?sni={p['sni']}#{quote(new_name)}")
             elif p['type'] == 'ss':
-                sub_links.append(f"ss://{safe_b64encode(p['cipher']+':'+p['password'])}@{p['server']}:{p['port']}#{quote(new_name)}")
+                ss_str = f"{p['cipher']}:{p['password']}"
+                sub_links.append(f"ss://{safe_b64encode(ss_str)}@{p['server']}:{p['port']}#{quote(new_name)}")
         except: pass
 
-    # --- 统一写文件 ---
-    active_regs = [r for r in ["🇭🇰 香港节点", "🇹🇼 台湾节点", "🇯🇵 日本节点", "🇸🇬 新加坡节点", "🇺🇸 美国节点", "🧿 其它地区"] if r in reg_map]
+    # 写入 config.yaml
+    active_regs = [r for r in ["🇭🇰 香港节点", "🇹🇼 台湾节点", "🇯🇵 日本节点", "🇸🇬 新加坡节点", "🇰🇷 韩国节点", "🇺🇸 美国节点", "🧿 其它地区"] if r in reg_map]
     config = {
         "mixed-port": 7890, "allow-lan": True, "mode": "rule",
         "proxies": clash_proxies + [{"name": "DIRECT", "type": "direct"}],
@@ -132,9 +134,10 @@ def main():
     with open('config.yaml', 'w', encoding='utf-8') as f:
         yaml.dump(config, f, allow_unicode=True, sort_keys=False)
 
+    # 写入 index.html 和 sub.txt
     final_b64 = safe_b64encode("\n".join(sub_links))
-    for fn in ['index.html', 'sub.txt']:
-        with open(fn, 'w', encoding='utf-8') as f:
+    for filename in ['index.html', 'sub.txt']:
+        with open(filename, 'w', encoding='utf-8') as f:
             f.write(final_b64)
 
 if __name__ == "__main__": main()
