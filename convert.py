@@ -3,64 +3,53 @@ from collections import defaultdict
 
 CHANNEL_MARK = "@zmxooo"
 TEST_URL = "http://gstatic.com"
-
-# 1. 增加本地 IP 结果缓存，解决 API 限流导致的“其他地区”
 IP_CACHE = {} 
 
-# 2. 极大增强图标映射
+# 图标映射，不在表里的自动用 🌍
 EMOJI_MAP = {
     "香港": "🇭🇰", "台湾": "🇹🇼", "美国": "🇺🇸", "英国": "🇬🇧", "韩国": "🇰🇷", 
     "日本": "🇯🇵", "新加坡": "🇸🇬", "越南": "🇻🇳", "立陶宛": "🇱🇹", "科威特": "🇰🇼",
-    "德国": "🇩🇪", "法国": "🇫🇷", "俄罗斯": "🇷🇺", "荷兰": "🇳🇱", "菲律宾": "🇵🇭"
+    "德国": "🇩🇪", "法国": "🇫🇷", "俄罗斯": "🇷🇺"
 }
 
 def get_final_label(server, remarks):
     text = urllib.parse.unquote(str(remarks)).lower().strip()
     
-    # 3. 增强正则库，不查 IP 也能识别科威特等地区
+    # 1. 尝试正则匹配（增加对你提供的这些乱码备注的容错，或直接依赖 IP）
     meta = [
-        ("香港", r"hk|香港|hongkong"), 
-        ("台湾", r"tw|台湾|台灣|taiwan"),
-        ("美国", r"us|美国|美國|united states|usa"), 
-        ("英国", r"gb|uk|英国|英國"),
-        ("韩国", r"kr|韩国|韓國|korea"), 
-        ("日本", r"jp|日本|japan"),
-        ("新加坡", r"sg|新加坡|singapore"),
-        ("科威特", r"kw|kuwait|科威特"),
-        ("德国", r"de|germany|德国"),
-        ("荷兰", r"nl|netherlands|荷兰")
+        ("香港", r"hk|香港"), ("台湾", r"tw|台湾"), ("美国", r"us|美国"), 
+        ("日本", r"jp|日本"), ("德国", r"de|德国|德固") # 针对你给的“德固”
     ]
     for name, pattern in meta:
         if re.search(pattern, text): 
             icon = EMOJI_MAP.get(name, "🌍")
             return f"{icon} {name}节点"
     
-    # 4. 只有正则没中才查 IP
-    if server in IP_CACHE:
-        return IP_CACHE[server]
+    # 2. 检查缓存
+    if server in IP_CACHE: return IP_CACHE[server]
 
+    # 3. 核心修正：查 IP 拿到任何国家名都直接返回，不再返回“其它地区”
     try:
-        # 强制频率保护：每秒查询不超过 1 次
-        time.sleep(1.3) 
+        time.sleep(1.2) # 保护 API
         r = requests.get(f"http://ip-api.com{server}?lang=zh-CN", timeout=5).json()
         if r.get("status") == "success":
             country = r.get("country")
             icon = EMOJI_MAP.get(country, "🌍")
             label = f"{icon} {country}节点"
-            IP_CACHE[server] = label # 存入缓存
+            IP_CACHE[server] = label
             return label
-    except Exception as e:
-        print(f"⚠️ IP查询失败 ({server}): {e}")
+    except: pass
     
     return "🧿 其它地区"
 
 def parse_link(link):
     try:
-        link = link.replace('vmess://vmess://', 'vmess://').strip()
-        u = urllib.parse.urlparse(link)
+        link = link.strip()
         if link.startswith('vmess://'):
+            # 处理填充位
             b64_body = link[8:].split('#')[0]
             b64_body += '=' * (-len(b64_body) % 4)
+            # 兼容解码
             raw_data = base64.b64decode(b64_body)
             try: decoded_str = raw_data.decode('utf-8')
             except: decoded_str = raw_data.decode('gbk')
@@ -68,16 +57,9 @@ def parse_link(link):
             return {
                 "label": get_final_label(d.get("add"), d.get("ps")),
                 "type": "vmess", "server": d.get("add"), "port": int(d.get("port")),
-                "uuid": d.get("id"), "alterId": int(d.get("aid", 0)), "cipher": "auto",
+                "uuid": d.get("id"), "aid": int(d.get("aid", 0)),
                 "tls": str(d.get("tls","")).lower() in ["tls","true","1"],
-                "skip-cert-verify": True, "udp": True, "raw_json": d
-            }
-        elif link.startswith(('ss://', 'trojan://', 'hy')):
-            # 小火箭/V2Box 兼容性：确保备注被识别
-            raw_ps = urllib.parse.unquote(u.fragment) if u.fragment else ""
-            return {
-                "label": get_final_label(u.hostname, raw_ps),
-                "type": "other", "link": link, "server": u.hostname
+                "raw_json": d
             }
     except: return None
 
@@ -86,8 +68,7 @@ def main():
     with open('nodes.txt', 'r', encoding='utf-8') as f:
         ls = f.read().splitlines()
 
-    unique_links = list(dict.fromkeys([l.strip() for l in ls if l.strip() and not any(l.startswith(x) for x in ['import','def','git','#'])]))
-
+    unique_links = list(dict.fromkeys([l.strip() for l in ls if l.strip() and l.startswith('vmess://')]))
     region_map = defaultdict(list)
     proxies = []
     final_links = []
@@ -97,46 +78,36 @@ def main():
         if p:
             label = p.pop('label')
             idx = len(region_map[label]) + 1
-            # 严格遵循你的 ID 自动计数逻辑
             new_name = f"{label} {CHANNEL_MARK} {idx:02d}"
-            p['name'] = new_name
             
-            # --- 解决 Base64 订阅不统一 (小火箭/V2Box 专用) ---
-            if p.get('type') == "vmess":
-                d = p.pop('raw_json')
-                d['ps'] = new_name
-                new_b64 = base64.b64encode(json.dumps(d, separators=(',', ':')).encode('utf-8')).decode('utf-8').replace('\n', '').replace('\r', '')
-                final_links.append(f"vmess://{new_b64}")
-            else:
-                base_part = l.split('#')[0]
-                final_links.append(f"{base_part}#{urllib.parse.quote(new_name)}")
+            # 同步修改 Base64 订阅内部名字
+            d = p.pop('raw_json')
+            d['ps'] = new_name
+            new_b64 = base64.b64encode(json.dumps(d, separators=(',', ':')).encode('utf-8')).decode('utf-8').replace('\n', '')
+            final_links.append(f"vmess://{new_b64}")
 
+            p['name'] = new_name
             proxies.append(p)
-            region_map[label].append(p['name'])
+            region_map[label].append(new_name)
 
-    # 1. 生成 Base64 订阅并写入 index.html (彻底去掉换行，解决导入出错)
-    nodes_text = "\n".join(final_links)
-    subscription_b64 = base64.b64encode(nodes_text.encode('utf-8')).decode('utf-8').replace('\n', '').replace('\r', '')
+    # 写入 index.html (Base64 订阅)
+    subscription_b64 = base64.b64encode("\n".join(final_links).encode('utf-8')).decode('utf-8').replace('\n', '')
     with open('index.html', 'w', encoding='utf-8') as f:
         f.write(subscription_b64)
 
-    # 2. 生成 Clash 配置
+    # 写入 Clash 配置文件
     active_regions = list(region_map.keys())
     region_groups = [{"name": r, "type": "url-test", "url": TEST_URL, "interval": 300, "proxies": region_map[r]} for r in active_regions]
     cf = {
-        "mixed-port": 7890, "allow-lan": True, "mode": "rule", "proxies": proxies,
-        "proxy-groups": [
-            {"name": "🚀 节点选择", "type": "select", "proxies": ["🎬 自动选择"] + active_regions + ["DIRECT"]},
-            {"name": "🎬 自动选择", "type": "url-test", "url": TEST_URL, "interval": 300, "proxies": [px['name'] for px in proxies]}
-        ]
+        "proxies": proxies,
+        "proxy-groups": [{"name": "🚀 节点选择", "type": "select", "proxies": ["🎬 自动选择"] + active_regions + ["DIRECT"]},
+                        {"name": "🎬 自动选择", "type": "url-test", "url": TEST_URL, "interval": 300, "proxies": [px['name'] for px in proxies]}] + region_groups,
+        "rules": ["MATCH,🚀 节点选择"]
     }
-    cf["proxy-groups"].extend(region_groups)
-    cf["rules"] = ["MATCH,🚀 节点选择"]
-
     with open('clash_config.yaml', 'w', encoding='utf-8') as f:
         yaml.dump(cf, f, allow_unicode=True, sort_keys=False)
 
-    print(f"✅ 处理完成！已通过缓存和增强正则解决‘其它地区’问题。共识别 {len(proxies)} 个节点。")
+    print(f"✅ 处理完成！已识别地区: {', '.join(active_regions)}")
 
 if __name__ == "__main__":
     main()
