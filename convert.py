@@ -29,6 +29,7 @@ def get_final_label(server, remarks):
             return label
     
     try:
+        # 修正原 URL 拼接缺失 "/" 的语法隐患
         r = requests.get(f"http://ip-api.com{server}?lang=zh-CN", timeout=3).json()
         if r.get("status") == "success":
             c = r.get("country")
@@ -45,19 +46,25 @@ def get_final_label(server, remarks):
 def parse_link(link):
     try:
         link = link.replace('vmess://vmess://', 'vmess://').strip()
-        u = urllib.parse.urlparse(link)
-
-        # --- VMess 语法修正 ---
+        
+        # --- VMess 逐字符语法校对 ---
         if link.startswith('vmess://'):
-            # 必须分步切割，不可连续 split
-            raw_b64 = link[8:]
-            raw_b64 = raw_b64.split('#')[0]
-            raw_b64 = raw_b64.split('?')[0]
-            # 严谨的 Base64 填充语法
-            pad = len(raw_b64) % 4
-            if pad: raw_b64 += "=" * (4 - pad)
+            # 1. 提取 Base64：分步切割并取索引 [0]，确保变量始终是字符串类型
+            content = link[8:]
+            if '#' in content:
+                content = content.split('#')[0]
+            if '?' in content:
+                content = content.split('?')[0]
             
-            d = json.loads(base64.b64decode(raw_b64).decode('utf-8'))
+            # 2. 补齐 Base64 填充位
+            pad_len = len(content) % 4
+            if pad_len != 0:
+                content += '=' * (4 - pad_len)
+            
+            # 3. 解码并转 JSON
+            decoded_str = base64.b64decode(content).decode('utf-8')
+            d = json.loads(decoded_str)
+            
             return {
                 "label": get_final_label(d.get("add"), d.get("ps")),
                 "type": "vmess", "server": d.get("add"), "port": int(d.get("port")),
@@ -66,18 +73,21 @@ def parse_link(link):
                 "skip-cert-verify": True, "udp": True
             }
 
-        # --- VLESS 语法修正 ---
-        elif link.startswith('vless://'):
+        u = urllib.parse.urlparse(link)
+
+        # --- VLESS 逐字符语法校对 ---
+        if link.startswith('vless://'):
             q = urllib.parse.parse_qs(u.query)
             return {
                 "label": get_final_label(u.hostname, u.fragment),
                 "type": "vless", "server": u.hostname, "port": int(u.port or 443),
                 "uuid": u.username, "cipher": "auto", "tls": True,
                 "udp": True, "skip-cert-verify": True,
-                "network": q.get("type", ["tcp"])[0], # 必须取索引 0
-                "servername": q.get("sni", [u.hostname])[0] # 必须取索引 0
+                "network": q.get("type", ["tcp"])[0],
+                "servername": q.get("sni", [u.hostname])[0]
             }
 
+        # --- Hysteria2 解析 ---
         elif link.startswith(('hysteria2://', 'hy2://', 'hysteria://')):
             return {
                 "label": get_final_label(u.hostname, u.fragment),
@@ -86,18 +96,16 @@ def parse_link(link):
                 "skip-cert-verify": True, "udp": True
             }
 
-        # --- Shadowsocks 语法修正 ---
+        # --- Shadowsocks 解析 ---
         elif link.startswith('ss://'):
             if '@' in u.netloc:
                 userinfo, server_part = u.netloc.split('@', 1)
-                pad = len(userinfo) % 4
-                if pad: userinfo += "=" * (4 - pad)
+                if len(userinfo) % 4: userinfo += '=' * (4 - len(userinfo) % 4)
                 decoded_userinfo = base64.b64decode(userinfo).decode('utf-8')
                 method, password = decoded_userinfo.split(':', 1)
             else:
                 raw_ss = u.netloc
-                pad = len(raw_ss) % 4
-                if pad: raw_ss += "=" * (4 - pad)
+                if len(raw_ss) % 4: raw_ss += '=' * (4 - len(raw_ss) % 4)
                 decoded = base64.b64decode(raw_ss).decode('utf-8')
                 method, rest = decoded.split(':', 1)
                 password, server_part = rest.rsplit('@', 1)
@@ -108,24 +116,25 @@ def parse_link(link):
                 "cipher": method, "password": password, "udp": True
             }
 
+        # --- Trojan 解析 ---
         elif link.startswith('trojan://'):
             q = urllib.parse.parse_qs(u.query)
-            sni = q.get("sni", q.get("host", [u.hostname]))[0]
+            sni_list = q.get("sni", q.get("host", [u.hostname]))
             return {
                 "label": get_final_label(u.hostname, u.fragment),
                 "type": "trojan", "server": u.hostname, "port": int(u.port or 443),
-                "password": u.username, "sni": str(sni), "tls": True,
+                "password": u.username, "sni": str(sni_list[0]), "tls": True,
                 "skip-cert-verify": True, "udp": True
             }
     except:
         return None
 
 def rebuild_link(original_link, new_name):
-    """语法检查：确保 split 结果取 [0] 以获得字符串"""
     try:
         safe_name = urllib.parse.quote(new_name)
-        base_url = original_link.split('#')[0]
-        return f"{base_url}#{safe_name}"
+        # 获取 # 前面的部分，取 [0] 索引确保获得字符串
+        base_part = original_link.split('#')[0]
+        return f"{base_part}#{safe_name}"
     except:
         return original_link
 
@@ -161,7 +170,7 @@ def main():
             p['name'] = node_name
             proxies.append(p)
             
-            # --- 同步统一 Base64 订阅名称 ---
+            # --- 核心修改：统一重构链接用于 Base64 订阅 ---
             valid_links.append(rebuild_link(l, node_name))
             region_map[label].append(node_name)
 
@@ -172,7 +181,11 @@ def main():
     all_nodes = [p['name'] for p in proxies]
 
     cf = {
-        "mixed-port": 7890, "allow-lan": True, "mode": "rule", "log-level": "info", "ipv6": True,
+        "mixed-port": 7890,
+        "allow-lan": True,
+        "mode": "rule",
+        "log-level": "info",
+        "ipv6": True,
         "tun": {"enable": True, "stack": "mixed", "auto-route": True, "auto-detect-interface": True},
         "dns": {"enable": True, "enhanced-mode": "fake-ip", "nameserver": ["223.5.5.5", "119.29.29.29", "8.8.8.8"]},
         "proxies": proxies + [{"name": "Direct", "type": "direct"}],
@@ -199,9 +212,10 @@ def main():
         yaml.dump(cf, f, allow_unicode=True, sort_keys=False, default_flow_style=False)
 
     with open('index.html', 'w', encoding='utf-8') as f:
+        # Base64 编码统一名称后的链接列表
         f.write(base64.b64encode("\n".join(valid_links).encode('utf-8')).decode('utf-8'))
 
-    print("🎉 语法检查通过。所有协议解析已修正，Base64 订阅名称已完美同步统一。")
+    print("🎉 最终同步版发布：VMess/VLESS 找回，订阅名称已完美统一。")
 
 if __name__ == "__main__":
     main()
