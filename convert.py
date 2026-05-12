@@ -42,23 +42,6 @@ def get_final_label(server, remarks):
         pass
     return "🧿 其它地区"
 
-# --- 新增：重构链接名称的函数 ---
-def rebuild_link(link, new_name):
-    try:
-        # 对名称进行 URL 编码处理（处理空格和表情符号）
-        safe_name = urllib.parse.quote(new_name)
-        
-        if link.startswith('vmess://'):
-            # VMess 的备注通常写在 Base64 内部，但大多数客户端也支持 # 挂载
-            # 为了最通用的兼容性，我们先把原本可能存在的 # 去掉，再挂载新名字
-            base = link.split('#')[0]
-            return f"{base}#{safe_name}"
-        else:
-            # SS, Trojan, Hysteria2 直接替换 # 后的内容
-            base = link.split('#')[0]
-            return f"{base}#{safe_name}"
-    except:
-        return link
 
 def parse_link(link):
     try:
@@ -66,6 +49,7 @@ def parse_link(link):
         u = urllib.parse.urlparse(link)
 
         if link.startswith('vmess://'):
+            # 修正：确保正确提取 Base64 部分
             b64 = link[8:].split('#')[0].split('?')[0]
             b64 += '=' * (-len(b64) % 4)
             d = json.loads(base64.b64decode(b64).decode('utf-8'))
@@ -112,6 +96,16 @@ def parse_link(link):
     except:
         return None
 
+# --- 新增补丁函数：用于重新构建统一名称的原始链接 ---
+def rebuild_link_with_new_name(original_link, new_name):
+    try:
+        # 对新名称进行 URL 编码
+        safe_name = urllib.parse.quote(new_name)
+        # 移除原链接可能存在的备注部分（#之后的内容），重新拼接
+        base_link = original_link.split('#')[0]
+        return f"{base_link}#{safe_name}"
+    except:
+        return original_link
 
 def main():
     if not os.path.exists('nodes.txt'):
@@ -148,8 +142,9 @@ def main():
             p['name'] = node_name
             proxies.append(p)
             
-            # --- 修改处：将原始链接重新构建为带统一名称的链接 ---
-            valid_links.append(rebuild_link(l, node_name))
+            # --- 核心修改：将统一后的名称重新注入到 valid_links 中 ---
+            renamed_link = rebuild_link_with_new_name(l, node_name)
+            valid_links.append(renamed_link)
             
             region_map[label].append(p['name'])
 
@@ -193,7 +188,7 @@ def main():
         yaml.dump(cf, f, allow_unicode=True, sort_keys=False, default_flow_style=False)
 
     with open('index.html', 'w', encoding='utf-8') as f:
-        # 这里现在使用的是经过 rebuild_link 统一过名称的链接列表
+        # 使用重构名称后的 valid_links 生成 Base64
         f.write(base64.b64encode("\n".join(valid_links).encode('utf-8')).decode('utf-8'))
 
     print("🎉 生成完成！已实现 Clash 配置与 Base64 订阅名称同步统一。")
