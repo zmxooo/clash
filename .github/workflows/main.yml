@@ -4,8 +4,6 @@ on:
   push:
     branches: [ main ]
   workflow_dispatch:
-  schedule:
-    - cron: '0 */6 * * *' # 每6小时自动更新一次（可选）
 
 jobs:
   convert:
@@ -29,7 +27,6 @@ jobs:
         run: |
           git config --local user.email "actions@github.com"
           git config --local user.name "GitHub Action"
-          # 关键点：添加所有生成的文件
-          git add config.yaml index.html sub.txt
-          git commit -m "自动更新订阅文件 (同步名称及sub.txt)" || exit 0
+          git add config.yaml index.html sub.txt || true
+          git commit -m "自动更新订阅文件" || exit 0
           git push
