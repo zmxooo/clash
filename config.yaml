@@ -36,6 +36,313 @@ proxies:
   skip-cert-verify: true
   udp: true
   name: 🇬🇧 英国节点 @zmxooo 02
+- type: hysteria2
+  server: 202.146.222.41
+  port: 443
+  password: qQe1z5kU8kN6SlKnDt9Ru3Qp
+  sni: 202.146.222.41
+  skip-cert-verify: true
+  udp: true
+  name: 🇭🇰 香港节点 @zmxooo 01
+- type: hysteria2
+  server: 202.146.222.13
+  port: 443
+  password: qQe1z5kU8kN6SlKnDt9Ru3Qp
+  sni: 202.146.222.13
+  skip-cert-verify: true
+  udp: true
+  name: 🇭🇰 香港节点 @zmxooo 02
+- type: hysteria2
+  server: 202.146.222.93
+  port: 443
+  password: qQe1z5kU8kN6SlKnDt9Ru3Qp
+  sni: 202.146.222.93
+  skip-cert-verify: true
+  udp: true
+  name: 🇭🇰 香港节点 @zmxooo 03
+- type: hysteria2
+  server: 202.146.222.89
+  port: 443
+  password: qQe1z5kU8kN6SlKnDt9Ru3Qp
+  sni: 202.146.222.89
+  skip-cert-verify: true
+  udp: true
+  name: 🇭🇰 香港节点 @zmxooo 04
+- type: hysteria2
+  server: 202.146.222.11
+  port: 443
+  password: qQe1z5kU8kN6SlKnDt9Ru3Qp
+  sni: 202.146.222.11
+  skip-cert-verify: true
+  udp: true
+  name: 🇭🇰 香港节点 @zmxooo 05
+- type: hysteria2
+  server: 202.146.222.29
+  port: 443
+  password: qQe1z5kU8kN6SlKnDt9Ru3Qp
+  sni: 202.146.222.29
+  skip-cert-verify: true
+  udp: true
+  name: 🇭🇰 香港节点 @zmxooo 06
+- type: hysteria2
+  server: 202.146.222.16
+  port: 443
+  password: qQe1z5kU8kN6SlKnDt9Ru3Qp
+  sni: 202.146.222.16
+  skip-cert-verify: true
+  udp: true
+  name: 🇭🇰 香港节点 @zmxooo 07
+- type: hysteria2
+  server: 202.146.222.85
+  port: 443
+  password: qQe1z5kU8kN6SlKnDt9Ru3Qp
+  sni: 202.146.222.85
+  skip-cert-verify: true
+  udp: true
+  name: 🇭🇰 香港节点 @zmxooo 08
+- type: hysteria2
+  server: 202.146.222.45
+  port: 443
+  password: qQe1z5kU8kN6SlKnDt9Ru3Qp
+  sni: 202.146.222.45
+  skip-cert-verify: true
+  udp: true
+  name: 🇭🇰 香港节点 @zmxooo 09
+- type: hysteria2
+  server: 160.187.100.109
+  port: 443
+  password: qQe1z5kU8kN6SlKnDt9Ru3Qp
+  sni: 160.187.100.109
+  skip-cert-verify: true
+  udp: true
+  name: 🇹🇼 台湾节点 @zmxooo 01
+- type: hysteria2
+  server: 43.200.123.45
+  port: 443
+  password: qQe1z5kU8kN6SlKnDt9Ru3Qp
+  sni: 43.200.123.45
+  skip-cert-verify: true
+  udp: true
+  name: 🇹🇼 台湾节点 @zmxooo 02
+- type: hysteria2
+  server: 23.144.12.162
+  port: 443
+  password: qQe1z5kU8kN6SlKnDt9Ru3Qp
+  sni: 23.144.12.162
+  skip-cert-verify: true
+  udp: true
+  name: 🇺🇸 美国节点 @zmxooo 01
+- type: vmess
+  server: 82.198.246.9
+  port: 180
+  uuid: d13fc2f5-3e05-4795-81eb-44143a09e552
+  alterId: 0
+  cipher: auto
+  tls: false
+  skip-cert-verify: true
+  udp: true
+  name: 🇬🇧 英国节点 @zmxooo 03
+- type: vmess
+  server: 82.198.246.37
+  port: 180
+  uuid: d13fc2f5-3e05-4795-81eb-44143a09e552
+  alterId: 0
+  cipher: auto
+  tls: false
+  skip-cert-verify: true
+  udp: true
+  name: 🇬🇧 英国节点 @zmxooo 04
+- type: vmess
+  server: 82.198.246.214
+  port: 180
+  uuid: d13fc2f5-3e05-4795-81eb-44143a09e552
+  alterId: 0
+  cipher: auto
+  tls: false
+  skip-cert-verify: true
+  udp: true
+  name: 🇬🇧 英国节点 @zmxooo 05
+- type: vmess
+  server: 82.198.246.250
+  port: 180
+  uuid: d13fc2f5-3e05-4795-81eb-44143a09e552
+  alterId: 0
+  cipher: auto
+  tls: false
+  skip-cert-verify: true
+  udp: true
+  name: 🇬🇧 英国节点 @zmxooo 06
+- type: ss
+  server: 103.186.155.79
+  port: 38388
+  cipher: aes-256-cfb
+  password: Xn8jKdmDM00IeO%#$#fJAMtsEAEUOpH/YWYtYqDFnT0SV
+  udp: true
+  name: 🇻🇳 越南节点 @zmxooo 01
+- type: ss
+  server: 103.186.155.75
+  port: 38388
+  cipher: aes-256-cfb
+  password: Xn8jKdmDM00IeO%#$#fJAMtsEAEUOpH/YWYtYqDFnT0SV
+  udp: true
+  name: 🇻🇳 越南节点 @zmxooo 02
+- type: ss
+  server: 103.186.155.109
+  port: 38388
+  cipher: aes-256-cfb
+  password: Xn8jKdmDM00IeO%#$#fJAMtsEAEUOpH/YWYtYqDFnT0SV
+  udp: true
+  name: 🇻🇳 越南节点 @zmxooo 03
+- type: ss
+  server: 103.186.155.8
+  port: 38388
+  cipher: aes-256-cfb
+  password: Xn8jKdmDM00IeO%#$#fJAMtsEAEUOpH/YWYtYqDFnT0SV
+  udp: true
+  name: 🇻🇳 越南节点 @zmxooo 04
+- type: ss
+  server: 103.186.155.49
+  port: 38388
+  cipher: aes-256-cfb
+  password: Xn8jKdmDM00IeO%#$#fJAMtsEAEUOpH/YWYtYqDFnT0SV
+  udp: true
+  name: 🇻🇳 越南节点 @zmxooo 05
+- type: ss
+  server: 34.229.121.217
+  port: 80
+  cipher: aes-256-gcm
+  password: dada1203
+  udp: true
+  name: 🇺🇸 美国节点 @zmxooo 02
+- type: ss
+  server: 3.137.174.85
+  port: 443
+  cipher: aes-256-cfb
+  password: amazonskr05
+  udp: true
+  name: 🇺🇸 美国节点 @zmxooo 03
+- type: ss
+  server: 3.144.123.157
+  port: 443
+  cipher: aes-256-cfb
+  password: amazonskr05
+  udp: true
+  name: 🇺🇸 美国节点 @zmxooo 04
+- type: hysteria2
+  server: vpn-kr-003.fastervpn.world
+  port: 443
+  password: qQe1z5kU8kN6SlKnDt9Ru3Qp
+  sni: vpn-kr-003.fastervpn.world
+  skip-cert-verify: true
+  udp: true
+  name: 🇰🇷 韩国节点 @zmxooo 01
+- type: vmess
+  server: v13.zgtfqs.click
+  port: 30813
+  uuid: cbb3f877-d1fb-344c-87a9-d153bffd5484
+  alterId: 0
+  cipher: auto
+  tls: false
+  skip-cert-verify: true
+  udp: true
+  name: 🇹🇼 台湾节点 @zmxooo 03
+- type: vmess
+  server: v11.zgtfqs.click
+  port: 30811
+  uuid: cbb3f877-d1fb-344c-87a9-d153bffd5484
+  alterId: 0
+  cipher: auto
+  tls: false
+  skip-cert-verify: true
+  udp: true
+  name: 🇹🇼 台湾节点 @zmxooo 04
+- type: vmess
+  server: 103.127.243.55
+  port: 58051
+  uuid: 8e5b521a-4a56-4bd7-baf1-bfcdf55d6cf1
+  alterId: 0
+  cipher: auto
+  tls: false
+  skip-cert-verify: true
+  udp: true
+  name: 🇯🇵 日本节点 @zmxooo 01
+- type: trojan
+  server: 172.66.44.230
+  port: 8443
+  tls: true
+  sni: Koma-YT.PAGeS.Dev
+  skip-cert-verify: true
+  udp: true
+  password: 8r%3C%5B9%27l6hAO%238ZQi
+  name: 🇺🇸 美国节点 @zmxooo 05
+- type: trojan
+  server: 220.118.248.123
+  port: 18001
+  tls: true
+  sni: Koma-YT.PAGeS.Dev
+  skip-cert-verify: true
+  udp: true
+  password: 8r%3C%5B9%27l6hAO%238ZQi
+  name: 🇰🇷 韩国节点 @zmxooo 02
+- type: trojan
+  server: 183.107.78.213
+  port: 20880
+  tls: true
+  sni: Koma-YT.PAGeS.Dev
+  skip-cert-verify: true
+  udp: true
+  password: 8r%3C%5B9%27l6hAO%238ZQi
+  name: 🇰🇷 韩国节点 @zmxooo 03
+- type: trojan
+  server: 59.16.228.103
+  port: 18469
+  tls: true
+  sni: Koma-YT.PAGeS.Dev
+  skip-cert-verify: true
+  udp: true
+  password: 8r%3C%5B9%27l6hAO%238ZQi
+  name: 🇰🇷 韩国节点 @zmxooo 04
+- type: trojan
+  server: 59.0.95.106
+  port: 32773
+  tls: true
+  sni: Koma-YT.PAGeS.Dev
+  skip-cert-verify: true
+  udp: true
+  password: 8r%3C%5B9%27l6hAO%238ZQi
+  name: 🇰🇷 韩国节点 @zmxooo 05
+- type: trojan
+  server: 59.12.232.18
+  port: 12345
+  tls: true
+  sni: Koma-YT.PAGeS.Dev
+  skip-cert-verify: true
+  udp: true
+  password: 8r%3C%5B9%27l6hAO%238ZQi
+  name: 🇰🇷 韩国节点 @zmxooo 06
+- type: ss
+  server: 82.38.31.155
+  port: 8080
+  cipher: chacha20-ietf-poly1305
+  password: oZIoA69Q8yhcQV8ka3Pa3A
+  udp: true
+  name: 🇬🇧 英国节点 @zmxooo 07
+- type: ss
+  server: 82.38.31.35
+  port: 8080
+  cipher: chacha20-ietf-poly1305
+  password: oZIoA69Q8yhcQV8ka3Pa3A
+  udp: true
+  name: 🇬🇧 英国节点 @zmxooo 08
+- type: trojan
+  server: lt-sin.ltdns.top
+  port: 37043
+  tls: true
+  sni: ://ithome.com
+  skip-cert-verify: true
+  udp: true
+  password: abb011d5-2749-4fba-9a66-0eb7b1b14d1e
+  name: 🇱🇹 立陶宛节点 @zmxooo 01
 - name: Direct
   type: direct
 proxy-groups:
@@ -45,6 +352,13 @@ proxy-groups:
   - ⚡ 自动选择
   - ☢ 负载均衡
   - 🇬🇧 英国节点
+  - 🇭🇰 香港节点
+  - 🇹🇼 台湾节点
+  - 🇺🇸 美国节点
+  - 🇻🇳 越南节点
+  - 🇰🇷 韩国节点
+  - 🇯🇵 日本节点
+  - 🇱🇹 立陶宛节点
   - Direct
 - name: ⚡ 自动选择
   type: url-test
@@ -53,6 +367,43 @@ proxy-groups:
   proxies: &id001
   - 🇬🇧 英国节点 @zmxooo 01
   - 🇬🇧 英国节点 @zmxooo 02
+  - 🇭🇰 香港节点 @zmxooo 01
+  - 🇭🇰 香港节点 @zmxooo 02
+  - 🇭🇰 香港节点 @zmxooo 03
+  - 🇭🇰 香港节点 @zmxooo 04
+  - 🇭🇰 香港节点 @zmxooo 05
+  - 🇭🇰 香港节点 @zmxooo 06
+  - 🇭🇰 香港节点 @zmxooo 07
+  - 🇭🇰 香港节点 @zmxooo 08
+  - 🇭🇰 香港节点 @zmxooo 09
+  - 🇹🇼 台湾节点 @zmxooo 01
+  - 🇹🇼 台湾节点 @zmxooo 02
+  - 🇺🇸 美国节点 @zmxooo 01
+  - 🇬🇧 英国节点 @zmxooo 03
+  - 🇬🇧 英国节点 @zmxooo 04
+  - 🇬🇧 英国节点 @zmxooo 05
+  - 🇬🇧 英国节点 @zmxooo 06
+  - 🇻🇳 越南节点 @zmxooo 01
+  - 🇻🇳 越南节点 @zmxooo 02
+  - 🇻🇳 越南节点 @zmxooo 03
+  - 🇻🇳 越南节点 @zmxooo 04
+  - 🇻🇳 越南节点 @zmxooo 05
+  - 🇺🇸 美国节点 @zmxooo 02
+  - 🇺🇸 美国节点 @zmxooo 03
+  - 🇺🇸 美国节点 @zmxooo 04
+  - 🇰🇷 韩国节点 @zmxooo 01
+  - 🇹🇼 台湾节点 @zmxooo 03
+  - 🇹🇼 台湾节点 @zmxooo 04
+  - 🇯🇵 日本节点 @zmxooo 01
+  - 🇺🇸 美国节点 @zmxooo 05
+  - 🇰🇷 韩国节点 @zmxooo 02
+  - 🇰🇷 韩国节点 @zmxooo 03
+  - 🇰🇷 韩国节点 @zmxooo 04
+  - 🇰🇷 韩国节点 @zmxooo 05
+  - 🇰🇷 韩国节点 @zmxooo 06
+  - 🇬🇧 英国节点 @zmxooo 07
+  - 🇬🇧 英国节点 @zmxooo 08
+  - 🇱🇹 立陶宛节点 @zmxooo 01
 - name: ☢ 负载均衡
   type: load-balance
   strategy: consistent-hashing
@@ -64,6 +415,13 @@ proxy-groups:
   proxies:
   - 🚀 节点选择
   - 🇬🇧 英国节点
+  - 🇭🇰 香港节点
+  - 🇹🇼 台湾节点
+  - 🇺🇸 美国节点
+  - 🇻🇳 越南节点
+  - 🇰🇷 韩国节点
+  - 🇯🇵 日本节点
+  - 🇱🇹 立陶宛节点
 - name: 📲 Telegram
   type: select
   proxies:
@@ -72,10 +430,14 @@ proxy-groups:
   type: select
   proxies:
   - 🚀 节点选择
+  - 🇺🇸 美国节点
+  - 🇯🇵 日本节点
 - name: 📹 哔哩哔哩
   type: select
   proxies:
   - Direct
+  - 🇭🇰 香港节点
+  - 🇹🇼 台湾节点
 - name: 🎥 Netflix
   type: select
   proxies:
@@ -87,6 +449,78 @@ proxy-groups:
   proxies:
   - 🇬🇧 英国节点 @zmxooo 01
   - 🇬🇧 英国节点 @zmxooo 02
+  - 🇬🇧 英国节点 @zmxooo 03
+  - 🇬🇧 英国节点 @zmxooo 04
+  - 🇬🇧 英国节点 @zmxooo 05
+  - 🇬🇧 英国节点 @zmxooo 06
+  - 🇬🇧 英国节点 @zmxooo 07
+  - 🇬🇧 英国节点 @zmxooo 08
+- name: 🇭🇰 香港节点
+  type: url-test
+  url: http://www.gstatic.com/generate_204
+  interval: 300
+  proxies:
+  - 🇭🇰 香港节点 @zmxooo 01
+  - 🇭🇰 香港节点 @zmxooo 02
+  - 🇭🇰 香港节点 @zmxooo 03
+  - 🇭🇰 香港节点 @zmxooo 04
+  - 🇭🇰 香港节点 @zmxooo 05
+  - 🇭🇰 香港节点 @zmxooo 06
+  - 🇭🇰 香港节点 @zmxooo 07
+  - 🇭🇰 香港节点 @zmxooo 08
+  - 🇭🇰 香港节点 @zmxooo 09
+- name: 🇹🇼 台湾节点
+  type: url-test
+  url: http://www.gstatic.com/generate_204
+  interval: 300
+  proxies:
+  - 🇹🇼 台湾节点 @zmxooo 01
+  - 🇹🇼 台湾节点 @zmxooo 02
+  - 🇹🇼 台湾节点 @zmxooo 03
+  - 🇹🇼 台湾节点 @zmxooo 04
+- name: 🇺🇸 美国节点
+  type: url-test
+  url: http://www.gstatic.com/generate_204
+  interval: 300
+  proxies:
+  - 🇺🇸 美国节点 @zmxooo 01
+  - 🇺🇸 美国节点 @zmxooo 02
+  - 🇺🇸 美国节点 @zmxooo 03
+  - 🇺🇸 美国节点 @zmxooo 04
+  - 🇺🇸 美国节点 @zmxooo 05
+- name: 🇻🇳 越南节点
+  type: url-test
+  url: http://www.gstatic.com/generate_204
+  interval: 300
+  proxies:
+  - 🇻🇳 越南节点 @zmxooo 01
+  - 🇻🇳 越南节点 @zmxooo 02
+  - 🇻🇳 越南节点 @zmxooo 03
+  - 🇻🇳 越南节点 @zmxooo 04
+  - 🇻🇳 越南节点 @zmxooo 05
+- name: 🇰🇷 韩国节点
+  type: url-test
+  url: http://www.gstatic.com/generate_204
+  interval: 300
+  proxies:
+  - 🇰🇷 韩国节点 @zmxooo 01
+  - 🇰🇷 韩国节点 @zmxooo 02
+  - 🇰🇷 韩国节点 @zmxooo 03
+  - 🇰🇷 韩国节点 @zmxooo 04
+  - 🇰🇷 韩国节点 @zmxooo 05
+  - 🇰🇷 韩国节点 @zmxooo 06
+- name: 🇯🇵 日本节点
+  type: url-test
+  url: http://www.gstatic.com/generate_204
+  interval: 300
+  proxies:
+  - 🇯🇵 日本节点 @zmxooo 01
+- name: 🇱🇹 立陶宛节点
+  type: url-test
+  url: http://www.gstatic.com/generate_204
+  interval: 300
+  proxies:
+  - 🇱🇹 立陶宛节点 @zmxooo 01
 rules:
 - DOMAIN-SUFFIX,youtube.com,📹 YouTube
 - DOMAIN-SUFFIX,googlevideo.com,📹 YouTube
