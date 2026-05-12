@@ -49,12 +49,11 @@ def parse_link(link):
         u = urllib.parse.urlparse(link)
 
         if link.startswith('vmess://'):
-            # --- 修复处：正确提取 vmess 的 base64 部分 ---
-            # 先去掉 vmess:// 前缀，再按 # 或 ? 分割取第一部分
-            raw_b64 = link[8:].split('#')[0].split('?')[0]
-            # 补齐 base64 填充
-            raw_b64 += '=' * (-len(raw_b64) % 4)
-            d = json.loads(base64.b64decode(raw_b64).decode('utf-8'))
+            # --- 修正后的 VMess 解析逻辑 ---
+            # 先去掉前缀，然后通过索引分割，确保拿到纯净的 Base64 字符串
+            b64_part = link[8:].split('#')[0].split('?')[0]
+            b64_part += '=' * (-len(b64_part) % 4)
+            d = json.loads(base64.b64decode(b64_part).decode('utf-8'))
             return {
                 "label": get_final_label(d.get("add"), d.get("ps")),
                 "type": "vmess", "server": d.get("add"), "port": int(d.get("port")),
@@ -88,8 +87,7 @@ def parse_link(link):
 
         elif link.startswith('trojan://'):
             q = urllib.parse.parse_qs(u.query)
-            sni_list = q.get("sni", q.get("host", [u.hostname]))
-            sni = sni_list[0] if sni_list else u.hostname
+            sni = q.get("sni", q.get("host", [u.hostname]))[0] or u.hostname
             return {
                 "label": get_final_label(u.hostname, u.fragment),
                 "type": "trojan", "server": u.hostname, "port": int(u.port or 443),
@@ -99,12 +97,11 @@ def parse_link(link):
     except:
         return None
 
-# --- 新增补丁函数：用于重新构建统一名称的原始链接 ---
+# --- 用于重新构建统一名称链接的函数 ---
 def rebuild_link_with_new_name(original_link, new_name):
     try:
-        # 对新名称进行 URL 编码
         safe_name = urllib.parse.quote(new_name)
-        # 移除原链接可能存在的备注部分（#之后的内容），重新拼接
+        # 取 # 之前的部分，重新拼接新备注
         base_part = original_link.split('#')[0]
         return f"{base_part}#{safe_name}"
     except:
@@ -145,9 +142,8 @@ def main():
             p['name'] = node_name
             proxies.append(p)
             
-            # --- 核心：将统一后的名称重新注入到 valid_links 中 ---
-            renamed_link = rebuild_link_with_new_name(l, node_name)
-            valid_links.append(renamed_link)
+            # --- 使用重构函数，确保 valid_links 里的名字是统一的 ---
+            valid_links.append(rebuild_link_with_new_name(l, node_name))
             
             region_map[label].append(p['name'])
 
@@ -193,7 +189,7 @@ def main():
     with open('index.html', 'w', encoding='utf-8') as f:
         f.write(base64.b64encode("\n".join(valid_links).encode('utf-8')).decode('utf-8'))
 
-    print("🎉 生成完成！所有节点名称已统一且同步。")
+    print("🎉 生成完成！VMess 节点已找回，名称已全面统一。")
 
 
 if __name__ == "__main__":
