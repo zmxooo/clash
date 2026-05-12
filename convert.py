@@ -4,114 +4,138 @@ from urllib.parse import urlparse, parse_qs, unquote
 # 配置常量
 HEADERS = {"User-Agent": "ClashMeta"}
 MARK = "@zmxooo"
+IP_CACHE = {} 
 
-def safe_b64decode(data):
+def get_final_label(server: str, remarks: str = "") -> str:
+    """识别地理位置：备注匹配优先，IP-API 在线查询补位"""
+    text = unquote(str(remarks)).lower().strip()
+    meta = [
+        ("🇭🇰 香港节点", r"hk|香港|hongkong|🇭🇰"), ("🇹🇼 台湾节点", r"tw|台湾|台灣|taiwan|🇹🇼"),
+        ("🇯🇵 日本节点", r"jp|日本|japan|🇯🇵"), ("🇸🇬 新加坡节点", r"sg|新加坡|singapore|🇸🇬"),
+        ("🇰🇷 韩国节点", r"kr|韩国|韓國|korea|🇰🇷"), ("🇺🇸 美国节点", r"us|美国|美國|usa|america|🇺🇸"),
+        ("🇬🇧 英国节点", r"gb|uk|英国|英國|united kingdom|🇬🇧"), ("🇩🇪 德国节点", r"de|德国|德國|germany|🇩🇪"),
+        ("🇻🇳 越南节点", r"vn|越南|vietnam|🇻🇳"), ("🇱🇹 立陶宛节点", r"lt|立陶宛|lithuania")
+    ]
+    for label, pattern in meta:
+        if re.search(pattern, text): return label
+
+    # 如果备注没写，调用 IP-API 动态识别
+    if server in IP_CACHE: return IP_CACHE[server]
     try:
-        data = data.strip().replace('-', '+').replace('_', '/')
-        data += "=" * (-len(data) % 4)
-        return base64.b64decode(data).decode("utf-8", errors="ignore")
-    except: return ""
-
-def get_region(text):
-    text = unquote(str(text)).lower()
-    rules = {
-        "🇭🇰 香港节点": r"香港|hk|hongkong|🇭🇰",
-        "🇹🇼 台湾节点": r"台湾|tw|taiwan|🇹🇼",
-        "🇯🇵 日本节点": r"日本|jp|japan|🇯🇵",
-        "🇸🇬 新加坡节点": r"新加坡|sg|singapore|🇸🇬",
-        "🇰🇷 韩国节点": r"韩国|kr|korea|🇰🇷",
-        "🇺🇸 美国节点": r"美国|us|unitedstates|america|🇺🇸",
-        "🇬🇧 英国节点": r"英国|uk|britain|🇬🇧",
-        "🇩🇪 德国节点": r"德国|de|germany|🇩🇪",
-        "🇻🇳 越南节点": r"越南|vn|vietnam|🇻🇳",
-    }
-    for name, rule in rules.items():
-        if re.search(rule, text): return name
+        # 必须补全 /json/ 路径，?lang=zh-CN 确保返回中文
+        resp = requests.get(f"http://ip-api.com{server}?lang=zh-CN", timeout=3).json()
+        if resp.get("status") == "success":
+            country = resp.get("country", "")
+            mapping = {"中国": "🇨🇳 中国", "香港": "🇭🇰 香港节点", "台湾": "🇹🇼 台湾节点", "美国": "🇺🇸 美国节点", "日本": "🇯🇵 日本节点", "韩国": "🇰🇷 韩国节点", "新加坡": "🇸🇬 新加坡节点", "德国": "🇩🇪 德国节点", "英国": "🇬🇧 英国节点", "越南": "🇻🇳 越南节点"}
+            res = mapping.get(country, "🧿 其它地区")
+            IP_CACHE[server] = res
+            return res
+    except: pass
     return "🧿 其它地区"
 
-def parse_link(link):
-    """解析单体链接：vmess/vless/trojan/ss"""
+def safe_b64decode(data: str):
     try:
+        data = data.strip().replace('-', '+').replace('_', '/')
+        data += '=' * (-len(data) % 4)
+        return base64.b64decode(data).decode('utf-8', errors='ignore')
+    except: return ""
+
+def parse_link(link: str):
+    """深度解析协议 (保留所有关键字段)"""
+    try:
+        link = link.strip()
         if link.startswith('vmess://'):
-            j = json.loads(safe_b64decode(link[8:].split('#')[0]))
-            return {"type": "vmess", "server": j["add"], "port": int(j["port"]), "uuid": j["id"], "alterId": 0, "cipher": "auto", "tls": str(j.get("tls")).lower() in ["tls", "true"], "network": j.get("net", "tcp")}
-        elif link.startswith(('vless://', 'trojan://')):
-            u = urlparse(link); q = parse_qs(u.query)
-            p = {"type": "vless" if "vless" in link else "trojan", "server": u.hostname, "port": int(u.port or 443), "uuid": u.username if "vless" in link else None, "password": u.username if "trojan" in link else None, "tls": True, "sni": (q.get("sni") or [u.hostname])[0]}
+            b64_part = link[8:].split('#')[0].split('?')[0]
+            config = json.loads(safe_b64decode(b64_part))
+            p = {
+                "label": get_final_label(config.get("add"), config.get("ps")),
+                "type": "vmess", "server": config.get("add"), "port": int(config.get("port")),
+                "uuid": config.get("id"), "alterId": int(config.get("aid", 0)),
+                "cipher": "auto", "tls": str(config.get("tls")).lower() in ["tls", "true"],
+                "network": config.get("net", "tcp"), "udp": True, "skip-cert-verify": True
+            }
+            if p["network"] == "ws":
+                p["ws-opts"] = {"path": config.get("path", "/"), "headers": {"Host": config.get("host", "")}}
             return p
+        
+        elif link.startswith(('vless://', 'trojan://')):
+            u = urlparse(link); q = parse_qs(u.query); is_vless = link.startswith('vless://')
+            p = {
+                "label": get_final_label(u.hostname, u.fragment),
+                "type": "vless" if is_vless else "trojan", "server": u.hostname, 
+                "port": int(u.port or 443), "tls": True, "udp": True, "skip-cert-verify": True,
+                "sni": (q.get("sni") or [u.hostname])[0]
+            }
+            if is_vless:
+                p.update({"uuid": u.username, "cipher": "auto"})
+                if q.get("security", [""]) == "reality":
+                    p["reality-opts"] = {"public-key": q.get("pbk", [""])[0], "short-id": q.get("sid", [""])[0]}
+            else: p["password"] = u.username
+            return p
+
         elif link.startswith('ss://'):
-            content = link.replace("ss://", "").split('#')[0]
-            if "@" not in content: content = safe_b64decode(content)
-            left, right = content.split("@")
-            method, pwd = (left if ":" in left else safe_b64decode(left)).split(":", 1)
-            srv, port = right.rsplit(":", 1)
-            return {"type": "ss", "server": srv, "port": int(port), "cipher": method, "password": pwd}
+            u = urlparse(link); content = u.netloc if '@' in u.netloc else safe_base64_decode(u.netloc)
+            if '@' not in content: return None
+            left, right = content.split('@', 1)
+            method, pwd = (left if ":" in left else safe_base64_decode(left)).split(':', 1)
+            host, port = right.rsplit(':', 1)
+            return {"label": get_final_label(host, u.fragment), "type": "ss", "server": host, "port": int(port), "cipher": method, "password": pwd, "udp": True}
     except: return None
 
-def fetch_content(url):
-    """抓取并深度解析：支持YAML/Base64/明文"""
-    try:
-        r = requests.get(url, timeout=15, headers=HEADERS)
-        if r.status_code != 200: return []
-        txt = r.text.strip()
-        
-        # 1. 尝试作为 YAML 解析 (Clash 格式)
-        if "proxies:" in txt or url.endswith(('.yaml', '.yml')):
-            try:
-                data = yaml.safe_load(txt)
-                if isinstance(data, dict) and 'proxies' in data:
-                    return data['proxies']
-            except: pass
-
-        # 2. 尝试作为 Base64 解码后解析
-        decoded = safe_b64decode(txt)
-        content = decoded if (decoded and "://" in decoded) else txt
-        
-        # 3. 正则抓取所有链接
-        return re.findall(r"(?:vmess|vless|trojan|ss)://[^\s#\"'>]+", content)
-    except: return []
-
 def main():
-    if not os.path.exists("nodes.txt"): return print("❌ nodes.txt 不存在")
-    with open("nodes.txt", "r", encoding="utf-8") as f:
-        subs = [x.strip() for x in f if x.strip()]
-
+    if not os.path.exists('nodes.txt'): return print("❌ 找不到 nodes.txt")
+    with open('nodes.txt', 'r', encoding='utf-8') as f: urls = [l.strip() for l in f if l.strip()]
+    
     all_proxies, reg_map = [], {}
-    print(f"🚀 正在从 {len(subs)} 个源抓取节点...")
+    print(f"🚀 正在拉取订阅并自动识别 IP 归属地...")
 
-    for sub in subs:
-        data = fetch_content(sub)
-        print(f"📡 {sub[:40]}... 找到 {len(data)} 个候选")
-        for item in data:
-            p = item if isinstance(item, dict) else parse_link(item)
-            if isinstance(p, dict) and p.get("server"):
-                region = get_region(p.get("name", "") or p.get("server", ""))
-                if region not in reg_map: reg_map[region] = []
-                p["name"] = f"{region} {MARK} {len(reg_map[region]) + 1:02d}"
-                reg_map[region].append(p["name"])
-                all_proxies.append(p)
+    for url in urls:
+        try:
+            r = requests.get(url, timeout=15, headers=HEADERS).text
+            # 兼容 YAML 格式内容
+            if "proxies:" in r or url.endswith(('.yaml', '.yml')):
+                data = yaml.safe_load(r)
+                if isinstance(data, dict) and 'proxies' in data:
+                    for p in data['proxies']:
+                        p['label'] = get_final_label(p.get('server'), p.get('name', ''))
+                        all_proxies.append(p)
+                    continue
+            # 处理 Base64 或明文
+            dec = safe_base64_decode(r.strip()); content = dec if (dec and "://" in dec) else r
+            links = re.findall(r'(?:vmess|vless|ss|trojan|hy2|hysteria2)://[^\s#"\'>]+', content)
+            for link in links:
+                p = parse_link(link)
+                if p: all_proxies.append(p)
+        except: print(f"⚠️ 拉取失败: {url[:40]}")
 
-    if not all_proxies: return print("⚠️ 未抓取到任何有效节点，请检查 nodes.txt 中的链接是否有效")
+    if not all_proxies: return print("⚠️ 未抓取到有效节点")
 
-    # 策略组生成
-    target_regs = ["🇭🇰 香港节点", "🇹🇼 台湾节点", "🇯🇵 日本节点", "🇸🇬 新加坡节点", "🇰🇷 韩国节点", "🇺🇸 美国节点", "🇬🇧 英国节点", "🇩🇪 德国节点", "🇻🇳 越南节点", "🧿 其它地区"]
-    active_regs = [r for r in target_regs if reg_map.get(r)]
-    groups = [{"name": r, "type": "url-test", "url": "http://gstatic.com", "interval": 300, "proxies": reg_map[r]} for r in active_regs]
+    # --- 核心：按 IP 识别结果动态分组 ---
+    for p in all_proxies:
+        lbl = p.pop('label', '🧿 其它地区')
+        if lbl not in reg_map: reg_map[lbl] = []
+        p['name'] = f"{lbl} {MARK} {len(reg_map[lbl]) + 1:02d}"
+        reg_map[lbl].append(p['name'])
+        # 控制频率防止被 API 封禁
+        if p.get('server') not in IP_CACHE: time.sleep(0.1)
+
+    # 只保留真正有节点的地区组
+    active_regs = [r for r in ["🇭🇰 香港节点", "🇹🇼 台湾节点", "🇯🇵 日本节点", "🇸🇬 新加坡节点", "🇰🇷 韩国节点", "🇺🇸 美国节点", "🇩🇪 德国节点", "🇬🇧 英国节点", "🇻🇳 越南节点", "🧿 其它地区"] if r in reg_map]
     
     config = {
-        "mixed-port": 7890, "allow-lan": True, "mode": "rule",
+        "mixed-port": 7890, "allow-lan": True, "mode": "rule", "ipv6": True,
         "tun": {"enable": True, "stack": "mixed", "auto-route": True},
-        "proxies": all_proxies,
+        "dns": {"enable": True, "enhanced-mode": "fake-ip", "nameserver": ["223.5.5.5", "119.29.29.29", "8.8.8.8"]},
+        "proxies": all_proxies + [{"name": "Direct", "type": "direct"}],
         "proxy-groups": [
-            {"name": "🚀 节点选择", "type": "select", "proxies": ["⚡ 自动选择"] + active_regs + ["DIRECT"]},
-            {"name": "⚡ 自动选择", "type": "url-test", "url": "http://gstatic.com", "interval": 300, "proxies": [p["name"] for p in all_proxies]}
-        ] + groups,
-        "rules": ["DOMAIN-SUFFIX,openai.com,🇺🇸 美国节点", "GEOIP,CN,DIRECT", "MATCH,🚀 节点选择"]
+            {"name": "🚀 节点选择", "type": "select", "proxies": ["⚡ 自动选择"] + active_regs + ["Direct"]},
+            {"name": "⚡ 自动选择", "type": "url-test", "url": "http://gstatic.com", "interval": 300, "proxies": [p['name'] for p in all_proxies]},
+        ] + [{"name": r, "type": "url-test", "url": "http://gstatic.com", "interval": 300, "proxies": reg_map[r]} for r in active_regs],
+        "rules": ["GEOIP,CN,Direct", "MATCH,🚀 节点选择"]
     }
 
-    with open("config.yaml", "w", encoding="utf-8") as f:
+    with open('config.yaml', 'w', encoding='utf-8') as f:
         yaml.dump(config, f, allow_unicode=True, sort_keys=False)
-    print(f"✨ 成功！总计处理节点: {len(all_proxies)}，已保存至 config.yaml")
+    print(f"✨ 识别完成！共分类 {len(all_proxies)} 个节点至 {len(active_regs)} 个地区组。")
 
-if __name__ == "__main__":
-    main()
+if __name__ == "__main__": main()
