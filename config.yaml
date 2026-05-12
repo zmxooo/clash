@@ -402,7 +402,7 @@ proxies:
   cipher: aes-256-cfb
   password: Xn8jKdmDM00IeO%#$#fJAMtsEAEUOpH/YWYtYqDFnT0SV
   udp: true
-  name: 🇻🇳 越南节点 @zmxooo 06
+  name: 🧿 其它地区 @zmxooo 01
 - type: trojan
   server: 172.66.44.230
   port: 8443
@@ -546,7 +546,7 @@ proxies:
   tls: false
   skip-cert-verify: true
   udp: true
-  name: 🇺🇸 美国节点 @zmxooo 12
+  name: 🧿 其它地区 @zmxooo 02
 - type: vmess
   server: 82.198.246.233
   port: 180
@@ -577,7 +577,7 @@ proxy-groups:
   - Direct
 - name: ⚡ 自动选择
   type: url-test
-  url: http://www.gstatic.com/generate_204
+  url: http://gstatic.com
   interval: 300
   proxies: &id001
   - 🇬🇧 英国节点 @zmxooo 01
@@ -623,7 +623,7 @@ proxy-groups:
   - 🇹🇼 台湾节点 @zmxooo 04
   - 🇹🇼 台湾节点 @zmxooo 05
   - 🇯🇵 日本节点 @zmxooo 01
-  - 🇻🇳 越南节点 @zmxooo 06
+  - 🧿 其它地区 @zmxooo 01
   - 🇺🇸 美国节点 @zmxooo 10
   - 🇰🇷 韩国节点 @zmxooo 02
   - 🇰🇷 韩国节点 @zmxooo 03
@@ -639,12 +639,12 @@ proxy-groups:
   - 🇬🇧 英国节点 @zmxooo 15
   - 🇱🇹 立陶宛节点 @zmxooo 01
   - 🇩🇪 德国节点 @zmxooo 05
-  - 🇺🇸 美国节点 @zmxooo 12
+  - 🧿 其它地区 @zmxooo 02
   - 🇩🇪 德国节点 @zmxooo 06
 - name: ☢ 负载均衡
   type: load-balance
   strategy: consistent-hashing
-  url: http://www.gstatic.com/generate_204
+  url: http://gstatic.com
   interval: 300
   proxies: *id001
 - name: 📹 YouTube
@@ -683,7 +683,7 @@ proxy-groups:
   - 🚀 节点选择
 - name: 🇭🇰 香港节点
   type: url-test
-  url: http://www.gstatic.com/generate_204
+  url: http://gstatic.com
   interval: 300
   tolerance: 50
   proxies:
@@ -698,7 +698,7 @@ proxy-groups:
   - 🇭🇰 香港节点 @zmxooo 09
 - name: 🇹🇼 台湾节点
   type: url-test
-  url: http://www.gstatic.com/generate_204
+  url: http://gstatic.com
   interval: 300
   tolerance: 50
   proxies:
@@ -709,21 +709,21 @@ proxy-groups:
   - 🇹🇼 台湾节点 @zmxooo 05
 - name: 🇯🇵 日本节点
   type: url-test
-  url: http://www.gstatic.com/generate_204
+  url: http://gstatic.com
   interval: 300
   tolerance: 50
   proxies:
   - 🇯🇵 日本节点 @zmxooo 01
 - name: 🇸🇬 新加坡节点
   type: url-test
-  url: http://www.gstatic.com/generate_204
+  url: http://gstatic.com
   interval: 300
   tolerance: 50
   proxies:
   - Direct
 - name: 🇰🇷 韩国节点
   type: url-test
-  url: http://www.gstatic.com/generate_204
+  url: http://gstatic.com
   interval: 300
   tolerance: 50
   proxies:
@@ -735,7 +735,7 @@ proxy-groups:
   - 🇰🇷 韩国节点 @zmxooo 06
 - name: 🇺🇸 美国节点
   type: url-test
-  url: http://www.gstatic.com/generate_204
+  url: http://gstatic.com
   interval: 300
   tolerance: 50
   proxies:
@@ -750,10 +750,9 @@ proxy-groups:
   - 🇺🇸 美国节点 @zmxooo 09
   - 🇺🇸 美国节点 @zmxooo 10
   - 🇺🇸 美国节点 @zmxooo 11
-  - 🇺🇸 美国节点 @zmxooo 12
 - name: 🇩🇪 德国节点
   type: url-test
-  url: http://www.gstatic.com/generate_204
+  url: http://gstatic.com
   interval: 300
   tolerance: 50
   proxies:
@@ -765,7 +764,7 @@ proxy-groups:
   - 🇩🇪 德国节点 @zmxooo 06
 - name: 🇬🇧 英国节点
   type: url-test
-  url: http://www.gstatic.com/generate_204
+  url: http://gstatic.com
   interval: 300
   tolerance: 50
   proxies:
@@ -786,19 +785,19 @@ proxy-groups:
   - 🇬🇧 英国节点 @zmxooo 15
 - name: 🧿 其它地区
   type: url-test
-  url: http://www.gstatic.com/generate_204
+  url: http://gstatic.com
   interval: 300
   tolerance: 50
   proxies:
-  - Direct
+  - 🧿 其它地区 @zmxooo 01
+  - 🧿 其它地区 @zmxooo 02
 rules:
+- DOMAIN-SUFFIX,google.com,🚀 节点选择
 - DOMAIN-SUFFIX,youtube.com,📹 YouTube
-- DOMAIN-SUFFIX,googlevideo.com,📹 YouTube
+- DOMAIN-SUFFIX,netflix.com,🎥 Netflix
 - DOMAIN-SUFFIX,telegram.org,📲 Telegram
-- DOMAIN-KEYWORD,telegram,📲 Telegram
-- DOMAIN-KEYWORD,openai,🤖 AI
+- DOMAIN-SUFFIX,openai.com,🤖 AI
 - DOMAIN-SUFFIX,chatgpt.com,🤖 AI
 - DOMAIN-SUFFIX,bilibili.com,📹 哔哩哔哩
-- DOMAIN-SUFFIX,netflix.com,🎥 Netflix
 - GEOIP,CN,Direct
 - MATCH,🚀 节点选择
