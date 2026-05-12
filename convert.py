@@ -7,280 +7,123 @@ import requests
 from urllib.parse import urlparse, parse_qs, unquote
 
 # =========================
-# Base64 解码
+# Base64 安全解码
 # =========================
-def safe_dec(d):
-
+def safe_dec(data):
     try:
+        data = data.strip()
 
-        d = d.strip()
+        # URLSafe Base64 修复
+        data = data.replace("-", "+")
+        data = data.replace("_", "/")
 
-        d = d.replace("-", "+")
-        d = d.replace("_", "/")
+        # 补齐 padding
+        data += "=" * (-len(data) % 4)
 
-        padding = len(d) % 4
-
-        if padding:
-            d += "=" * (4 - padding)
-
-        return base64.b64decode(
-            d
-        ).decode(
+        return base64.b64decode(data).decode(
             "utf-8",
             errors="ignore"
         )
 
     except:
-
         return ""
 
+
 # =========================
-# 地区识别
+# 节点地区识别
 # =========================
 def get_final_label(server, remarks=""):
 
     text = unquote(str(remarks)).lower()
 
-    meta = [
-
-        ("🇭🇰 香港节点", r"hk|香港"),
-        ("🇹🇼 台湾节点", r"tw|台湾"),
-        ("🇺🇸 美国节点", r"us|美国"),
-        ("🇰🇷 韩国节点", r"kr|韩国"),
-        ("🇯🇵 日本节点", r"jp|日本"),
-        ("🇸🇬 新加坡节点", r"sg|新加坡"),
-        ("🇩🇪 德国节点", r"de|德国"),
-        ("🇬🇧 英国节点", r"gb|uk|英国"),
-        ("🇻🇳 越南节点", r"vn|越南"),
-        ("🇱🇹 立陶宛节点", r"lt|立陶宛")
-
+    rules = [
+        ("🇭🇰 香港节点", r"hk|香港|hongkong"),
+        ("🇹🇼 台湾节点", r"tw|台湾|taiwan"),
+        ("🇺🇸 美国节点", r"us|美国|usa"),
+        ("🇯🇵 日本节点", r"jp|日本|japan"),
+        ("🇸🇬 新加坡节点", r"sg|新加坡|singapore"),
+        ("🇰🇷 韩国节点", r"kr|韩国|korea"),
+        ("🇩🇪 德国节点", r"de|德国|germany"),
+        ("🇬🇧 英国节点", r"uk|英国|england"),
     ]
 
-    for label, pattern in meta:
-
+    for label, pattern in rules:
         if re.search(pattern, text):
-
             return label
-
-    try:
-
-        r = requests.get(
-            f"http://ip-api.com/json/{server}?lang=zh-CN",
-            timeout=3
-        ).json()
-
-        if r.get("status") == "success":
-
-            mapping = {
-
-                "香港": "🇭🇰 香港节点",
-                "台湾": "🇹🇼 台湾节点",
-                "美国": "🇺🇸 美国节点",
-                "韩国": "🇰🇷 韩国节点",
-                "日本": "🇯🇵 日本节点",
-                "新加坡": "🇸🇬 新加坡节点",
-                "德国": "🇩🇪 德国节点",
-                "英国": "🇬🇧 英国节点",
-                "越南": "🇻🇳 越南节点",
-                "立陶宛": "🇱🇹 立陶宛节点"
-
-            }
-
-            return mapping.get(
-                r.get("country", ""),
-                "🧿 其它地区"
-            )
-
-    except:
-
-        pass
 
     return "🧿 其它地区"
 
+
 # =========================
-# VMESS
+# VMESS 解析
 # =========================
 def parse_vmess(link):
 
     try:
 
-        raw = link[8:]
+        raw = link[8:].strip()
 
-        raw = raw.split("#")[0]
-
+        # 第一层 Base64
         data = safe_dec(raw)
 
-        if not data:
-
-            return None
-
-        # 双层base64修复
+        # 有些机场是双层 Base64
         try:
-
             cfg = json.loads(data)
 
         except:
+            data2 = safe_dec(data)
+            cfg = json.loads(data2)
 
-            data = safe_dec(data)
+        server = cfg.get("add")
 
-            cfg = json.loads(data)
-
-        network = cfg.get("net", "tcp")
-
-        proxy = {
-
+        return {
             "label": get_final_label(
-                cfg.get("add"),
+                server,
                 cfg.get("ps", "")
             ),
 
+            "name": cfg.get("ps", "VMESS"),
+
             "type": "vmess",
 
-            "server": cfg.get("add"),
+            "server": server,
 
             "port": int(cfg.get("port", 443)),
 
             "uuid": cfg.get("id"),
 
-            "alterId": int(
-                cfg.get(
-                    "aid",
-                    cfg.get("alterId", 0)
-                )
-            ),
+            "alterId": int(cfg.get("aid", 0)),
 
-            "cipher": cfg.get(
-                "scy",
-                "auto"
-            ),
-
-            "udp": True,
+            "cipher": cfg.get("scy", "auto"),
 
             "tls": str(
                 cfg.get("tls", "")
-            ).lower() in [
-                "tls",
-                "true",
-                "1"
-            ],
+            ).lower() in ["tls", "true", "1"],
 
-            "network": network
-        }
+            "network": cfg.get("net", "tcp"),
 
-        # ws
-        if network == "ws":
+            "servername": cfg.get("sni", ""),
 
-            proxy["ws-opts"] = {
-
+            "ws-opts": {
                 "path": cfg.get("path", "/"),
-
                 "headers": {
                     "Host": cfg.get("host", "")
                 }
-            }
-
-        # grpc
-        elif network == "grpc":
-
-            proxy["grpc-opts"] = {
-                "grpc-service-name": cfg.get("path", "")
-            }
-
-        # h2
-        elif network == "h2":
-
-            proxy["h2-opts"] = {
-                "host": [cfg.get("host", "")],
-                "path": cfg.get("path", "/")
-            }
-
-        return proxy
-
-    except Exception as e:
-
-        print("VMESS失败:", e)
-
-        return None
-
-# =========================
-# VLESS
-# =========================
-def parse_vless(link):
-
-    try:
-
-        u = urlparse(link)
-
-        q = parse_qs(u.query)
-
-        network = q.get("type", ["tcp"])[0]
-
-        proxy = {
-
-            "label": get_final_label(
-                u.hostname,
-                u.fragment
-            ),
-
-            "type": "vless",
-
-            "server": u.hostname,
-
-            "port": int(u.port or 443),
-
-            "uuid": u.username,
-
-            "cipher": "auto",
+            },
 
             "udp": True,
 
-            "tls": (
-                q.get("security", ["tls"])[0]
-                != "none"
-            ),
-
-            "servername": (
-                q.get("sni", [u.hostname])[0]
-            ),
-
-            "network": network
+            "skip-cert-verify": True
         }
 
-        if network == "ws":
-
-            proxy["ws-opts"] = {
-
-                "path": (
-                    q.get("path", ["/"])[0]
-                ),
-
-                "headers": {
-                    "Host": (
-                        q.get("host", [""])[0]
-                    )
-                }
-            }
-
-        elif network == "grpc":
-
-            proxy["grpc-opts"] = {
-                "grpc-service-name": (
-                    q.get("serviceName", [""])[0]
-                )
-            }
-
-        return proxy
-
     except Exception as e:
-
-        print("VLESS失败:", e)
-
         return None
 
+
 # =========================
-# TROJAN
+# VLESS/TROJAN
 # =========================
-def parse_trojan(link):
+def parse_vless_or_trojan(link):
 
     try:
 
@@ -288,33 +131,48 @@ def parse_trojan(link):
 
         q = parse_qs(u.query)
 
-        return {
+        is_vless = link.startswith("vless://")
 
+        p = {
             "label": get_final_label(
                 u.hostname,
                 u.fragment
             ),
 
-            "type": "trojan",
+            "name": unquote(u.fragment) or u.hostname,
+
+            "type": "vless" if is_vless else "trojan",
 
             "server": u.hostname,
 
             "port": int(u.port or 443),
 
-            "password": u.username,
+            "tls": True,
 
-            "sni": (
-                q.get("sni", [u.hostname])[0]
-            ),
+            "sni": q.get(
+                "sni",
+                [u.hostname]
+            )[0],
 
-            "udp": True
+            "udp": True,
+
+            "skip-cert-verify": True
         }
 
-    except Exception as e:
+        if is_vless:
 
-        print("TROJAN失败:", e)
+            p["uuid"] = u.username
+            p["cipher"] = "auto"
 
+        else:
+
+            p["password"] = u.username
+
+        return p
+
+    except:
         return None
+
 
 # =========================
 # SS
@@ -325,78 +183,68 @@ def parse_ss(link):
 
         body = link[5:]
 
-        remark = "SS"
-
         if "#" in body:
-
-            body, remark = body.split("#", 1)
+            body = body.split("#")[0]
 
         if "@" not in body:
 
-            dec = safe_dec(body)
+            body = safe_dec(body)
 
-            userinfo, serverinfo = dec.rsplit("@", 1)
+        if "@" in body:
 
-        else:
+            userinfo, server = body.split("@", 1)
 
-            userinfo, serverinfo = body.split("@", 1)
+            if ":" not in userinfo:
 
-            userinfo = safe_dec(userinfo)
+                userinfo = safe_dec(userinfo)
 
-        cipher, password = userinfo.split(":", 1)
+            method, password = userinfo.split(":", 1)
 
-        host, port = serverinfo.split(":")
+            host, port = server.rsplit(":", 1)
 
-        return {
+            return {
+                "label": get_final_label(host),
 
-            "label": get_final_label(
-                host,
-                remark
-            ),
+                "name": host,
 
-            "type": "ss",
+                "type": "ss",
 
-            "server": host,
+                "server": host,
 
-            "port": int(port),
+                "port": int(port),
 
-            "cipher": cipher,
+                "cipher": method,
 
-            "password": password,
+                "password": password,
 
-            "udp": True
-        }
+                "udp": True
+            }
 
-    except Exception as e:
-
-        print("SS失败:", e)
-
+    except:
         return None
 
+
 # =========================
-# 主解析
+# 通用解析
 # =========================
 def parse_link(link):
 
     link = link.strip()
 
     if link.startswith("vmess://"):
-
         return parse_vmess(link)
 
     elif link.startswith("vless://"):
-
-        return parse_vless(link)
+        return parse_vless_or_trojan(link)
 
     elif link.startswith("trojan://"):
-
-        return parse_trojan(link)
+        return parse_vless_or_trojan(link)
 
     elif link.startswith("ss://"):
-
         return parse_ss(link)
 
     return None
+
 
 # =========================
 # 主程序
@@ -406,7 +254,6 @@ def main():
     if not os.path.exists("nodes.txt"):
 
         print("❌ 缺少 nodes.txt")
-
         return
 
     with open(
@@ -421,18 +268,21 @@ def main():
             if x.strip()
         ]
 
+    proxies = []
+
     headers = {
-        "User-Agent": "Clash.Meta"
+        "User-Agent": "Clash.Meta",
+        "Accept-Encoding": "gzip"
     }
 
-    all_text = ""
-
-    # 下载订阅
+    # =========================
+    # 抓订阅
+    # =========================
     for url in urls:
 
         try:
 
-            print("📥 下载:", url[:70])
+            print(f"📡 抓取: {url}")
 
             r = requests.get(
                 url,
@@ -440,120 +290,111 @@ def main():
                 headers=headers
             )
 
-            txt = r.text.strip()
+            txt = r.text
 
-            # 尝试base64订阅
+            txt = txt.replace(
+                "\r",
+                "\n"
+            )
+
+            # Base64 订阅
             dec = safe_dec(txt)
 
             if dec:
-
                 txt = dec
 
-            all_text += "\n" + txt
+            # Clash YAML
+            try:
+
+                y = yaml.safe_load(txt)
+
+                if (
+                    isinstance(y, dict)
+                    and "proxies" in y
+                ):
+
+                    for p in y["proxies"]:
+
+                        if "name" not in p:
+                            continue
+
+                        proxies.append(p)
+
+                    continue
+
+            except:
+                pass
+
+            # =========================
+            # 正则提取
+            # =========================
+
+            patterns = [
+
+                r'vmess://[A-Za-z0-9+/=_-]+',
+
+                r'vless://[^\s]+',
+
+                r'trojan://[^\s]+',
+
+                r'ss://[A-Za-z0-9+/=_:@.?&%-]+'
+            ]
+
+            links = []
+
+            for p in patterns:
+
+                found = re.findall(
+                    p,
+                    txt
+                )
+
+                links.extend(found)
+
+            # 去重
+            links = list(set(links))
+
+            # =========================
+            # 解析
+            # =========================
+            for l in links:
+
+                node = parse_link(l)
+
+                if node:
+                    proxies.append(node)
 
         except Exception as e:
 
-            print("下载失败:", e)
-
-    content = all_text.replace("\r", "")
+            print(f"❌ 失败: {e}")
 
     # =========================
-    # 修复 vmess 丢失
-    # =========================
-
-    links = []
-
-    # vmess单独抓
-    vmess_links = re.findall(
-        r'vmess://[A-Za-z0-9+/=_-]+',
-        content
-    )
-
-    links.extend(vmess_links)
-
-    # 其它协议
-    other_links = re.findall(
-        r'(?:vless|trojan|ss|hy2|hysteria2)://[^\s]+',
-        content
-    )
-
-    links.extend(other_links)
-
     # 去重
-    links = list(dict.fromkeys(links))
+    # =========================
+    final = []
 
-    print("📦 总链接:", len(links))
+    seen = set()
 
-    proxies = []
+    for p in proxies:
 
-    region_map = {}
-
-    for link in links:
-
-        p = parse_link(link)
-
-        if not p:
-
-            continue
-
-        label = p.pop("label")
-
-        if label not in region_map:
-
-            region_map[label] = []
-
-        idx = len(region_map[label]) + 1
-
-        p["name"] = f"{label} @zmxooo {idx:02d}"
-
-        region_map[label].append(
-            p["name"]
+        key = (
+            p.get("server"),
+            p.get("port"),
+            p.get("type")
         )
 
-        proxies.append(p)
+        if key in seen:
+            continue
 
-    if not proxies:
+        seen.add(key)
 
-        print("❌ 没解析到节点")
+        final.append(p)
 
-        return
+    print(f"\n✅ 最终节点数量: {len(final)}")
 
-    regs = [
-
-        "🇭🇰 香港节点",
-        "🇹🇼 台湾节点",
-        "🇯🇵 日本节点",
-        "🇸🇬 新加坡节点",
-        "🇰🇷 韩国节点",
-        "🇺🇸 美国节点",
-        "🇩🇪 德国节点",
-        "🇬🇧 英国节点",
-        "🧿 其它地区"
-
-    ]
-
-    groups = []
-
-    for r in regs:
-
-        groups.append({
-
-            "name": r,
-
-            "type": "url-test",
-
-            "url": "http://www.gstatic.com/generate_204",
-
-            "interval": 300,
-
-            "tolerance": 50,
-
-            "proxies": region_map.get(
-                r,
-                ["DIRECT"]
-            )
-        })
-
+    # =========================
+    # 配置生成
+    # =========================
     config = {
 
         "mixed-port": 7890,
@@ -567,47 +408,38 @@ def main():
         "ipv6": False,
 
         "tun": {
-
             "enable": True,
-
             "stack": "mixed",
-
             "auto-route": True,
-
             "auto-detect-interface": True
         },
 
         "dns": {
-
             "enable": True,
-
             "enhanced-mode": "fake-ip",
-
             "nameserver": [
-
                 "223.5.5.5",
                 "119.29.29.29",
                 "8.8.8.8"
             ]
         },
 
-        "proxies": proxies,
+        "proxies": final,
 
         "proxy-groups": [
 
             {
-
                 "name": "🚀 节点选择",
 
                 "type": "select",
 
                 "proxies": [
-                    "⚡ 自动选择"
-                ] + regs
+                    p["name"]
+                    for p in final
+                ]
             },
 
             {
-
                 "name": "⚡ 自动选择",
 
                 "type": "url-test",
@@ -618,15 +450,12 @@ def main():
 
                 "proxies": [
                     p["name"]
-                    for p in proxies
+                    for p in final
                 ]
             }
-
-        ] + groups,
+        ],
 
         "rules": [
-
-            "DOMAIN-SUFFIX,openai.com,🇺🇸 美国节点",
 
             "GEOIP,CN,DIRECT",
 
@@ -647,9 +476,8 @@ def main():
             sort_keys=False
         )
 
-    print("✅ 完成")
-    print("✅ 实际节点:", len(proxies))
+    print("🎉 已生成 config.yaml")
+
 
 if __name__ == "__main__":
-
     main()
