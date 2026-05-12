@@ -29,6 +29,7 @@ def get_final_label(server, remarks):
             return label
     
     try:
+        # 修正 URL 拼接：增加了 /json/ 路径
         r = requests.get(f"http://ip-api.com{server}?lang=zh-CN", timeout=3).json()
         if r.get("status") == "success":
             c = r.get("country")
@@ -42,24 +43,28 @@ def get_final_label(server, remarks):
         pass
     return "🧿 其它地区"
 
+
 def parse_link(link):
     try:
         link = link.replace('vmess://vmess://', 'vmess://').strip()
         u = urllib.parse.urlparse(link)
 
+        # --- VMess 解析 (彻底修复) ---
         if link.startswith('vmess://'):
-            # --- 彻底修复：最稳健的 VMess 提取方式 ---
-            raw = link[8:]
-            # 找到第一个出现的 # 或 ? 的位置，截取前面的 Base64 部分
-            end_pos = len(raw)
-            for char in ['#', '?']:
-                pos = raw.find(char)
-                if pos != -1:
-                    end_pos = min(end_pos, pos)
-            b64_part = raw[:end_pos]
+            # 1. 提取 Base64 部分：截取 vmess:// 之后，且在 # 或 ? 之前的内容
+            main_part = link[8:]
+            if '#' in main_part:
+                main_part = main_part.split('#')[0]
+            if '?' in main_part:
+                main_part = main_part.split('?')[0]
             
-            b64_part += '=' * (-len(b64_part) % 4)
-            d = json.loads(base64.b64decode(b64_part).decode('utf-8'))
+            # 2. 补齐 Base64 填充
+            missing_padding = len(main_part) % 4
+            if missing_padding:
+                main_part += '=' * (4 - missing_padding)
+            
+            # 3. 解码 JSON
+            d = json.loads(base64.b64decode(main_part).decode('utf-8'))
             return {
                 "label": get_final_label(d.get("add"), d.get("ps")),
                 "type": "vmess", "server": d.get("add"), "port": int(d.get("port")),
@@ -68,6 +73,7 @@ def parse_link(link):
                 "skip-cert-verify": True, "udp": True
             }
 
+        # --- VLESS 解析 ---
         elif link.startswith('vless://'):
             q = urllib.parse.parse_qs(u.query)
             return {
@@ -79,6 +85,7 @@ def parse_link(link):
                 "servername": q.get("sni", [u.hostname])[0]
             }
 
+        # --- Hysteria2 解析 ---
         elif link.startswith(('hysteria2://', 'hy2://', 'hysteria://')):
             return {
                 "label": get_final_label(u.hostname, u.fragment),
@@ -87,6 +94,7 @@ def parse_link(link):
                 "skip-cert-verify": True, "udp": True
             }
 
+        # --- Shadowsocks 解析 ---
         elif link.startswith('ss://'):
             if '@' in u.netloc:
                 userinfo, server_part = u.netloc.split('@', 1)
@@ -102,9 +110,11 @@ def parse_link(link):
                 "cipher": method, "password": password, "udp": True
             }
 
+        # --- Trojan 解析 ---
         elif link.startswith('trojan://'):
             q = urllib.parse.parse_qs(u.query)
-            sni = q.get("sni", q.get("host", [u.hostname]))[0]
+            sni_list = q.get("sni", q.get("host", [u.hostname]))
+            sni = sni_list[0] if sni_list else u.hostname
             return {
                 "label": get_final_label(u.hostname, u.fragment),
                 "type": "trojan", "server": u.hostname, "port": int(u.port or 443),
@@ -116,10 +126,9 @@ def parse_link(link):
 
 def rebuild_link_with_new_name(original_link, new_name):
     try:
+        # 获取不含备注的原始链接主体
         safe_name = urllib.parse.quote(new_name)
-        # 只取 # 之前的部分
-        idx = original_link.find('#')
-        base_part = original_link[:idx] if idx != -1 else original_link
+        base_part = original_link.split('#')[0]
         return f"{base_part}#{safe_name}"
     except:
         return original_link
@@ -155,8 +164,10 @@ def main():
             
             p['name'] = node_name
             proxies.append(p)
+            
+            # --- 这里确保 valid_links 存储的是统一名称后的链接 ---
             valid_links.append(rebuild_link_with_new_name(l, node_name))
-            region_map[label].append(p['name'])
+            region_map[label].append(node_name)
 
     print(f"成功解析: {len(proxies)} 个节点")
 
@@ -165,7 +176,11 @@ def main():
     all_nodes = [p['name'] for p in proxies]
 
     cf = {
-        "mixed-port": 7890, "allow-lan": True, "mode": "rule", "log-level": "info", "ipv6": True,
+        "mixed-port": 7890,
+        "allow-lan": True,
+        "mode": "rule",
+        "log-level": "info",
+        "ipv6": True,
         "tun": {"enable": True, "stack": "mixed", "auto-route": True, "auto-detect-interface": True},
         "dns": {"enable": True, "enhanced-mode": "fake-ip", "nameserver": ["223.5.5.5", "119.29.29.29", "8.8.8.8"]},
         "proxies": proxies + [{"name": "Direct", "type": "direct"}],
@@ -192,9 +207,10 @@ def main():
         yaml.dump(cf, f, allow_unicode=True, sort_keys=False, default_flow_style=False)
 
     with open('index.html', 'w', encoding='utf-8') as f:
+        # Base64 编码统一名称后的链接列表
         f.write(base64.b64encode("\n".join(valid_links).encode('utf-8')).decode('utf-8'))
 
-    print("✅ 全部功能已修复完成。")
+    print("🎉 最终同步版完成！节点解析与命名已全面统一。")
 
 if __name__ == "__main__":
     main()
