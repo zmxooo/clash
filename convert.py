@@ -11,7 +11,6 @@ from collections import defaultdict
 CHANNEL_MARK = "@zmxooo"
 
 def get_region_info(server, remarks):
-    """提取地区名称和图标"""
     text = urllib.parse.unquote(str(remarks)).lower().strip()
     meta = [
         ("香港", "🇭🇰", r"hk|香港"), 
@@ -25,52 +24,48 @@ def get_region_info(server, remarks):
     for label, emoji, pattern in meta:
         if re.search(pattern, text): 
             return label, emoji
-    
-    # 简单的 IP API 备份
-    try:
-        r = requests.get(f"http://ip-api.com{server}?lang=zh-CN", timeout=2).json()
-        if r.get("status") == "success":
-            c = r.get("country")
-            m = {"香港":("香港","🇭🇰"), "美国":("美国","🇺🇸"), "日本":("日本","🇯🇵")}
-            return m.get(c, (c, "🌍"))
-    except: pass
-    return "其它", "🧿"
+    return "其它", "🌍"
 
 def rename_node(link, region_counts):
     """
-    最关键的一步：解开链接协议，强制修改其内部备注名，再封回去
-    这样 base64 订阅里的名字才会统一
+    深度重命名链接内部备注，解决 Base64 订阅名称不统一问题
     """
     try:
         link = link.strip()
-        u = urllib.parse.urlparse(link)
+        if not link: return None
         
+        # 提取原有的备注（# 之后的部分）
+        u = urllib.parse.urlparse(link)
+        raw_remarks = urllib.parse.unquote(u.fragment) if u.fragment else ""
+
         if link.startswith('vmess://'):
-            # 处理 VMess 内部名称
-            b64_part = link[8:].split('#')[0]
-            b64_part += '=' * (-len(b64_part) % 4)
-            d = json.loads(base64.b64decode(b64_part).decode('utf-8'))
+            # 1. 提取 VMess JSON 部分
+            b64_data = link[8:].split('#')[0]
+            b64_data += '=' * (-len(b64_data) % 4)
+            d = json.loads(base64.b64decode(b64_data).decode('utf-8'))
             
-            city, emoji = get_region_info(d.get("add"), d.get("ps") or u.fragment)
+            # 2. 识别并统计
+            city, emoji = get_region_info(d.get("add"), d.get("ps") or raw_remarks)
             region_counts[city] += 1
-            # 强制统一 ps 字段
+            # 3. 强制改写名称
             d["ps"] = f"{emoji} {city} {CHANNEL_MARK} {region_counts[city]:02d}"
             
-            new_json = json.dumps(d).encode('utf-8')
-            return "vmess://" + base64.b64encode(new_json).decode('utf-8')
+            # 4. 重新编码（注意：一定要去掉换行符）
+            new_json_b64 = base64.b64encode(json.dumps(d).encode('utf-8')).decode('utf-8').replace('\n', '').replace('\r', '')
+            return f"vmess://{new_json_b64}"
 
         elif link.startswith(('ss://', 'trojan://', 'hy2://', 'hysteria2://')):
-            # 处理 SS/Trojan/Hy2 的备注（# 后面部分）
-            city, emoji = get_region_info(u.hostname, u.fragment)
+            # 处理 SS/Trojan/Hy2 的备注替换
+            city, emoji = get_region_info(u.hostname, raw_remarks)
             region_counts[city] += 1
             new_name = urllib.parse.quote(f"{emoji} {city} {CHANNEL_MARK} {region_counts[city]:02d}")
             
-            # 移除旧备注，拼上新备注
-            base_url = link.split('#')[0]
-            return f"{base_url}#{new_name}"
+            # 找到最后一个 # 的位置并替换
+            base_part = link.split('#')[0]
+            return f"{base_part}#{new_name}"
             
     except:
-        return link # 出错则返回原样
+        return link # 万一出错保留原链接，防止订阅变为空
     return link
 
 def main():
@@ -80,28 +75,27 @@ def main():
     with open('nodes.txt', 'r', encoding='utf-8') as f:
         ls = [l.strip() for l in f.read().splitlines() if l.strip()]
 
-    # 1. 基础去重（方案二）
+    # 1. 基础去重
     unique_links = list(dict.fromkeys(ls))
     
-    # 2. 统一所有节点的内部名称
+    # 2. 统一所有链接内部的名称
     region_counts = defaultdict(int)
-    final_links = []
+    renamed_links = []
     for l in unique_links:
-        renamed = rename_node(l, region_counts)
-        if renamed:
-            final_links.append(renamed)
+        new_l = rename_node(l, region_counts)
+        if new_l:
+            renamed_links.append(new_l)
 
-    # 3. 生成 index.html 里的那串 Base64 订阅
-    # 把所有改名后的链接拼起来，整体转 Base64
-    nodes_combined = "\n".join(final_links)
-    b64_subscription = base64.b64encode(nodes_combined.encode('utf-8')).decode('utf-8')
+    # 3. 生成 Base64 订阅字符串（用于 index.html）
+    # 链接之间必须用换行符连接，且整体编码不能有换行
+    combined_text = "\n".join(renamed_links)
+    final_b64 = base64.b64encode(combined_text.encode('utf-8')).decode('utf-8').replace('\n', '').replace('\r', '')
 
-    # 4. 写入 index.html (这里模拟你的写入逻辑)
-    html_content = f"<html><body>{b64_subscription}</body></html>"
+    # 4. 写入 index.html (请根据你实际的 HTML 结构调整)
     with open('index.html', 'w', encoding='utf-8') as f:
-        f.write(html_content)
+        f.write(final_b64)
 
-    print(f"✅ 处理完成！index.html 里的 Base64 节点名称已全部统一。")
+    print(f"✅ 处理完成！已生成统一名称的 Base64 订阅。")
 
 if __name__ == "__main__":
     main()
