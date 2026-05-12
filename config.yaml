@@ -363,7 +363,7 @@ proxies:
   sni: 5.83.129.90
   skip-cert-verify: true
   udp: true
-  name: 🌍 德国 @zmxooo 01
+  name: 🧿 其它地区 @zmxooo 01
 - type: vmess
   server: v13.zgtfqs.click
   port: 30813
@@ -400,7 +400,7 @@ proxies:
   cipher: aes-256-cfb
   password: Xn8jKdmDM00IeO%#$#fJAMtsEAEUOpH/YWYtYqDFnT0SV
   udp: true
-  name: 🇻🇳 越南节点 @zmxooo 06
+  name: 🧿 其它地区 @zmxooo 02
 - type: trojan
   server: 172.66.44.230
   port: 8443
@@ -464,7 +464,7 @@ proxies:
   tls: false
   skip-cert-verify: true
   udp: true
-  name: 🇺🇸 美国节点 @zmxooo 11
+  name: 🧿 其它地区 @zmxooo 03
 - type: vmess
   server: 82.198.246.37
   port: 180
@@ -474,7 +474,7 @@ proxies:
   tls: false
   skip-cert-verify: true
   udp: true
-  name: 🇺🇸 美国节点 @zmxooo 12
+  name: 🧿 其它地区 @zmxooo 04
 - type: vmess
   server: 82.198.246.233
   port: 180
@@ -484,7 +484,7 @@ proxies:
   tls: false
   skip-cert-verify: true
   udp: true
-  name: 🇺🇸 美国节点 @zmxooo 13
+  name: 🧿 其它地区 @zmxooo 05
 - type: vmess
   server: 82.198.246.233
   port: 180
@@ -494,14 +494,14 @@ proxies:
   tls: false
   skip-cert-verify: true
   udp: true
-  name: 🇺🇸 美国节点 @zmxooo 14
+  name: 🧿 其它地区 @zmxooo 06
 - type: ss
   server: 3.137.174.85
   port: 443
   cipher: aes-256-cfb
   password: amazonskr05
   udp: true
-  name: 🇺🇸 美国节点 @zmxooo 15
+  name: 🇺🇸 美国节点 @zmxooo 11
 - type: ss
   server: 82.38.31.155
   port: 8080
@@ -534,7 +534,7 @@ proxies:
   tls: false
   skip-cert-verify: true
   udp: true
-  name: 🇺🇸 美国节点 @zmxooo 16
+  name: 🧿 其它地区 @zmxooo 07
 - type: vmess
   server: 82.198.246.37
   port: 180
@@ -544,7 +544,7 @@ proxies:
   tls: false
   skip-cert-verify: true
   udp: true
-  name: 🇺🇸 美国节点 @zmxooo 17
+  name: 🧿 其它地区 @zmxooo 08
 - type: vmess
   server: 82.198.246.233
   port: 180
@@ -554,7 +554,7 @@ proxies:
   tls: false
   skip-cert-verify: true
   udp: true
-  name: 🇺🇸 美国节点 @zmxooo 18
+  name: 🧿 其它地区 @zmxooo 09
 - name: Direct
   type: direct
 proxy-groups:
@@ -569,13 +569,13 @@ proxy-groups:
   - 🇹🇼 台湾节点
   - 🇻🇳 越南节点
   - 🇰🇷 韩国节点
-  - 🌍 德国
+  - 🧿 其它地区
   - 🇯🇵 日本节点
   - 🇱🇹 立陶宛节点
   - Direct
 - name: ⚡ 自动选择
   type: url-test
-  url: http://www.gstatic.com/generate_204
+  url: http://gstatic.com
   interval: 300
   proxies: &id001
   - 🇬🇧 英国节点 @zmxooo 01
@@ -617,32 +617,32 @@ proxy-groups:
   - 🇺🇸 美国节点 @zmxooo 08
   - 🇺🇸 美国节点 @zmxooo 09
   - 🇰🇷 韩国节点 @zmxooo 01
-  - 🌍 德国 @zmxooo 01
+  - 🧿 其它地区 @zmxooo 01
   - 🇹🇼 台湾节点 @zmxooo 03
   - 🇹🇼 台湾节点 @zmxooo 04
   - 🇯🇵 日本节点 @zmxooo 01
-  - 🇻🇳 越南节点 @zmxooo 06
+  - 🧿 其它地区 @zmxooo 02
   - 🇺🇸 美国节点 @zmxooo 10
   - 🇰🇷 韩国节点 @zmxooo 02
   - 🇰🇷 韩国节点 @zmxooo 03
   - 🇰🇷 韩国节点 @zmxooo 04
   - 🇰🇷 韩国节点 @zmxooo 05
   - 🇰🇷 韩国节点 @zmxooo 06
+  - 🧿 其它地区 @zmxooo 03
+  - 🧿 其它地区 @zmxooo 04
+  - 🧿 其它地区 @zmxooo 05
+  - 🧿 其它地区 @zmxooo 06
   - 🇺🇸 美国节点 @zmxooo 11
-  - 🇺🇸 美国节点 @zmxooo 12
-  - 🇺🇸 美国节点 @zmxooo 13
-  - 🇺🇸 美国节点 @zmxooo 14
-  - 🇺🇸 美国节点 @zmxooo 15
   - 🇬🇧 英国节点 @zmxooo 14
   - 🇬🇧 英国节点 @zmxooo 15
   - 🇱🇹 立陶宛节点 @zmxooo 01
-  - 🇺🇸 美国节点 @zmxooo 16
-  - 🇺🇸 美国节点 @zmxooo 17
-  - 🇺🇸 美国节点 @zmxooo 18
+  - 🧿 其它地区 @zmxooo 07
+  - 🧿 其它地区 @zmxooo 08
+  - 🧿 其它地区 @zmxooo 09
 - name: ☢ 负载均衡
   type: load-balance
   strategy: consistent-hashing
-  url: http://www.gstatic.com/generate_204
+  url: http://gstatic.com
   interval: 300
   proxies: *id001
 - name: 📹 YouTube
@@ -655,7 +655,7 @@ proxy-groups:
   - 🇹🇼 台湾节点
   - 🇻🇳 越南节点
   - 🇰🇷 韩国节点
-  - 🌍 德国
+  - 🧿 其它地区
   - 🇯🇵 日本节点
   - 🇱🇹 立陶宛节点
 - name: 📲 Telegram
@@ -676,7 +676,7 @@ proxy-groups:
   - 🚀 节点选择
 - name: 🇬🇧 英国节点
   type: url-test
-  url: http://www.gstatic.com/generate_204
+  url: http://gstatic.com
   interval: 300
   proxies:
   - 🇬🇧 英国节点 @zmxooo 01
@@ -696,7 +696,7 @@ proxy-groups:
   - 🇬🇧 英国节点 @zmxooo 15
 - name: 🇺🇸 美国节点
   type: url-test
-  url: http://www.gstatic.com/generate_204
+  url: http://gstatic.com
   interval: 300
   proxies:
   - 🇺🇸 美国节点 @zmxooo 01
@@ -710,16 +710,9 @@ proxy-groups:
   - 🇺🇸 美国节点 @zmxooo 09
   - 🇺🇸 美国节点 @zmxooo 10
   - 🇺🇸 美国节点 @zmxooo 11
-  - 🇺🇸 美国节点 @zmxooo 12
-  - 🇺🇸 美国节点 @zmxooo 13
-  - 🇺🇸 美国节点 @zmxooo 14
-  - 🇺🇸 美国节点 @zmxooo 15
-  - 🇺🇸 美国节点 @zmxooo 16
-  - 🇺🇸 美国节点 @zmxooo 17
-  - 🇺🇸 美国节点 @zmxooo 18
 - name: 🇭🇰 香港节点
   type: url-test
-  url: http://www.gstatic.com/generate_204
+  url: http://gstatic.com
   interval: 300
   proxies:
   - 🇭🇰 香港节点 @zmxooo 01
@@ -733,7 +726,7 @@ proxy-groups:
   - 🇭🇰 香港节点 @zmxooo 09
 - name: 🇹🇼 台湾节点
   type: url-test
-  url: http://www.gstatic.com/generate_204
+  url: http://gstatic.com
   interval: 300
   proxies:
   - 🇹🇼 台湾节点 @zmxooo 01
@@ -742,7 +735,7 @@ proxy-groups:
   - 🇹🇼 台湾节点 @zmxooo 04
 - name: 🇻🇳 越南节点
   type: url-test
-  url: http://www.gstatic.com/generate_204
+  url: http://gstatic.com
   interval: 300
   proxies:
   - 🇻🇳 越南节点 @zmxooo 01
@@ -750,10 +743,9 @@ proxy-groups:
   - 🇻🇳 越南节点 @zmxooo 03
   - 🇻🇳 越南节点 @zmxooo 04
   - 🇻🇳 越南节点 @zmxooo 05
-  - 🇻🇳 越南节点 @zmxooo 06
 - name: 🇰🇷 韩国节点
   type: url-test
-  url: http://www.gstatic.com/generate_204
+  url: http://gstatic.com
   interval: 300
   proxies:
   - 🇰🇷 韩国节点 @zmxooo 01
@@ -762,21 +754,29 @@ proxy-groups:
   - 🇰🇷 韩国节点 @zmxooo 04
   - 🇰🇷 韩国节点 @zmxooo 05
   - 🇰🇷 韩国节点 @zmxooo 06
-- name: 🌍 德国
+- name: 🧿 其它地区
   type: url-test
-  url: http://www.gstatic.com/generate_204
+  url: http://gstatic.com
   interval: 300
   proxies:
-  - 🌍 德国 @zmxooo 01
+  - 🧿 其它地区 @zmxooo 01
+  - 🧿 其它地区 @zmxooo 02
+  - 🧿 其它地区 @zmxooo 03
+  - 🧿 其它地区 @zmxooo 04
+  - 🧿 其它地区 @zmxooo 05
+  - 🧿 其它地区 @zmxooo 06
+  - 🧿 其它地区 @zmxooo 07
+  - 🧿 其它地区 @zmxooo 08
+  - 🧿 其它地区 @zmxooo 09
 - name: 🇯🇵 日本节点
   type: url-test
-  url: http://www.gstatic.com/generate_204
+  url: http://gstatic.com
   interval: 300
   proxies:
   - 🇯🇵 日本节点 @zmxooo 01
 - name: 🇱🇹 立陶宛节点
   type: url-test
-  url: http://www.gstatic.com/generate_204
+  url: http://gstatic.com
   interval: 300
   proxies:
   - 🇱🇹 立陶宛节点 @zmxooo 01
