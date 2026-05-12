@@ -7,7 +7,7 @@ import requests
 from urllib.parse import urlparse, parse_qs, unquote
 
 # =========================
-# Base64 修复
+# Base64 解码
 # =========================
 def safe_dec(d):
 
@@ -30,7 +30,7 @@ def safe_dec(d):
             errors="ignore"
         )
 
-    except Exception:
+    except:
 
         return ""
 
@@ -114,7 +114,16 @@ def parse_vmess(link):
 
             return None
 
-        cfg = json.loads(data)
+        # 双层base64修复
+        try:
+
+            cfg = json.loads(data)
+
+        except:
+
+            data = safe_dec(data)
+
+            cfg = json.loads(data)
 
         network = cfg.get("net", "tcp")
 
@@ -204,9 +213,7 @@ def parse_vless(link):
 
         q = parse_qs(u.query)
 
-        network = (
-            q.get("type", ["tcp"])[0]
-        )
+        network = q.get("type", ["tcp"])[0]
 
         proxy = {
 
@@ -239,7 +246,6 @@ def parse_vless(link):
             "network": network
         }
 
-        # ws
         if network == "ws":
 
             proxy["ws-opts"] = {
@@ -255,7 +261,6 @@ def parse_vless(link):
                 }
             }
 
-        # grpc
         elif network == "grpc":
 
             proxy["grpc-opts"] = {
@@ -437,7 +442,7 @@ def main():
 
             txt = r.text.strip()
 
-            # base64订阅
+            # 尝试base64订阅
             dec = safe_dec(txt)
 
             if dec:
@@ -452,25 +457,32 @@ def main():
 
     content = all_text.replace("\r", "")
 
-    # 修复VMESS丢失
+    # =========================
+    # 修复 vmess 丢失
+    # =========================
+
     links = []
 
-    for line in content.splitlines():
+    # vmess单独抓
+    vmess_links = re.findall(
+        r'vmess://[A-Za-z0-9+/=_-]+',
+        content
+    )
 
-        line = line.strip()
+    links.extend(vmess_links)
 
-        if line.startswith((
-            "vmess://",
-            "vless://",
-            "trojan://",
-            "ss://",
-            "hy2://",
-            "hysteria2://"
-        )):
+    # 其它协议
+    other_links = re.findall(
+        r'(?:vless|trojan|ss|hy2|hysteria2)://[^\s]+',
+        content
+    )
 
-            links.append(line)
+    links.extend(other_links)
 
-    print("📦 节点数量:", len(links))
+    # 去重
+    links = list(dict.fromkeys(links))
+
+    print("📦 总链接:", len(links))
 
     proxies = []
 
