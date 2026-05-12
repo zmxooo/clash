@@ -34,36 +34,36 @@ dns:
   - https://doh.pub
   - https://alidns.com
 proxies:
-- type: vless
-  server: 163.5.58.211
-  port: 443
-  tls: true
-  sni: fastcdn.hoyoverse.com
+- type: vmess
+  server: 82.198.246.233
+  port: 180
+  uuid: d13fc2f5-3e05-4795-81eb-44143a09e552
+  alterId: 0
+  cipher: auto
+  tls: false
   skip-cert-verify: true
   udp: true
-  uuid: 245fcfc2-0c80-49d3-b28f-fd8f4f43aaab
+  name: 🇬🇧英国节点 @zmxooo 01
+- type: vmess
+  server: 82.198.246.233
+  port: 180
+  uuid: d13fc2f5-3e05-4795-81eb-44143a09e552
+  alterId: 0
   cipher: auto
-  name: 🧿其它地区 @zmxooo 01
-- type: vless
-  server: 163.5.58.211
-  port: 443
-  tls: true
-  sni: fastcdn.hoyoverse.com
+  tls: false
   skip-cert-verify: true
   udp: true
-  uuid: 8d4e3a65-a181-49f1-b83c-4b33168db6b5
+  name: 🇺🇲美国节点 @zmxooo 01
+- type: vmess
+  server: 82.198.246.97
+  port: 180
+  uuid: d13fc2f5-3e05-4795-81eb-44143a09e552
+  alterId: 0
   cipher: auto
-  name: 🧿其它地区 @zmxooo 02
-- type: vless
-  server: 163.5.58.211
-  port: 443
-  tls: true
-  sni: fastcdn.hoyoverse.com
+  tls: false
   skip-cert-verify: true
   udp: true
-  uuid: a366b147-b0b2-4cb3-8e15-fa8ec83544c7
-  cipher: auto
-  name: 🧿其它地区 @zmxooo 03
+  name: 🇬🇧英国节点 @zmxooo 02
 - name: 🟢 直连
   type: direct
 proxy-groups:
@@ -86,9 +86,9 @@ proxy-groups:
   url: http://gstatic.com
   interval: 300
   proxies:
-  - 🧿其它地区 @zmxooo 01
-  - 🧿其它地区 @zmxooo 02
-  - 🧿其它地区 @zmxooo 03
+  - 🇬🇧英国节点 @zmxooo 01
+  - 🇺🇲美国节点 @zmxooo 01
+  - 🇬🇧英国节点 @zmxooo 02
 - name: 🇭🇰香港节点
   type: url-test
   url: http://gstatic.com
@@ -124,7 +124,7 @@ proxy-groups:
   url: http://gstatic.com
   interval: 300
   proxies:
-  - DIRECT
+  - 🇺🇲美国节点 @zmxooo 01
 - name: 🇩🇪德国节点
   type: url-test
   url: http://gstatic.com
@@ -136,15 +136,14 @@ proxy-groups:
   url: http://gstatic.com
   interval: 300
   proxies:
-  - DIRECT
+  - 🇬🇧英国节点 @zmxooo 01
+  - 🇬🇧英国节点 @zmxooo 02
 - name: 🧿其它地区
   type: url-test
   url: http://gstatic.com
   interval: 300
   proxies:
-  - 🧿其它地区 @zmxooo 01
-  - 🧿其它地区 @zmxooo 02
-  - 🧿其它地区 @zmxooo 03
+  - DIRECT
 - name: 📹 YouTube
   type: select
   proxies:
