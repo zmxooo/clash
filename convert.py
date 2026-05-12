@@ -49,10 +49,12 @@ def parse_link(link):
         u = urllib.parse.urlparse(link)
 
         if link.startswith('vmess://'):
-            # 修正：确保正确提取 Base64 部分
-            b64 = link[8:].split('#')[0].split('?')[0]
-            b64 += '=' * (-len(b64) % 4)
-            d = json.loads(base64.b64decode(b64).decode('utf-8'))
+            # --- 修复处：正确提取 vmess 的 base64 部分 ---
+            # 先去掉 vmess:// 前缀，再按 # 或 ? 分割取第一部分
+            raw_b64 = link[8:].split('#')[0].split('?')[0]
+            # 补齐 base64 填充
+            raw_b64 += '=' * (-len(raw_b64) % 4)
+            d = json.loads(base64.b64decode(raw_b64).decode('utf-8'))
             return {
                 "label": get_final_label(d.get("add"), d.get("ps")),
                 "type": "vmess", "server": d.get("add"), "port": int(d.get("port")),
@@ -86,7 +88,8 @@ def parse_link(link):
 
         elif link.startswith('trojan://'):
             q = urllib.parse.parse_qs(u.query)
-            sni = q.get("sni", q.get("host", [u.hostname]))[0] or u.hostname
+            sni_list = q.get("sni", q.get("host", [u.hostname]))
+            sni = sni_list[0] if sni_list else u.hostname
             return {
                 "label": get_final_label(u.hostname, u.fragment),
                 "type": "trojan", "server": u.hostname, "port": int(u.port or 443),
@@ -102,8 +105,8 @@ def rebuild_link_with_new_name(original_link, new_name):
         # 对新名称进行 URL 编码
         safe_name = urllib.parse.quote(new_name)
         # 移除原链接可能存在的备注部分（#之后的内容），重新拼接
-        base_link = original_link.split('#')[0]
-        return f"{base_link}#{safe_name}"
+        base_part = original_link.split('#')[0]
+        return f"{base_part}#{safe_name}"
     except:
         return original_link
 
@@ -142,7 +145,7 @@ def main():
             p['name'] = node_name
             proxies.append(p)
             
-            # --- 核心修改：将统一后的名称重新注入到 valid_links 中 ---
+            # --- 核心：将统一后的名称重新注入到 valid_links 中 ---
             renamed_link = rebuild_link_with_new_name(l, node_name)
             valid_links.append(renamed_link)
             
@@ -188,10 +191,9 @@ def main():
         yaml.dump(cf, f, allow_unicode=True, sort_keys=False, default_flow_style=False)
 
     with open('index.html', 'w', encoding='utf-8') as f:
-        # 使用重构名称后的 valid_links 生成 Base64
         f.write(base64.b64encode("\n".join(valid_links).encode('utf-8')).decode('utf-8'))
 
-    print("🎉 生成完成！已实现 Clash 配置与 Base64 订阅名称同步统一。")
+    print("🎉 生成完成！所有节点名称已统一且同步。")
 
 
 if __name__ == "__main__":
