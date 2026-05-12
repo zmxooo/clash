@@ -6,162 +6,257 @@ import os
 import re
 import requests
 import time
-from collections import defaultdict
+from urllib.parse import urlparse, parse_qs, unquote
 
-CHANNEL_MARK = "@zmxooo"
-TEST_URL = "http://www.gstatic.com/generate_204"
-
-def get_final_label(server, remarks):
-    text = urllib.parse.unquote(str(remarks)).lower().strip()
-    meta = [
-        ("🇭🇰 香港节点", r"hk|香港"), ("🇹🇼 台湾节点", r"tw|台湾|台灣"),
-        ("🇺🇸 美国节点", r"us|美国|美國"), ("🇬🇧 英国节点", r"gb|uk|英国|英國"),
-        ("🇰🇷 韩国节点", r"kr|韩国|韓國"), ("🇯🇵 日本节点", r"jp|日本"),
-        ("🇸🇬 新加坡节点", r"sg|新加坡"), ("🇻🇳 越南节点", r"vn|越南"),
-        ("🇱🇹 立陶宛节点", r"lt|立陶宛"),
-    ]
-    for label, pattern in meta:
-        if re.search(pattern, text): return label
+def get_final_label(server: str, remarks: str = "") -> str:
+    """IP归属地 + 备注优先匹配"""
+    text = unquote(str(remarks)).lower().strip()
     
+    meta = [
+        ("🇭🇰 香港节点", r"hk|香港|hongkong|🇭🇰"),
+        ("🇹🇼 台湾节点", r"tw|台湾|台灣|taiwan|🇹🇼"),
+        ("🇺🇸 美国节点", r"us|美国|美國|usa|america|🇺🇸"),
+        ("🇰🇷 韩国节点", r"kr|韩国|韓國|korea|🇰🇷"),
+        ("🇯🇵 日本节点", r"jp|日本|japan|🇯🇵"),
+        ("🇸🇬 新加坡节点", r"sg|新加坡|singapore|🇸🇬"),
+        ("🇩🇪 德国节点", r"de|德国|德國|germany|🇩🇪"),
+        ("🇬🇧 英国节点", r"gb|uk|英国|英國|united kingdom|🇬🇧"),
+        ("🇻🇳 越南节点", r"vn|越南|vietnam|🇻🇳"),
+        ("🇱🇹 立陶宛节点", r"lt|立陶宛|lithuania"),
+    ]
+    
+    for label, pattern in meta:
+        if re.search(pattern, text):
+            return label
+
+    # IP-API 查询
     try:
-        r = requests.get(f"http://ip-api.com/json/{server}?lang=zh-CN", timeout=3).json()
-        if r.get("status") == "success":
-            c = r.get("country")
-            m = {"香港": "🇭🇰 香港节点", "台湾": "🇹🇼 台湾节点", "美国": "🇺🇸 美国节点",
-                 "英国": "🇬🇧 英国节点", "韩国": "🇰🇷 韩国节点", "日本": "🇯🇵 日本节点",
-                 "新加坡": "🇸🇬 新加坡节点", "越南": "🇻🇳 越南节点", "立陶宛": "🇱🇹 立陶宛节点"}
-            return m.get(c, f"🌍 {c}")
+        resp = requests.get(f"http://ip-api.com/json/{server}?lang=zh-CN", timeout=3)
+        if resp.status_code == 200:
+            data = resp.json()
+            if data.get("status") == "success":
+                country = data.get("country", "")
+                mapping = {
+                    "中国": "🇨🇳 中国",
+                    "香港": "🇭🇰 香港节点",
+                    "台湾": "🇹🇼 台湾节点",
+                    "美国": "🇺🇸 美国节点",
+                    "日本": "🇯🇵 日本节点",
+                    "韩国": "🇰🇷 韩国节点",
+                    "新加坡": "🇸🇬 新加坡节点",
+                    "德国": "🇩🇪 德国节点",
+                    "英国": "🇬🇧 英国节点",
+                    "越南": "🇻🇳 越南节点",
+                    "立陶宛": "🇱🇹 立陶宛节点",
+                }
+                return mapping.get(country, f"🌍 {country}")
     except:
         pass
+    
     return "🧿 其它地区"
 
 
-def parse_link(link):
+def parse_link(link: str):
+    """增强型订阅链接解析器"""
     try:
-        original_link = link
-        link = link.replace('vmess://vmess://', 'vmess://').strip()
-        u = urllib.parse.urlparse(link)
+        link = link.strip().replace('vmess://vmess://', 'vmess://')
+        if not link:
+            return None
 
         # VMess
         if link.startswith('vmess://'):
             b64 = link[8:].split('#')[0].split('?')[0]
             b64 += '=' * (-len(b64) % 4)
-            d = json.loads(base64.b64decode(b64).decode('utf-8', errors='ignore'))
+            config = json.loads(base64.b64decode(b64).decode('utf-8'))
+            
             return {
-                "label": get_final_label(d.get("add"), d.get("ps")),
-                "type": "vmess", "server": d.get("add"), "port": int(d.get("port")),
-                "uuid": d.get("id"), "alterId": 0, "cipher": "auto",
-                "tls": str(d.get("tls","")).lower() in ["tls","true","1"],
-                "skip-cert-verify": True, "udp": True
+                "label": get_final_label(config.get("add"), config.get("ps")),
+                "type": "vmess",
+                "server": config.get("add"),
+                "port": int(config.get("port")),
+                "uuid": config.get("id"),
+                "alterId": int(config.get("alterId", 0)),
+                "cipher": config.get("scy", "auto"),
+                "tls": str(config.get("tls", "")).lower() in ["tls", "true", "1"],
+                "skip-cert-verify": True,
+                "udp": True,
             }
 
-        # Hysteria2 / hy2 / hysteria
-        elif any(link.startswith(p) for p in ['hysteria2://', 'hy2://', 'hysteria://']):
-            return {
+        # VLESS / Trojan
+        elif link.startswith(('vless://', 'trojan://')):
+            u = urlparse(link)
+            q = parse_qs(u.query)
+            is_vless = link.startswith('vless://')
+            
+            sni = q.get("sni", q.get("host", [u.hostname]))[0]
+            
+            proxy = {
                 "label": get_final_label(u.hostname, u.fragment),
-                "type": "hysteria2", "server": u.hostname, "port": int(u.port or 443),
-                "password": u.username or "", "sni": u.hostname,
-                "skip-cert-verify": True, "udp": True
+                "type": "vless" if is_vless else "trojan",
+                "server": u.hostname,
+                "port": int(u.port or 443),
+                "tls": True,
+                "sni": sni,
+                "skip-cert-verify": True,
+                "udp": True,
             }
+            if is_vless:
+                proxy["uuid"] = u.username
+                proxy["cipher"] = "auto"
+            else:
+                proxy["password"] = u.username
+            return proxy
 
-        # SS
+        # Shadowsocks
         elif link.startswith('ss://'):
+            u = urlparse(link)
             if '@' in u.netloc:
                 userinfo, server_part = u.netloc.split('@', 1)
-                try:
-                    method, password = base64.b64decode(userinfo + '==').decode('utf-8').split(':', 1)
-                except:
-                    method, password = "aes-256-gcm", userinfo
+                method, password = base64.b64decode(userinfo + '==').decode().split(':', 1)
             else:
-                decoded = base64.b64decode(u.netloc + '==').decode('utf-8')
+                # 老格式
+                decoded = base64.b64decode(u.netloc + '==').decode()
                 method, rest = decoded.split(':', 1)
                 password, server_part = rest.rsplit('@', 1)
+            
             host, port = server_part.rsplit(':', 1)
+            
             return {
                 "label": get_final_label(host, u.fragment),
-                "type": "ss", "server": host, "port": int(port),
-                "cipher": method, "password": password, "udp": True
+                "type": "ss",
+                "server": host,
+                "port": int(port),
+                "cipher": method,
+                "password": password,
+                "udp": True,
             }
 
-        # Trojan
-        elif link.startswith('trojan://'):
-            q = urllib.parse.parse_qs(u.query)
-            sni = q.get("sni", q.get("host", [u.hostname]))[0] or u.hostname
+        # Hysteria2 / hy2
+        elif link.startswith(('hysteria2://', 'hy2://')):
+            u = urlparse(link)
             return {
                 "label": get_final_label(u.hostname, u.fragment),
-                "type": "trojan", "server": u.hostname, "port": int(u.port or 443),
-                "password": u.username, "sni": str(sni), "tls": True,
-                "skip-cert-verify": True, "udp": True
+                "type": "hysteria2",
+                "server": u.hostname,
+                "port": int(u.port or 443),
+                "password": u.username or "",
+                "sni": u.hostname,
+                "skip-cert-verify": True,
+                "udp": True,
             }
 
     except Exception as e:
-        # print(f"解析失败: {link[:60]}...")   # 调试时可取消注释
+        # print(f"解析失败: {link[:60]}... {e}")
         return None
 
 
 def main():
     if not os.path.exists('nodes.txt'):
-        print("❌ 未找到 nodes.txt")
+        print("❌ 未找到 nodes.txt 文件")
         return
 
     with open('nodes.txt', 'r', encoding='utf-8') as f:
-        ls = f.read().splitlines()
-
-    # 只去除完全相同的字符串
-    seen = set()
-    unique_links = [l.strip() for l in ls if l.strip() and not any(l.strip().startswith(x) for x in ['import','def','git','#']) and l.strip() not in seen and not seen.add(l.strip())]
-
-    print(f"原始行数: {len(ls)}")
-    print(f"去重后链接数: {len(unique_links)}")
+        links = [line.strip() for line in f if line.strip()]
 
     proxies = []
     valid_links = []
-    region_map = defaultdict(list)
-    failed = 0
+    region_map = {}
+    channel_mark = "@zmxooo"
 
-    for l in unique_links:
-        p = parse_link(l)
+    print(f"开始解析 {len(links)} 个节点...")
+
+    for link in links:
+        if any(link.startswith(x) for x in ['import', 'def', '#', 'http']):
+            continue
+            
+        p = parse_link(link)
         if p:
+            valid_links.append(link)
             label = p.pop('label')
+            
+            # 去重
+            if label not in region_map:
+                region_map[label] = []
+            
             idx = len(region_map[label]) + 1
-            p['name'] = f"{label} {CHANNEL_MARK} {idx:02d}"
+            p['name'] = f"{label} {channel_mark} {idx:02d}"
             
             proxies.append(p)
-            valid_links.append(l)
             region_map[label].append(p['name'])
-        else:
-            failed += 1
+            
+            time.sleep(0.08)  # 稍微放慢避免 ip-api 限流
 
-    print(f"成功解析: {len(proxies)} 个节点")
-    print(f"解析失败: {failed} 个")
-    print(f"地区分布: {dict((k, len(v)) for k,v in region_map.items())}")
+    if not proxies:
+        print("⚠️ 没有解析到有效节点")
+        return
 
-    # ==================== 生成配置 ====================
-    active_regions = list(region_map.keys())
-    region_groups = [{"name": r, "type": "url-test", "url": TEST_URL, "interval": 300, "proxies": region_map[r]} for r in active_regions]
+    print(f"✅ 成功解析 {len(proxies)} 个节点")
+
+    # 策略组配置
+    target_regions = ["🇭🇰 香港节点", "🇹🇼 台湾节点", "🇯🇵 日本节点", 
+                     "🇸🇬 新加坡节点", "🇰🇷 韩国节点", "🇺🇸 美国节点",
+                     "🇩🇪 德国节点", "🇬🇧 英国节点", "🧿 其它地区"]
+
+    region_groups = [
+        {"name": r, "type": "url-test", "url": "http://www.gstatic.com/generate_204", 
+         "interval": 300, "tolerance": 50, "proxies": region_map.get(r, ["Direct"])}
+        for r in target_regions
+    ]
 
     all_nodes = [p['name'] for p in proxies]
 
-    cf = {
-        "mixed-port": 7890, "allow-lan": True, "mode": "rule", "log-level": "info",
-        "tun": {"enable": True, "stack": "mixed", "auto-route": True, "auto-detect-interface": True},
-        "dns": {"enable": True, "enhanced-mode": "fake-ip", "nameserver": ["223.5.5.5", "119.29.29.29"]},
+    config = {
+        "mixed-port": 7890,
+        "allow-lan": True,
+        "mode": "rule",
+        "log-level": "info",
+        "ipv6": True,
+        "tun": {
+            "enable": True,
+            "stack": "mixed",
+            "auto-route": True,
+            "auto-detect-interface": True
+        },
+        "dns": {
+            "enable": True,
+            "enhanced-mode": "fake-ip",
+            "nameserver": ["223.5.5.5", "119.29.29.29", "8.8.8.8"]
+        },
         "proxies": proxies + [{"name": "Direct", "type": "direct"}],
         "proxy-groups": [
-            {"name": "🚀 节点选择", "type": "select", "proxies": ["⚡ 自动选择", "☢ 负载均衡"] + active_regions + ["Direct"]},
-            {"name": "⚡ 自动选择", "type": "url-test", "url": TEST_URL, "interval": 300, "proxies": all_nodes},
-            {"name": "☢ 负载均衡", "type": "load-balance", "strategy": "consistent-hashing", "url": TEST_URL, "interval": 300, "proxies": all_nodes},
-        ] + [{"name": r, "type": "url-test", "url": TEST_URL, "interval": 300, "proxies": region_map[r]} for r in active_regions],
-        "rules": ["GEOIP,CN,Direct", "MATCH,🚀 节点选择"]
+            {"name": "🚀 节点选择", "type": "select", 
+             "proxies": ["⚡ 自动选择", "☢ 负载均衡"] + target_regions + ["Direct"]},
+            {"name": "⚡ 自动选择", "type": "url-test", "url": "http://www.gstatic.com/generate_204", 
+             "interval": 300, "proxies": all_nodes},
+            {"name": "☢ 负载均衡", "type": "load-balance", "strategy": "consistent-hashing", 
+             "url": "http://www.gstatic.com/generate_204", "interval": 300, "proxies": all_nodes},
+            {"name": "📹 YouTube", "type": "select", "proxies": ["🚀 节点选择"] + target_regions},
+            {"name": "📲 Telegram", "type": "select", "proxies": ["🚀 节点选择", "🇸🇬 新加坡节点"]},
+            {"name": "🤖 AI", "type": "select", "proxies": ["🇺🇸 美国节点", "🇯🇵 日本节点", "🇸🇬 新加坡节点"]},
+            {"name": "📹 哔哩哔哩", "type": "select", "proxies": ["Direct", "🇭🇰 香港节点", "🇹🇼 台湾节点"]},
+            {"name": "🎥 Netflix", "type": "select", "proxies": ["🚀 节点选择"]},
+        ] + region_groups,
+        "rules": [
+            "DOMAIN-SUFFIX,youtube.com,📹 YouTube",
+            "DOMAIN-SUFFIX,googlevideo.com,📹 YouTube",
+            "DOMAIN-SUFFIX,telegram.org,📲 Telegram",
+            "DOMAIN-KEYWORD,telegram,📲 Telegram",
+            "DOMAIN-KEYWORD,openai,🤖 AI",
+            "DOMAIN-SUFFIX,chatgpt.com,🤖 AI",
+            "DOMAIN-SUFFIX,bilibili.com,📹 哔哩哔哩",
+            "DOMAIN-SUFFIX,netflix.com,🎥 Netflix",
+            "GEOIP,CN,Direct",
+            "MATCH,🚀 节点选择"
+        ]
     }
 
     with open('config.yaml', 'w', encoding='utf-8') as f:
-        yaml.dump(cf, f, allow_unicode=True, sort_keys=False, default_flow_style=False)
+        yaml.dump(config, f, allow_unicode=True, sort_keys=False, default_flow_style=False)
 
     with open('index.html', 'w', encoding='utf-8') as f:
-        f.write(base64.b64encode("\n".join(valid_links).encode('utf-8')).decode('utf-8'))
+        f.write(base64.b64encode('\n'.join(valid_links).encode('utf-8')).decode('utf-8'))
 
-    print("🎉 生成完成！")
+    print("🎉 生成完成！\n   → config.yaml\n   → index.html")
 
 
 if __name__ == "__main__":
