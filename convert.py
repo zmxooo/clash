@@ -9,51 +9,55 @@ import time
 from collections import defaultdict
 
 CHANNEL_MARK = "@zmxooo"
-TEST_URL = "http://www.gstatic.com/generate_204"
+TEST_URL = "http://gstatic.com"
 
 def get_final_label(server, remarks):
     text = urllib.parse.unquote(str(remarks)).lower().strip()
     meta = [
-        ("🇭🇰 香港节点", r"hk|香港"), 
-        ("🇹🇼 台湾节点", r"tw|台湾|台灣"),
-        ("🇺🇸 美国节点", r"us|美国|美國"), 
-        ("🇬🇧 英国节点", r"gb|uk|英国|英國"),
-        ("🇰🇷 韩国节点", r"kr|韩国|韓國"), 
-        ("🇯🇵 日本节点", r"jp|日本"),
-        ("🇸🇬 新加坡节点", r"sg|新加坡"), 
-        ("🇻🇳 越南节点", r"vn|越南"),
-        ("🇱🇹 立陶宛节点", r"lt|立陶宛"),
+        ("🇭🇰 香港", r"hk|香港"), 
+        ("🇹🇼 台湾", r"tw|台湾|台灣"),
+        ("🇺🇸 美国", r"us|美国|美國"), 
+        ("🇬🇧 英国", r"gb|uk|英国|英國"),
+        ("🇰🇷 韩国", r"kr|韩国|韓國"), 
+        ("🇯🇵 日本", r"jp|日本"),
+        ("🇸🇬 新加坡", r"sg|新加坡"), 
+        ("🇻🇳 越南", r"vn|越南"),
+        ("🇱🇹 立陶宛", r"lt|立陶宛"),
     ]
     for label, pattern in meta:
         if re.search(pattern, text): 
             return label
     
     try:
-        r = requests.get(f"http://ip-api.com/json/{server}?lang=zh-CN", timeout=3).json()
+        r = requests.get(f"http://ip-api.com{server}?lang=zh-CN", timeout=3).json()
         if r.get("status") == "success":
             c = r.get("country")
             m = {
-                "香港": "🇭🇰 香港节点", "台湾": "🇹🇼 台湾节点", "美国": "🇺🇸 美国节点",
-                "英国": "🇬🇧 英国节点", "韩国": "🇰🇷 韩国节点", "日本": "🇯🇵 日本节点",
-                "新加坡": "🇸🇬 新加坡节点", "越南": "🇻🇳 越南节点", "立陶宛": "🇱🇹 立陶宛节点"
+                "香港": "🇭🇰 香港", "台湾": "🇹🇼 台湾", "美国": "🇺🇸 美国",
+                "英国": "🇬🇧 英国", "韩国": "🇰🇷 韩国", "日本": "🇯🇵 日本",
+                "新加坡": "🇸🇬 新加坡", "越南": "🇻🇳 越南", "立陶宛": "🇱🇹 立陶宛"
             }
             return m.get(c, f"🌍 {c}")
+        # API 限流保护
+        time.sleep(1.2)
     except:
         pass
     return "🧿 其它地区"
-
 
 def parse_link(link):
     try:
         link = link.replace('vmess://vmess://', 'vmess://').strip()
         u = urllib.parse.urlparse(link)
+        remarks = u.fragment if u.fragment else ""
 
         if link.startswith('vmess://'):
             b64 = link[8:].split('#')[0].split('?')[0]
             b64 += '=' * (-len(b64) % 4)
             d = json.loads(base64.b64decode(b64).decode('utf-8'))
+            # 统一获取原始备注名
+            raw_ps = d.get("ps") or d.get("remarks") or remarks
             return {
-                "label": get_final_label(d.get("add"), d.get("ps")),
+                "label": get_final_label(d.get("add"), raw_ps),
                 "type": "vmess", "server": d.get("add"), "port": int(d.get("port")),
                 "uuid": d.get("id"), "alterId": 0, "cipher": "auto",
                 "tls": str(d.get("tls","")).lower() in ["tls","true","1"],
@@ -62,24 +66,28 @@ def parse_link(link):
 
         elif link.startswith(('hysteria2://', 'hy2://', 'hysteria://')):
             return {
-                "label": get_final_label(u.hostname, u.fragment),
+                "label": get_final_label(u.hostname, remarks),
                 "type": "hysteria2", "server": u.hostname, "port": int(u.port or 443),
                 "password": u.username or "", "sni": u.hostname,
                 "skip-cert-verify": True, "udp": True
             }
 
         elif link.startswith('ss://'):
-            # 简单处理 SS
+            # 补全 SS 解析
             if '@' in u.netloc:
                 userinfo, server_part = u.netloc.split('@', 1)
-                method, password = base64.b64decode(userinfo + '==').decode('utf-8').split(':', 1)
+                if ':' not in userinfo:
+                    userinfo += '=' * (-len(userinfo) % 4)
+                    userinfo = base64.b64decode(userinfo).decode('utf-8')
+                method, password = userinfo.split(':', 1)
             else:
-                decoded = base64.b64decode(u.netloc + '==').decode('utf-8')
+                b64 = u.netloc + '=='
+                decoded = base64.b64decode(b64).decode('utf-8')
                 method, rest = decoded.split(':', 1)
                 password, server_part = rest.rsplit('@', 1)
             host, port = server_part.rsplit(':', 1)
             return {
-                "label": get_final_label(host, u.fragment),
+                "label": get_final_label(host, remarks),
                 "type": "ss", "server": host, "port": int(port),
                 "cipher": method, "password": password, "udp": True
             }
@@ -88,7 +96,7 @@ def parse_link(link):
             q = urllib.parse.parse_qs(u.query)
             sni = q.get("sni", q.get("host", [u.hostname]))[0] or u.hostname
             return {
-                "label": get_final_label(u.hostname, u.fragment),
+                "label": get_final_label(u.hostname, remarks),
                 "type": "trojan", "server": u.hostname, "port": int(u.port or 443),
                 "password": u.username, "sni": str(sni), "tls": True,
                 "skip-cert-verify": True, "udp": True
@@ -96,16 +104,30 @@ def parse_link(link):
     except:
         return None
 
-
 def main():
     if not os.path.exists('nodes.txt'):
         print("❌ 未找到 nodes.txt")
         return
 
     with open('nodes.txt', 'r', encoding='utf-8') as f:
-        ls = f.read().splitlines()
+        raw_lines = f.read().splitlines()
 
-    # 方案二：只去除完全一模一样的字符串
+    # 处理整段 Base64 编码的订阅链接
+    ls = []
+    for line in raw_lines:
+        line = line.strip()
+        if not line: continue
+        if not any(line.startswith(p) for p in ['vmess://', 'ss://', 'trojan://', 'hy']):
+            try:
+                line += '=' * (-len(line) % 4)
+                decoded = base64.b64decode(line).decode('utf-8')
+                ls.extend(decoded.splitlines())
+            except:
+                ls.append(line)
+        else:
+            ls.append(line)
+
+    # 方案二：去重逻辑
     seen_links = set()
     unique_links = []
     for l in ls:
@@ -116,69 +138,51 @@ def main():
             seen_links.add(l)
             unique_links.append(l)
 
-    print(f"原始节点数: {len(ls)}")
-    print(f"去重后节点数: {len(unique_links)}")
-
     proxies = []
-    valid_links = []
     region_map = defaultdict(list)
 
     for l in unique_links:
         p = parse_link(l)
         if p:
-            label = p.pop('label')
+            label = p.pop('label') # 这里的 label 已经是 "🇭🇰 香港" 这种格式
             idx = len(region_map[label]) + 1
+            # --- 核心：在这里彻底统一节点名称格式 ---
             p['name'] = f"{label} {CHANNEL_MARK} {idx:02d}"
             
             proxies.append(p)
-            valid_links.append(l)
             region_map[label].append(p['name'])
 
     print(f"成功解析: {len(proxies)} 个节点")
-    print(f"地区分布: {dict((k, len(v)) for k, v in region_map.items())}")
 
-    # 动态生成配置
     active_regions = list(region_map.keys())
     region_groups = [{"name": r, "type": "url-test", "url": TEST_URL, "interval": 300, "proxies": region_map[r]} for r in active_regions]
-
-    all_nodes = [p['name'] for p in proxies]
 
     cf = {
         "mixed-port": 7890,
         "allow-lan": True,
         "mode": "rule",
         "log-level": "info",
-        "ipv6": True,
-        "tun": {"enable": True, "stack": "mixed", "auto-route": True, "auto-detect-interface": True},
-        "dns": {"enable": True, "enhanced-mode": "fake-ip", "nameserver": ["223.5.5.5", "119.29.29.29", "8.8.8.8"]},
-        "proxies": proxies + [{"name": "Direct", "type": "direct"}],
+        "proxies": proxies,
         "proxy-groups": [
-            {"name": "🚀 节点选择", "type": "select", "proxies": ["⚡ 自动选择", "☢ 负载均衡"] + active_regions + ["Direct"]},
-            {"name": "⚡ 自动选择", "type": "url-test", "url": TEST_URL, "interval": 300, "proxies": all_nodes},
-            {"name": "☢ 负载均衡", "type": "load-balance", "strategy": "consistent-hashing", "url": TEST_URL, "interval": 300, "proxies": all_nodes},
-            {"name": "📹 YouTube", "type": "select", "proxies": ["🚀 节点选择"] + active_regions},
-            {"name": "📲 Telegram", "type": "select", "proxies": ["🚀 节点选择"]},
-            {"name": "🤖 AI", "type": "select", "proxies": ["🚀 节点选择"]},
-            {"name": "📹 哔哩哔哩", "type": "select", "proxies": ["Direct"]},
-            {"name": "🎥 Netflix", "type": "select", "proxies": ["🚀 节点选择"]},
-        ] + region_groups,
-        "rules": [
-            "DOMAIN-SUFFIX,youtube.com,📹 YouTube", "DOMAIN-SUFFIX,googlevideo.com,📹 YouTube",
-            "DOMAIN-SUFFIX,telegram.org,📲 Telegram", "DOMAIN-KEYWORD,telegram,📲 Telegram",
-            "DOMAIN-KEYWORD,openai,🤖 AI", "DOMAIN-SUFFIX,chatgpt.com,🤖 AI",
-            "DOMAIN-SUFFIX,bilibili.com,📹 哔哩哔哩", "DOMAIN-SUFFIX,netflix.com,🎥 Netflix",
-            "GEOIP,CN,Direct", "MATCH,🚀 节点选择"
+            {
+                "name": "🚀 节点选择",
+                "type": "select",
+                "proxies": ["🎬 自动选择"] + active_regions + ["DIRECT"]
+            },
+            {
+                "name": "🎬 自动选择",
+                "type": "url-test",
+                "url": TEST_URL,
+                "interval": 300,
+                "proxies": [px['name'] for px in proxies]
+            }
         ]
     }
+    cf["proxy-groups"].extend(region_groups)
+    cf["rules"] = ["MATCH,🚀 节点选择"]
 
-    with open('config.yaml', 'w', encoding='utf-8') as f:
-        yaml.dump(cf, f, allow_unicode=True, sort_keys=False, default_flow_style=False)
-
-    with open('index.html', 'w', encoding='utf-8') as f:
-        f.write(base64.b64encode("\n".join(valid_links).encode('utf-8')).decode('utf-8'))
-
-    print("🎉 生成完成！已尽量保留更多节点。")
-
+    with open('clash_config.yaml', 'w', encoding='utf-8') as f:
+        yaml.dump(cf, f, allow_unicode=True, sort_keys=False)
 
 if __name__ == "__main__":
     main()
