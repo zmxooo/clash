@@ -9,7 +9,7 @@ import time
 from collections import defaultdict
 
 CHANNEL_MARK = "@zmxooo"
-TEST_URL = "http://www.gstatic.com/generate_204"
+TEST_URL = "http://gstatic.com"
 
 def get_final_label(server, remarks):
     text = urllib.parse.unquote(str(remarks)).lower().strip()
@@ -29,7 +29,7 @@ def get_final_label(server, remarks):
             return label
     
     try:
-        r = requests.get(f"http://ip-api.com/json/{server}?lang=zh-CN", timeout=3).json()
+        r = requests.get(f"http://ip-api.com{server}?lang=zh-CN", timeout=3).json()
         if r.get("status") == "success":
             c = r.get("country")
             m = {
@@ -42,6 +42,23 @@ def get_final_label(server, remarks):
         pass
     return "🧿 其它地区"
 
+# --- 新增：重构链接名称的函数 ---
+def rebuild_link(link, new_name):
+    try:
+        # 对名称进行 URL 编码处理（处理空格和表情符号）
+        safe_name = urllib.parse.quote(new_name)
+        
+        if link.startswith('vmess://'):
+            # VMess 的备注通常写在 Base64 内部，但大多数客户端也支持 # 挂载
+            # 为了最通用的兼容性，我们先把原本可能存在的 # 去掉，再挂载新名字
+            base = link.split('#')[0]
+            return f"{base}#{safe_name}"
+        else:
+            # SS, Trojan, Hysteria2 直接替换 # 后的内容
+            base = link.split('#')[0]
+            return f"{base}#{safe_name}"
+    except:
+        return link
 
 def parse_link(link):
     try:
@@ -69,7 +86,6 @@ def parse_link(link):
             }
 
         elif link.startswith('ss://'):
-            # 简单处理 SS
             if '@' in u.netloc:
                 userinfo, server_part = u.netloc.split('@', 1)
                 method, password = base64.b64decode(userinfo + '==').decode('utf-8').split(':', 1)
@@ -105,7 +121,6 @@ def main():
     with open('nodes.txt', 'r', encoding='utf-8') as f:
         ls = f.read().splitlines()
 
-    # 方案二：只去除完全一模一样的字符串
     seen_links = set()
     unique_links = []
     for l in ls:
@@ -128,16 +143,19 @@ def main():
         if p:
             label = p.pop('label')
             idx = len(region_map[label]) + 1
-            p['name'] = f"{label} {CHANNEL_MARK} {idx:02d}"
+            node_name = f"{label} {CHANNEL_MARK} {idx:02d}"
             
+            p['name'] = node_name
             proxies.append(p)
-            valid_links.append(l)
+            
+            # --- 修改处：将原始链接重新构建为带统一名称的链接 ---
+            valid_links.append(rebuild_link(l, node_name))
+            
             region_map[label].append(p['name'])
 
     print(f"成功解析: {len(proxies)} 个节点")
     print(f"地区分布: {dict((k, len(v)) for k, v in region_map.items())}")
 
-    # 动态生成配置
     active_regions = list(region_map.keys())
     region_groups = [{"name": r, "type": "url-test", "url": TEST_URL, "interval": 300, "proxies": region_map[r]} for r in active_regions]
 
@@ -175,9 +193,10 @@ def main():
         yaml.dump(cf, f, allow_unicode=True, sort_keys=False, default_flow_style=False)
 
     with open('index.html', 'w', encoding='utf-8') as f:
+        # 这里现在使用的是经过 rebuild_link 统一过名称的链接列表
         f.write(base64.b64encode("\n".join(valid_links).encode('utf-8')).decode('utf-8'))
 
-    print("🎉 生成完成！已尽量保留更多节点。")
+    print("🎉 生成完成！已实现 Clash 配置与 Base64 订阅名称同步统一。")
 
 
 if __name__ == "__main__":
