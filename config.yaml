@@ -1,0 +1,57 @@
+port: 7890
+proxies:
+- type: vless
+  server: 163.5.58.211
+  port: 443
+  tls: true
+  sni: fastcdn.hoyoverse.com
+  skip-cert-verify: true
+  udp: true
+  uuid: 245fcfc2-0c80-49d3-b28f-fd8f4f43aaab
+  cipher: auto
+  name: 🌍 其他 @zmxooo 01
+- type: vless
+  server: 163.5.58.211
+  port: 443
+  tls: true
+  sni: fastcdn.hoyoverse.com
+  skip-cert-verify: true
+  udp: true
+  uuid: 8d4e3a65-a181-49f1-b83c-4b33168db6b5
+  cipher: auto
+  name: 🌍 其他 @zmxooo 02
+- type: vless
+  server: 163.5.58.211
+  port: 443
+  tls: true
+  sni: fastcdn.hoyoverse.com
+  skip-cert-verify: true
+  udp: true
+  uuid: a366b147-b0b2-4cb3-8e15-fa8ec83544c7
+  cipher: auto
+  name: 🌍 其他 @zmxooo 03
+proxy-groups:
+- name: 🚀 节点选择
+  type: select
+  proxies:
+  - ⚡ 自动选择
+  - DIRECT
+  - 🌍 其他
+- name: ⚡ 自动选择
+  type: url-test
+  url: http://gstatic.com
+  interval: 300
+  proxies:
+  - 🌍 其他 @zmxooo 01
+  - 🌍 其他 @zmxooo 02
+  - 🌍 其他 @zmxooo 03
+- name: 🌍 其他
+  type: url-test
+  url: http://gstatic.com
+  interval: 300
+  proxies:
+  - 🌍 其他 @zmxooo 01
+  - 🌍 其他 @zmxooo 02
+  - 🌍 其他 @zmxooo 03
+rules:
+- MATCH,🚀 节点选择
