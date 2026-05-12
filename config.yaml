@@ -25,6 +25,8 @@ proxies:
   tls: false
   skip-cert-verify: true
   udp: true
+  network: tcp
+  ws-opts: null
   name: 🇬🇧 英国节点 @zmxooo 01
 - type: vmess
   server: 82.198.246.233
@@ -35,6 +37,8 @@ proxies:
   tls: false
   skip-cert-verify: true
   udp: true
+  network: tcp
+  ws-opts: null
   name: 🇺🇸 美国节点 @zmxooo 01
 - type: vmess
   server: 82.198.246.97
@@ -45,6 +49,8 @@ proxies:
   tls: false
   skip-cert-verify: true
   udp: true
+  network: tcp
+  ws-opts: null
   name: 🇬🇧 英国节点 @zmxooo 02
 - type: hysteria2
   server: 202.146.222.41
@@ -151,6 +157,8 @@ proxies:
   tls: false
   skip-cert-verify: true
   udp: true
+  network: tcp
+  ws-opts: null
   name: 🇬🇧 英国节点 @zmxooo 03
 - type: vmess
   server: 82.198.246.233
@@ -161,6 +169,8 @@ proxies:
   tls: false
   skip-cert-verify: true
   udp: true
+  network: tcp
+  ws-opts: null
   name: 🇬🇧 英国节点 @zmxooo 04
 - type: vmess
   server: 82.198.246.233
@@ -171,6 +181,8 @@ proxies:
   tls: false
   skip-cert-verify: true
   udp: true
+  network: tcp
+  ws-opts: null
   name: 🇬🇧 英国节点 @zmxooo 05
 - type: vmess
   server: 82.198.246.9
@@ -181,6 +193,8 @@ proxies:
   tls: false
   skip-cert-verify: true
   udp: true
+  network: tcp
+  ws-opts: null
   name: 🇬🇧 英国节点 @zmxooo 06
 - type: vmess
   server: 82.198.246.233
@@ -191,6 +205,8 @@ proxies:
   tls: false
   skip-cert-verify: true
   udp: true
+  network: tcp
+  ws-opts: null
   name: 🇬🇧 英国节点 @zmxooo 07
 - type: vmess
   server: 82.198.246.37
@@ -201,6 +217,8 @@ proxies:
   tls: false
   skip-cert-verify: true
   udp: true
+  network: tcp
+  ws-opts: null
   name: 🇬🇧 英国节点 @zmxooo 08
 - type: vmess
   server: 82.198.246.9
@@ -211,6 +229,8 @@ proxies:
   tls: false
   skip-cert-verify: true
   udp: true
+  network: tcp
+  ws-opts: null
   name: 🇬🇧 英国节点 @zmxooo 09
 - type: vmess
   server: 82.198.246.214
@@ -221,6 +241,8 @@ proxies:
   tls: false
   skip-cert-verify: true
   udp: true
+  network: tcp
+  ws-opts: null
   name: 🇬🇧 英国节点 @zmxooo 10
 - type: vmess
   server: 82.198.246.233
@@ -231,6 +253,8 @@ proxies:
   tls: false
   skip-cert-verify: true
   udp: true
+  network: tcp
+  ws-opts: null
   name: 🇬🇧 英国节点 @zmxooo 11
 - type: vmess
   server: 82.198.246.250
@@ -241,6 +265,8 @@ proxies:
   tls: false
   skip-cert-verify: true
   udp: true
+  network: tcp
+  ws-opts: null
   name: 🇬🇧 英国节点 @zmxooo 12
 - type: vmess
   server: 82.198.246.214
@@ -251,6 +277,8 @@ proxies:
   tls: false
   skip-cert-verify: true
   udp: true
+  network: tcp
+  ws-opts: null
   name: 🇬🇧 英国节点 @zmxooo 13
 - type: vmess
   server: 82.198.246.214
@@ -261,6 +289,8 @@ proxies:
   tls: false
   skip-cert-verify: true
   udp: true
+  network: tcp
+  ws-opts: null
   name: 🇺🇸 美国节点 @zmxooo 03
 - type: vmess
   server: 82.198.246.233
@@ -271,6 +301,8 @@ proxies:
   tls: false
   skip-cert-verify: true
   udp: true
+  network: tcp
+  ws-opts: null
   name: 🇺🇸 美国节点 @zmxooo 04
 - type: vmess
   server: 82.198.246.9
@@ -281,6 +313,8 @@ proxies:
   tls: false
   skip-cert-verify: true
   udp: true
+  network: tcp
+  ws-opts: null
   name: 🇺🇸 美国节点 @zmxooo 05
 - type: vmess
   server: 82.198.246.37
@@ -291,6 +325,8 @@ proxies:
   tls: false
   skip-cert-verify: true
   udp: true
+  network: tcp
+  ws-opts: null
   name: 🇺🇸 美国节点 @zmxooo 06
 - type: ss
   server: 103.186.155.79
@@ -368,21 +404,25 @@ proxies:
   server: v13.zgtfqs.click
   port: 30813
   uuid: cbb3f877-d1fb-344c-87a9-d153bffd5484
-  alterId: 0
+  alterId: 2
   cipher: auto
   tls: false
   skip-cert-verify: true
   udp: true
+  network: tcp
+  ws-opts: null
   name: 🇹🇼 台湾节点 @zmxooo 03
 - type: vmess
   server: v11.zgtfqs.click
   port: 30811
   uuid: cbb3f877-d1fb-344c-87a9-d153bffd5484
-  alterId: 0
+  alterId: 2
   cipher: auto
   tls: false
   skip-cert-verify: true
   udp: true
+  network: tcp
+  ws-opts: null
   name: 🇹🇼 台湾节点 @zmxooo 04
 - type: vmess
   server: 103.127.243.55
@@ -393,6 +433,8 @@ proxies:
   tls: false
   skip-cert-verify: true
   udp: true
+  network: tcp
+  ws-opts: null
   name: 🇯🇵 日本节点 @zmxooo 01
 - type: ss
   server: 103.186.155.75
@@ -464,6 +506,8 @@ proxies:
   tls: false
   skip-cert-verify: true
   udp: true
+  network: tcp
+  ws-opts: null
   name: 🧿 其它地区 @zmxooo 03
 - type: vmess
   server: 82.198.246.37
@@ -474,6 +518,8 @@ proxies:
   tls: false
   skip-cert-verify: true
   udp: true
+  network: tcp
+  ws-opts: null
   name: 🧿 其它地区 @zmxooo 04
 - type: vmess
   server: 82.198.246.233
@@ -484,6 +530,8 @@ proxies:
   tls: false
   skip-cert-verify: true
   udp: true
+  network: tcp
+  ws-opts: null
   name: 🧿 其它地区 @zmxooo 05
 - type: vmess
   server: 82.198.246.233
@@ -494,6 +542,8 @@ proxies:
   tls: false
   skip-cert-verify: true
   udp: true
+  network: tcp
+  ws-opts: null
   name: 🧿 其它地区 @zmxooo 06
 - type: ss
   server: 3.137.174.85
@@ -534,6 +584,8 @@ proxies:
   tls: false
   skip-cert-verify: true
   udp: true
+  network: tcp
+  ws-opts: null
   name: 🧿 其它地区 @zmxooo 07
 - type: vmess
   server: 82.198.246.37
@@ -544,6 +596,8 @@ proxies:
   tls: false
   skip-cert-verify: true
   udp: true
+  network: tcp
+  ws-opts: null
   name: 🧿 其它地区 @zmxooo 08
 - type: vmess
   server: 82.198.246.233
@@ -554,6 +608,8 @@ proxies:
   tls: false
   skip-cert-verify: true
   udp: true
+  network: tcp
+  ws-opts: null
   name: 🧿 其它地区 @zmxooo 09
 - name: Direct
   type: direct
