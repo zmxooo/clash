@@ -2,24 +2,6 @@ mixed-port: 7890
 allow-lan: true
 mode: rule
 log-level: info
-ipv6: false
-global-ua: clash.meta
-sniffer:
-  enable: true
-  sniff:
-    HTTP:
-      ports:
-      - 80
-      - 8080-8880
-      override-destination: true
-    TLS:
-      ports:
-      - 443
-      - 8443
-    QUIC:
-      ports:
-      - 443
-      - 8443
 tun:
   enable: true
   stack: mixed
@@ -27,12 +9,10 @@ tun:
   auto-detect-interface: true
 dns:
   enable: true
-  listen: 0.0.0.0:53
   enhanced-mode: fake-ip
-  fake-ip-range: 198.18.0.1/16
   nameserver:
-  - https://doh.pub
-  - https://alidns.com
+  - 119.29.29.29
+  - 223.5.5.5
 proxies:
 - type: vmess
   server: 82.198.246.233
@@ -43,7 +23,7 @@ proxies:
   tls: false
   skip-cert-verify: true
   udp: true
-  name: 🇬🇧英国节点 @zmxooo 01
+  name: 🇬🇧 英国节点 @zmxooo 01
 - type: vmess
   server: 82.198.246.233
   port: 180
@@ -53,7 +33,7 @@ proxies:
   tls: false
   skip-cert-verify: true
   udp: true
-  name: 🇺🇲美国节点 @zmxooo 01
+  name: 🇺🇸 美国节点 @zmxooo 01
 - type: vmess
   server: 82.198.246.97
   port: 180
@@ -63,129 +43,145 @@ proxies:
   tls: false
   skip-cert-verify: true
   udp: true
-  name: 🇬🇧英国节点 @zmxooo 02
-- name: 🟢 直连
+  name: 🇬🇧 英国节点 @zmxooo 02
+- name: Direct
   type: direct
 proxy-groups:
 - name: 🚀 节点选择
   type: select
   proxies:
-  - ♻️ 自动选择
-  - DIRECT
-  - 🇭🇰香港节点
-  - 🇨🇳台湾节点
-  - 🇯🇵日本节点
-  - 🇸🇬新加坡节点
-  - 🇰🇷韩国节点
-  - 🇺🇲美国节点
-  - 🇩🇪德国节点
-  - 🇬🇧英国节点
-  - 🧿其它地区
-- name: ♻️ 自动选择
+  - ⚡ 自动选择
+  - ☢ 负载均衡-散列
+  - 🇭🇰 香港节点
+  - 🇹🇼 台湾节点
+  - 🇯🇵 日本节点
+  - 🇸🇬 新加坡节点
+  - 🇰🇷 韩国节点
+  - 🇺🇸 美国节点
+  - 🇩🇪 德国节点
+  - 🇬🇧 英国节点
+  - 🧿 其它地区
+  - Direct
+  icon: https://githubusercontent.com
+- name: ⚡ 自动选择
   type: url-test
   url: http://gstatic.com
   interval: 300
-  proxies:
-  - 🇬🇧英国节点 @zmxooo 01
-  - 🇺🇲美国节点 @zmxooo 01
-  - 🇬🇧英国节点 @zmxooo 02
-- name: 🇭🇰香港节点
-  type: url-test
+  proxies: &id001
+  - 🇬🇧 英国节点 @zmxooo 01
+  - 🇺🇸 美国节点 @zmxooo 01
+  - 🇬🇧 英国节点 @zmxooo 02
+  icon: https://githubusercontent.com
+- name: ☢ 负载均衡-散列
+  type: load-balance
+  strategy: consistent-hashing
   url: http://gstatic.com
   interval: 300
-  proxies:
-  - DIRECT
-- name: 🇨🇳台湾节点
-  type: url-test
-  url: http://gstatic.com
-  interval: 300
-  proxies:
-  - DIRECT
-- name: 🇯🇵日本节点
-  type: url-test
-  url: http://gstatic.com
-  interval: 300
-  proxies:
-  - DIRECT
-- name: 🇸🇬新加坡节点
-  type: url-test
-  url: http://gstatic.com
-  interval: 300
-  proxies:
-  - DIRECT
-- name: 🇰🇷韩国节点
-  type: url-test
-  url: http://gstatic.com
-  interval: 300
-  proxies:
-  - DIRECT
-- name: 🇺🇲美国节点
-  type: url-test
-  url: http://gstatic.com
-  interval: 300
-  proxies:
-  - 🇺🇲美国节点 @zmxooo 01
-- name: 🇩🇪德国节点
-  type: url-test
-  url: http://gstatic.com
-  interval: 300
-  proxies:
-  - DIRECT
-- name: 🇬🇧英国节点
-  type: url-test
-  url: http://gstatic.com
-  interval: 300
-  proxies:
-  - 🇬🇧英国节点 @zmxooo 01
-  - 🇬🇧英国节点 @zmxooo 02
-- name: 🧿其它地区
-  type: url-test
-  url: http://gstatic.com
-  interval: 300
-  proxies:
-  - DIRECT
+  proxies: *id001
+  icon: https://githubusercontent.com
 - name: 📹 YouTube
   type: select
   proxies:
   - 🚀 节点选择
-  - 🇭🇰香港节点
-  - 🇨🇳台湾节点
-  - 🇯🇵日本节点
-  - 🇸🇬新加坡节点
-  - 🇰🇷韩国节点
-  - 🇺🇲美国节点
-  - 🇩🇪德国节点
-  - 🇬🇧英国节点
-  - 🧿其它地区
+  - 🇭🇰 香港节点
+  - 🇹🇼 台湾节点
+  - 🇯🇵 日本节点
+  - 🇸🇬 新加坡节点
+  - 🇰🇷 韩国节点
+  - 🇺🇸 美国节点
+  - 🇩🇪 德国节点
+  - 🇬🇧 英国节点
+  - 🧿 其它地区
+  icon: https://githubusercontent.com
 - name: 📲 Telegram
   type: select
   proxies:
   - 🚀 节点选择
-  - 🇭🇰香港节点
-  - 🇨🇳台湾节点
-  - 🇯🇵日本节点
-  - 🇸🇬新加坡节点
-  - 🇰🇷韩国节点
-  - 🇺🇲美国节点
-  - 🇩🇪德国节点
-  - 🇬🇧英国节点
-  - 🧿其它地区
+  - 🇸🇬 新加坡节点
+  icon: https://githubusercontent.com
 - name: 🤖 AI
   type: select
   proxies:
-  - 🇺🇲美国节点
-  - 🇯🇵日本节点
-  - 🇸🇬新加坡节点
-  - 🚀 节点选择
-- name: 🍀 Google
+  - 🇺🇸 美国节点
+  - 🇯🇵 日本节点
+  - 🇸🇬 新加坡节点
+  icon: https://githubusercontent.com
+- name: 📹 哔哩哔哩
+  type: select
+  proxies:
+  - Direct
+  - 🇭🇰 香港节点
+  - 🇹🇼 台湾节点
+  icon: https://githubusercontent.com
+- name: 🎥 Netflix
   type: select
   proxies:
   - 🚀 节点选择
-  - DIRECT
+  - ⚡ 自动选择
+  icon: https://githubusercontent.com
+- name: 🇭🇰 香港节点
+  type: url-test
+  url: http://gstatic.com
+  interval: 300
+  proxies:
+  - Direct
+- name: 🇹🇼 台湾节点
+  type: url-test
+  url: http://gstatic.com
+  interval: 300
+  proxies:
+  - Direct
+- name: 🇯🇵 日本节点
+  type: url-test
+  url: http://gstatic.com
+  interval: 300
+  proxies:
+  - Direct
+- name: 🇸🇬 新加坡节点
+  type: url-test
+  url: http://gstatic.com
+  interval: 300
+  proxies:
+  - Direct
+- name: 🇰🇷 韩国节点
+  type: url-test
+  url: http://gstatic.com
+  interval: 300
+  proxies:
+  - Direct
+- name: 🇺🇸 美国节点
+  type: url-test
+  url: http://gstatic.com
+  interval: 300
+  proxies:
+  - 🇺🇸 美国节点 @zmxooo 01
+- name: 🇩🇪 德国节点
+  type: url-test
+  url: http://gstatic.com
+  interval: 300
+  proxies:
+  - Direct
+- name: 🇬🇧 英国节点
+  type: url-test
+  url: http://gstatic.com
+  interval: 300
+  proxies:
+  - 🇬🇧 英国节点 @zmxooo 01
+  - 🇬🇧 英国节点 @zmxooo 02
+- name: 🧿 其它地区
+  type: url-test
+  url: http://gstatic.com
+  interval: 300
+  proxies:
+  - Direct
 rules:
 - DOMAIN-SUFFIX,youtube.com,📹 YouTube
 - DOMAIN-SUFFIX,googlevideo.com,📹 YouTube
 - DOMAIN-SUFFIX,telegram.org,📲 Telegram
+- DOMAIN-KEYWORD,telegram,📲 Telegram
 - DOMAIN-KEYWORD,openai,🤖 AI
-- DOMAIN-KEYWORD,google,🍀 Google
+- DOMAIN-SUFFIX,chatgpt.com,🤖 AI
+- DOMAIN-SUFFIX,bilibili.com,📹 哔哩哔哩
+- DOMAIN-SUFFIX,netflix.com,🎥 Netflix
+- GEOIP,CN,Direct
 - MATCH,🚀 节点选择
