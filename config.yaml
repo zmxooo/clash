@@ -1,4 +1,38 @@
-port: 7890
+mixed-port: 7890
+allow-lan: true
+mode: rule
+log-level: info
+ipv6: false
+global-ua: clash.meta
+sniffer:
+  enable: true
+  sniff:
+    HTTP:
+      ports:
+      - 80
+      - 8080-8880
+      override-destination: true
+    TLS:
+      ports:
+      - 443
+      - 8443
+    QUIC:
+      ports:
+      - 443
+      - 8443
+tun:
+  enable: true
+  stack: mixed
+  auto-route: true
+  auto-detect-interface: true
+dns:
+  enable: true
+  listen: 0.0.0.0:53
+  enhanced-mode: fake-ip
+  fake-ip-range: 198.18.0.1/16
+  nameserver:
+  - https://doh.pub
+  - https://alidns.com
 proxies:
 - type: vless
   server: 163.5.58.211
@@ -9,7 +43,7 @@ proxies:
   udp: true
   uuid: 245fcfc2-0c80-49d3-b28f-fd8f4f43aaab
   cipher: auto
-  name: 🌍 其他 @zmxooo 01
+  name: 🧿其它地区 @zmxooo 01
 - type: vless
   server: 163.5.58.211
   port: 443
@@ -19,7 +53,7 @@ proxies:
   udp: true
   uuid: 8d4e3a65-a181-49f1-b83c-4b33168db6b5
   cipher: auto
-  name: 🌍 其他 @zmxooo 02
+  name: 🧿其它地区 @zmxooo 02
 - type: vless
   server: 163.5.58.211
   port: 443
@@ -29,29 +63,130 @@ proxies:
   udp: true
   uuid: a366b147-b0b2-4cb3-8e15-fa8ec83544c7
   cipher: auto
-  name: 🌍 其他 @zmxooo 03
+  name: 🧿其它地区 @zmxooo 03
+- name: 🟢 直连
+  type: direct
 proxy-groups:
 - name: 🚀 节点选择
   type: select
   proxies:
-  - ⚡ 自动选择
+  - ♻️ 自动选择
   - DIRECT
-  - 🌍 其他
-- name: ⚡ 自动选择
+  - 🇭🇰香港节点
+  - 🇨🇳台湾节点
+  - 🇯🇵日本节点
+  - 🇸🇬新加坡节点
+  - 🇰🇷韩国节点
+  - 🇺🇲美国节点
+  - 🇩🇪德国节点
+  - 🇬🇧英国节点
+  - 🧿其它地区
+- name: ♻️ 自动选择
   type: url-test
   url: http://gstatic.com
   interval: 300
   proxies:
-  - 🌍 其他 @zmxooo 01
-  - 🌍 其他 @zmxooo 02
-  - 🌍 其他 @zmxooo 03
-- name: 🌍 其他
+  - 🧿其它地区 @zmxooo 01
+  - 🧿其它地区 @zmxooo 02
+  - 🧿其它地区 @zmxooo 03
+- name: 🇭🇰香港节点
   type: url-test
   url: http://gstatic.com
   interval: 300
   proxies:
-  - 🌍 其他 @zmxooo 01
-  - 🌍 其他 @zmxooo 02
-  - 🌍 其他 @zmxooo 03
+  - DIRECT
+- name: 🇨🇳台湾节点
+  type: url-test
+  url: http://gstatic.com
+  interval: 300
+  proxies:
+  - DIRECT
+- name: 🇯🇵日本节点
+  type: url-test
+  url: http://gstatic.com
+  interval: 300
+  proxies:
+  - DIRECT
+- name: 🇸🇬新加坡节点
+  type: url-test
+  url: http://gstatic.com
+  interval: 300
+  proxies:
+  - DIRECT
+- name: 🇰🇷韩国节点
+  type: url-test
+  url: http://gstatic.com
+  interval: 300
+  proxies:
+  - DIRECT
+- name: 🇺🇲美国节点
+  type: url-test
+  url: http://gstatic.com
+  interval: 300
+  proxies:
+  - DIRECT
+- name: 🇩🇪德国节点
+  type: url-test
+  url: http://gstatic.com
+  interval: 300
+  proxies:
+  - DIRECT
+- name: 🇬🇧英国节点
+  type: url-test
+  url: http://gstatic.com
+  interval: 300
+  proxies:
+  - DIRECT
+- name: 🧿其它地区
+  type: url-test
+  url: http://gstatic.com
+  interval: 300
+  proxies:
+  - 🧿其它地区 @zmxooo 01
+  - 🧿其它地区 @zmxooo 02
+  - 🧿其它地区 @zmxooo 03
+- name: 📹 YouTube
+  type: select
+  proxies:
+  - 🚀 节点选择
+  - 🇭🇰香港节点
+  - 🇨🇳台湾节点
+  - 🇯🇵日本节点
+  - 🇸🇬新加坡节点
+  - 🇰🇷韩国节点
+  - 🇺🇲美国节点
+  - 🇩🇪德国节点
+  - 🇬🇧英国节点
+  - 🧿其它地区
+- name: 📲 Telegram
+  type: select
+  proxies:
+  - 🚀 节点选择
+  - 🇭🇰香港节点
+  - 🇨🇳台湾节点
+  - 🇯🇵日本节点
+  - 🇸🇬新加坡节点
+  - 🇰🇷韩国节点
+  - 🇺🇲美国节点
+  - 🇩🇪德国节点
+  - 🇬🇧英国节点
+  - 🧿其它地区
+- name: 🤖 AI
+  type: select
+  proxies:
+  - 🇺🇲美国节点
+  - 🇯🇵日本节点
+  - 🇸🇬新加坡节点
+  - 🚀 节点选择
+- name: 🍀 Google
+  type: select
+  proxies:
+  - 🚀 节点选择
+  - DIRECT
 rules:
+- DOMAIN-SUFFIX,youtube.com,📹 YouTube
+- DOMAIN-SUFFIX,googlevideo.com,📹 YouTube
+- DOMAIN-SUFFIX,telegram.org,📲 Telegram
+- DOMAIN-KEYWORD,openai,🤖 AI
+- DOMAIN-KEYWORD,google,🍀 Google
 - MATCH,🚀 节点选择
