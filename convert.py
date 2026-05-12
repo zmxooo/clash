@@ -48,9 +48,9 @@ def parse_link(link):
         link = link.replace('vmess://vmess://', 'vmess://').strip()
         u = urllib.parse.urlparse(link)
 
+        # --- VMess 解析 ---
         if link.startswith('vmess://'):
-            # --- 修正后的 VMess 解析逻辑 ---
-            # 先去掉前缀，然后通过索引分割，确保拿到纯净的 Base64 字符串
+            # 稳健提取：先分 # 再分 ?，取第一段
             b64_part = link[8:].split('#')[0].split('?')[0]
             b64_part += '=' * (-len(b64_part) % 4)
             d = json.loads(base64.b64decode(b64_part).decode('utf-8'))
@@ -62,6 +62,19 @@ def parse_link(link):
                 "skip-cert-verify": True, "udp": True
             }
 
+        # --- VLESS 解析 ---
+        elif link.startswith('vless://'):
+            q = urllib.parse.parse_qs(u.query)
+            return {
+                "label": get_final_label(u.hostname, u.fragment),
+                "type": "vless", "server": u.hostname, "port": int(u.port or 443),
+                "uuid": u.username, "cipher": "auto", "tls": True,
+                "udp": True, "skip-cert-verify": True,
+                "network": q.get("type", ["tcp"])[0],
+                "servername": q.get("sni", [u.hostname])[0]
+            }
+
+        # --- Hysteria2 解析 ---
         elif link.startswith(('hysteria2://', 'hy2://', 'hysteria://')):
             return {
                 "label": get_final_label(u.hostname, u.fragment),
@@ -70,6 +83,7 @@ def parse_link(link):
                 "skip-cert-verify": True, "udp": True
             }
 
+        # --- Shadowsocks 解析 ---
         elif link.startswith('ss://'):
             if '@' in u.netloc:
                 userinfo, server_part = u.netloc.split('@', 1)
@@ -85,9 +99,10 @@ def parse_link(link):
                 "cipher": method, "password": password, "udp": True
             }
 
+        # --- Trojan 解析 ---
         elif link.startswith('trojan://'):
             q = urllib.parse.parse_qs(u.query)
-            sni = q.get("sni", q.get("host", [u.hostname]))[0] or u.hostname
+            sni = q.get("sni", q.get("host", [u.hostname]))[0]
             return {
                 "label": get_final_label(u.hostname, u.fragment),
                 "type": "trojan", "server": u.hostname, "port": int(u.port or 443),
@@ -97,11 +112,10 @@ def parse_link(link):
     except:
         return None
 
-# --- 用于重新构建统一名称链接的函数 ---
 def rebuild_link_with_new_name(original_link, new_name):
     try:
+        # 获取 # 前的 URL 主体
         safe_name = urllib.parse.quote(new_name)
-        # 取 # 之前的部分，重新拼接新备注
         base_part = original_link.split('#')[0]
         return f"{base_part}#{safe_name}"
     except:
@@ -142,17 +156,14 @@ def main():
             p['name'] = node_name
             proxies.append(p)
             
-            # --- 使用重构函数，确保 valid_links 里的名字是统一的 ---
+            # 记录重命名后的链接用于 Base64
             valid_links.append(rebuild_link_with_new_name(l, node_name))
-            
             region_map[label].append(p['name'])
 
     print(f"成功解析: {len(proxies)} 个节点")
-    print(f"地区分布: {dict((k, len(v)) for k, v in region_map.items())}")
 
     active_regions = list(region_map.keys())
     region_groups = [{"name": r, "type": "url-test", "url": TEST_URL, "interval": 300, "proxies": region_map[r]} for r in active_regions]
-
     all_nodes = [p['name'] for p in proxies]
 
     cf = {
@@ -189,8 +200,7 @@ def main():
     with open('index.html', 'w', encoding='utf-8') as f:
         f.write(base64.b64encode("\n".join(valid_links).encode('utf-8')).decode('utf-8'))
 
-    print("🎉 生成完成！VMess 节点已找回，名称已全面统一。")
-
+    print("🎉 任务完全成功。Clash 与 Base64 命名已同步。")
 
 if __name__ == "__main__":
     main()
