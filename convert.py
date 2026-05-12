@@ -127,4 +127,16 @@ def main():
         "mixed-port": 7890, "allow-lan": True, "mode": "rule", "proxies": proxies,
         "proxy-groups": [
             {"name": "🚀 节点选择", "type": "select", "proxies": ["🎬 自动选择"] + active_regions + ["DIRECT"]},
-            {"name": "🎬 自动选择", "type": "url-
+            {"name": "🎬 自动选择", "type": "url-test", "url": TEST_URL, "interval": 300, "proxies": [px['name'] for px in proxies]}
+        ]
+    }
+    cf["proxy-groups"].extend(region_groups)
+    cf["rules"] = ["MATCH,🚀 节点选择"]
+
+    with open('clash_config.yaml', 'w', encoding='utf-8') as f:
+        yaml.dump(cf, f, allow_unicode=True, sort_keys=False)
+
+    print(f"✅ 处理完成！已通过缓存和增强正则解决‘其它地区’问题。共识别 {len(proxies)} 个节点。")
+
+if __name__ == "__main__":
+    main()
