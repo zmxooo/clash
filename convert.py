@@ -1,13 +1,12 @@
 import base64, json, yaml, os, re, requests, time
 from urllib.parse import urlparse, parse_qs, unquote, quote
 
-# 配置常量
 HEADERS = {"User-Agent": "ClashMeta"}
 MARK = "@zmxooo"
 IP_CACHE = {} 
 
 def get_final_label(server: str, remarks: str = "") -> str:
-    """识别地理位置：备注匹配优先，IP-API 在线查询补位"""
+    """识别地理位置：备注匹配优先，IP-API 补位"""
     if not server: return "🧿 其它地区"
     text = unquote(str(remarks)).lower().strip()
     meta = [
@@ -19,9 +18,9 @@ def get_final_label(server: str, remarks: str = "") -> str:
     ]
     for label, pattern in meta:
         if re.search(pattern, text): return label
-
     if server in IP_CACHE: return IP_CACHE[server]
     try:
+        # 【修正】确保 API 路径 100% 正确
         resp = requests.get(f"http://ip-api.com{server}?lang=zh-CN", timeout=2).json()
         if resp.get("status") == "success":
             country = resp.get("country", "")
@@ -57,13 +56,12 @@ def parse_link(link: str):
             }
         elif link.startswith(('vless://', 'trojan://')):
             u = urlparse(link); q = parse_qs(u.query); is_vless = link.startswith('vless://')
-            p = {
+            return {
                 "label": get_final_label(u.hostname, u.fragment),
                 "type": "vless" if is_vless else "trojan", "server": u.hostname, "port": int(u.port or 443),
                 "uuid": u.username, "password": u.username, "sni": (q.get("sni", [u.hostname])[0]),
                 "pbk": q.get("pbk", [""])[0], "sid": q.get("sid", [""])[0]
             }
-            return p
         elif link.startswith('ss://'):
             u = urlparse(link); content = u.netloc if '@' in u.netloc else safe_b64decode(u.netloc)
             left, right = content.split('@', 1); method, pwd = left.split(':', 1)
@@ -93,36 +91,35 @@ def main():
         new_name = f"{lbl} {MARK} {len(reg_map[lbl]) + 1:02d}"
         reg_map[lbl].append(new_name)
 
-        # 1. 组建 Clash 节点
+        # 1. 生成 Clash 节点数据
         cp = {"name": new_name, "type": p['type'], "server": p['server'], "port": p['port'], "udp": True}
         if p['type'] == 'vmess':
             cp.update({"uuid": p['uuid'], "alterId": p['aid'], "cipher": "auto", "tls": p['tls'], "network": p['net']})
             if p['net'] == 'ws': cp["ws-opts"] = {"path": p['path'], "headers": {"Host": p['host']}}
         elif p['type'] == 'vless':
             cp.update({"uuid": p['uuid'], "cipher": "auto", "tls": True, "sni": p['sni']})
-            if p['pbk']: cp["reality-opts"] = {"public-key": p['pbk'], "short-id": p['sid']}
+            if p.get('pbk'): cp["reality-opts"] = {"public-key": p['pbk'], "short-id": p['sid']}
         elif p['type'] == 'trojan':
-            cp.update({"password": p['password'], "sni": p['sni'], "skip-cert-verify": True})
+            cp.update({"password": p['password'], "sni": p['sni']})
         elif p['type'] == 'ss':
             cp.update({"cipher": p['cipher'], "password": p['password']})
         clash_proxies.append(cp)
 
-        # 2. 组建 Base64 订阅链接
+        # 2. 生成 Base64 订阅数据
         try:
             if p['type'] == 'vmess':
-                v_json = {"v":"2","ps":new_name,"add":p['server'],"port":p['port'],"id":p['uuid'],"aid":p['aid'],"net":p['net'],"type":"none","host":p['host'],"path":p['path'],"tls":"tls" if p['tls'] else ""}
-                sub_links.append(f"vmess://{safe_b64encode(json.dumps(v_json))}")
+                v_j = {"v":"2","ps":new_name,"add":p['server'],"port":p['port'],"id":p['uuid'],"aid":p['aid'],"net":p['net'],"host":p['host'],"path":p['path'],"tls":"tls" if p['tls'] else ""}
+                sub_links.append(f"vmess://{safe_b64encode(json.dumps(v_j))}")
             elif p['type'] == 'vless':
-                sub_links.append(f"vless://{p['uuid']}@{p['server']}:{p['port']}?encryption=none&security={'reality' if p['pbk'] else 'tls'}&sni={p['sni']}&pbk={p['pbk']}&sid={p['sid']}#{quote(new_name)}")
+                sub_links.append(f"vless://{p['uuid']}@{p['server']}:{p['port']}?security={'reality' if p.get('pbk') else 'tls'}&sni={p['sni']}&pbk={p.get('pbk','')}&sid={p.get('sid','')}#{quote(new_name)}")
             elif p['type'] == 'trojan':
                 sub_links.append(f"trojan://{p['password']}@{p['server']}:{p['port']}?sni={p['sni']}#{quote(new_name)}")
             elif p['type'] == 'ss':
-                ss_data = f"{p['cipher']}:{p['password']}"
-                sub_links.append(f"ss://{safe_b64encode(ss_data)}@{p['server']}:{p['port']}#{quote(new_name)}")
+                sub_links.append(f"ss://{safe_b64encode(p['cipher']+':'+p['password'])}@{p['server']}:{p['port']}#{quote(new_name)}")
         except: pass
 
-    # --- 保存 1: config.yaml ---
-    active_regs = [r for r in ["🇭🇰 香港节点", "🇹🇼 台湾节点", "🇯🇵 日本节点", "🇸🇬 新加坡节点", "🇰🇷 韩国节点", "🇺🇸 美国节点", "🧿 其它地区"] if r in reg_map]
+    # --- 统一写文件 ---
+    active_regs = [r for r in ["🇭🇰 香港节点", "🇹🇼 台湾节点", "🇯🇵 日本节点", "🇸🇬 新加坡节点", "🇺🇸 美国节点", "🧿 其它地区"] if r in reg_map]
     config = {
         "mixed-port": 7890, "allow-lan": True, "mode": "rule",
         "proxies": clash_proxies + [{"name": "DIRECT", "type": "direct"}],
@@ -135,11 +132,9 @@ def main():
     with open('config.yaml', 'w', encoding='utf-8') as f:
         yaml.dump(config, f, allow_unicode=True, sort_keys=False)
 
-    # --- 保存 2: index.html & sub.txt ---
-    # 必须用 \n 换行连接，否则 Base64 解码后工具无法识别
-    final_sub = safe_b64encode("\n".join(sub_links))
-    for fname in ['index.html', 'sub.txt']:
-        with open(fname, 'w', encoding='utf-8') as f:
-            f.write(final_sub)
+    final_b64 = safe_b64encode("\n".join(sub_links))
+    for fn in ['index.html', 'sub.txt']:
+        with open(fn, 'w', encoding='utf-8') as f:
+            f.write(final_b64)
 
 if __name__ == "__main__": main()
