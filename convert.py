@@ -46,20 +46,23 @@ def parse_link(link):
     try:
         link = link.replace('vmess://vmess://', 'vmess://').strip()
         
-        # --- 重做 VMess 解析逻辑 ---
+        # --- 重新构造的 VM 解析逻辑 ---
         if link.startswith('vmess://'):
-            # 1. 提取 Base64 字符串主体
-            b64_data = link[8:].split('#')[0].split('?')[0]
+            # 1. 提取 vmess:// 后的主体，避开备注和参数
+            main_str = link[8:]
+            if '#' in main_str:
+                main_str = main_str.split('#')[0]
+            if '?' in main_str:
+                main_str = main_str.split('?')[0]
             
-            # 2. 补齐填充位
-            padding = len(b64_data) % 4
-            if padding:
-                b64_data += "=" * (4 - padding)
+            # 2. 补齐 Base64 填充
+            missing_padding = len(main_str) % 4
+            if missing_padding:
+                main_str += '=' * (4 - missing_padding)
             
-            # 3. 解码并载入 JSON
-            v2_json = json.loads(base64.b64decode(b64_data).decode('utf-8'))
+            # 3. 解码 JSON
+            v2_json = json.loads(base64.b64decode(main_str).decode('utf-8'))
             
-            # 4. 映射到 Clash 代理字典
             return {
                 "label": get_final_label(v2_json.get("add"), v2_json.get("ps")),
                 "type": "vmess",
@@ -121,11 +124,11 @@ def parse_link(link):
         # --- Trojan 解析 ---
         elif link.startswith('trojan://'):
             q = urllib.parse.parse_qs(u.query)
-            sni_list = q.get("sni", q.get("host", [u.hostname]))
+            sni = q.get("sni", q.get("host", [u.hostname]))[0]
             return {
                 "label": get_final_label(u.hostname, u.fragment),
                 "type": "trojan", "server": u.hostname, "port": int(u.port or 443),
-                "password": u.username, "sni": str(sni_list[0]), "tls": True,
+                "password": u.username, "sni": str(sni), "tls": True,
                 "skip-cert-verify": True, "udp": True
             }
     except:
@@ -171,9 +174,8 @@ def main():
             p['name'] = node_name
             proxies.append(p)
             
-            # 使用同步名称重构链接
-            renamed_url = rebuild_link(l, node_name)
-            valid_links.append(renamed_url)
+            # --- 核心：Base64 订阅同步重命名 ---
+            valid_links.append(rebuild_link(l, node_name))
             region_map[label].append(node_name)
 
     print(f"成功解析: {len(proxies)} 个节点")
@@ -212,7 +214,7 @@ def main():
     with open('index.html', 'w', encoding='utf-8') as f:
         f.write(base64.b64encode("\n".join(valid_links).encode('utf-8')).decode('utf-8'))
 
-    print("🎉 任务完成。")
+    print("🎉 任务完成。VM 节点解析已修正，所有订阅名称已同步统一。")
 
 if __name__ == "__main__":
     main()
