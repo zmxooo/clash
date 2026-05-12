@@ -29,7 +29,6 @@ def get_final_label(server, remarks):
             return label
     
     try:
-        # 修正原 URL 拼接缺失 "/" 的语法隐患
         r = requests.get(f"http://ip-api.com{server}?lang=zh-CN", timeout=3).json()
         if r.get("status") == "success":
             c = r.get("country")
@@ -47,35 +46,38 @@ def parse_link(link):
     try:
         link = link.replace('vmess://vmess://', 'vmess://').strip()
         
-        # --- VMess 逐字符语法校对 ---
+        # --- 重做 VMess 解析逻辑 ---
         if link.startswith('vmess://'):
-            # 1. 提取 Base64：分步切割并取索引 [0]，确保变量始终是字符串类型
-            content = link[8:]
-            if '#' in content:
-                content = content.split('#')[0]
-            if '?' in content:
-                content = content.split('?')[0]
+            # 1. 提取 Base64 字符串主体
+            b64_data = link[8:].split('#')[0].split('?')[0]
             
-            # 2. 补齐 Base64 填充位
-            pad_len = len(content) % 4
-            if pad_len != 0:
-                content += '=' * (4 - pad_len)
+            # 2. 补齐填充位
+            padding = len(b64_data) % 4
+            if padding:
+                b64_data += "=" * (4 - padding)
             
-            # 3. 解码并转 JSON
-            decoded_str = base64.b64decode(content).decode('utf-8')
-            d = json.loads(decoded_str)
+            # 3. 解码并载入 JSON
+            v2_json = json.loads(base64.b64decode(b64_data).decode('utf-8'))
             
+            # 4. 映射到 Clash 代理字典
             return {
-                "label": get_final_label(d.get("add"), d.get("ps")),
-                "type": "vmess", "server": d.get("add"), "port": int(d.get("port")),
-                "uuid": d.get("id"), "alterId": 0, "cipher": "auto",
-                "tls": str(d.get("tls","")).lower() in ["tls","true","1"],
-                "skip-cert-verify": True, "udp": True
+                "label": get_final_label(v2_json.get("add"), v2_json.get("ps")),
+                "type": "vmess",
+                "server": v2_json.get("add"),
+                "port": int(v2_json.get("port")),
+                "uuid": v2_json.get("id"),
+                "alterId": int(v2_json.get("aid", 0)),
+                "cipher": "auto",
+                "tls": True if str(v2_json.get("tls")).lower() in ["tls", "true"] else False,
+                "skip-cert-verify": True,
+                "udp": True,
+                "network": v2_json.get("net", "tcp"),
+                "ws-opts": {"path": v2_json.get("path", "/"), "headers": {"Host": v2_json.get("host", "")}} if v2_json.get("net") == "ws" else None
             }
 
         u = urllib.parse.urlparse(link)
 
-        # --- VLESS 逐字符语法校对 ---
+        # --- VLESS 解析 ---
         if link.startswith('vless://'):
             q = urllib.parse.parse_qs(u.query)
             return {
@@ -132,7 +134,6 @@ def parse_link(link):
 def rebuild_link(original_link, new_name):
     try:
         safe_name = urllib.parse.quote(new_name)
-        # 获取 # 前面的部分，取 [0] 索引确保获得字符串
         base_part = original_link.split('#')[0]
         return f"{base_part}#{safe_name}"
     except:
@@ -170,8 +171,9 @@ def main():
             p['name'] = node_name
             proxies.append(p)
             
-            # --- 核心修改：统一重构链接用于 Base64 订阅 ---
-            valid_links.append(rebuild_link(l, node_name))
+            # 使用同步名称重构链接
+            renamed_url = rebuild_link(l, node_name)
+            valid_links.append(renamed_url)
             region_map[label].append(node_name)
 
     print(f"成功解析: {len(proxies)} 个节点")
@@ -181,11 +183,7 @@ def main():
     all_nodes = [p['name'] for p in proxies]
 
     cf = {
-        "mixed-port": 7890,
-        "allow-lan": True,
-        "mode": "rule",
-        "log-level": "info",
-        "ipv6": True,
+        "mixed-port": 7890, "allow-lan": True, "mode": "rule", "log-level": "info", "ipv6": True,
         "tun": {"enable": True, "stack": "mixed", "auto-route": True, "auto-detect-interface": True},
         "dns": {"enable": True, "enhanced-mode": "fake-ip", "nameserver": ["223.5.5.5", "119.29.29.29", "8.8.8.8"]},
         "proxies": proxies + [{"name": "Direct", "type": "direct"}],
@@ -212,10 +210,9 @@ def main():
         yaml.dump(cf, f, allow_unicode=True, sort_keys=False, default_flow_style=False)
 
     with open('index.html', 'w', encoding='utf-8') as f:
-        # Base64 编码统一名称后的链接列表
         f.write(base64.b64encode("\n".join(valid_links).encode('utf-8')).decode('utf-8'))
 
-    print("🎉 最终同步版发布：VMess/VLESS 找回，订阅名称已完美统一。")
+    print("🎉 任务完成。")
 
 if __name__ == "__main__":
     main()
