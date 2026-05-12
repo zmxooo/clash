@@ -7,7 +7,7 @@ MARK = "@zmxooo"
 IP_CACHE = {} 
 
 def get_final_label(server: str, remarks: str = "") -> str:
-    """识别地理位置"""
+    """识别地理位置：备注匹配优先，IP-API 在线查询补位"""
     if not server: return "🧿 其它地区"
     text = unquote(str(remarks)).lower().strip()
     meta = [
@@ -43,7 +43,7 @@ def safe_b64encode(data: str):
     return base64.b64encode(data.encode('utf-8')).decode('utf-8')
 
 def parse_link(link: str):
-    """解析协议核心参数"""
+    """提取协议核心参数"""
     try:
         link = link.strip()
         if link.startswith('vmess://'):
@@ -80,7 +80,6 @@ def main():
         try:
             r = requests.get(url, timeout=10, headers=HEADERS).text
             dec = safe_b64decode(r.strip()); content = dec if "://" in dec else r
-            # 补齐了 hy2 和 hysteria2 的匹配
             links = re.findall(r'(?:vmess|vless|ss|trojan|hy2|hysteria2)://[^\s#"\'>]+', content)
             for link in links:
                 p = parse_link(link)
@@ -94,7 +93,7 @@ def main():
         new_name = f"{lbl} {MARK} {len(reg_map[lbl]) + 1:02d}"
         reg_map[lbl].append(new_name)
 
-        # 构建 Clash 节点
+        # 1. 组建 Clash 节点
         cp = {"name": new_name, "type": p['type'], "server": p['server'], "port": p['port'], "udp": True}
         if p['type'] == 'vmess':
             cp.update({"uuid": p['uuid'], "alterId": p['aid'], "cipher": "auto", "tls": p['tls'], "network": p['net']})
@@ -108,7 +107,7 @@ def main():
             cp.update({"cipher": p['cipher'], "password": p['password']})
         clash_proxies.append(cp)
 
-        # 构建 Base64 订阅链接 (修复了之前图中的 f-string 语法错误)
+        # 2. 组建 Base64 订阅链接
         try:
             if p['type'] == 'vmess':
                 v_json = {"v":"2","ps":new_name,"add":p['server'],"port":p['port'],"id":p['uuid'],"aid":p['aid'],"net":p['net'],"type":"none","host":p['host'],"path":p['path'],"tls":"tls" if p['tls'] else ""}
@@ -118,12 +117,11 @@ def main():
             elif p['type'] == 'trojan':
                 sub_links.append(f"trojan://{p['password']}@{p['server']}:{p['port']}?sni={p['sni']}#{quote(new_name)}")
             elif p['type'] == 'ss':
-                # 修复引号冲突点
-                ss_data = p['cipher'] + ":" + p['password']
-                sub_links.append("ss://" + safe_b64encode(ss_data) + "@" + p['server'] + ":" + str(p['port']) + "#" + quote(new_name))
+                ss_data = f"{p['cipher']}:{p['password']}"
+                sub_links.append(f"ss://{safe_b64encode(ss_data)}@{p['server']}:{p['port']}#{quote(new_name)}")
         except: pass
 
-    # 生成 config.yaml
+    # --- 保存 1: config.yaml ---
     active_regs = [r for r in ["🇭🇰 香港节点", "🇹🇼 台湾节点", "🇯🇵 日本节点", "🇸🇬 新加坡节点", "🇰🇷 韩国节点", "🇺🇸 美国节点", "🧿 其它地区"] if r in reg_map]
     config = {
         "mixed-port": 7890, "allow-lan": True, "mode": "rule",
@@ -137,8 +135,11 @@ def main():
     with open('config.yaml', 'w', encoding='utf-8') as f:
         yaml.dump(config, f, allow_unicode=True, sort_keys=False)
 
-    # 生成 index.html
-    with open('index.html', 'w', encoding='utf-8') as f:
-        f.write(safe_b64encode("\n".join(sub_links)))
+    # --- 保存 2: index.html & sub.txt ---
+    # 必须用 \n 换行连接，否则 Base64 解码后工具无法识别
+    final_sub = safe_b64encode("\n".join(sub_links))
+    for fname in ['index.html', 'sub.txt']:
+        with open(fname, 'w', encoding='utf-8') as f:
+            f.write(final_sub)
 
 if __name__ == "__main__": main()
