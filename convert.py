@@ -148,26 +148,26 @@ def main():
             })
 
         else:  # ss / trojan
+            # 修复点：确保 clean 是字符串而非列表，防止 Base64 编码格式错误
             clean = link.split('#')[0]
             rocket_links.append(f"{clean}#{urllib.parse.quote(new_name)}")
 
         region_map[label].append(new_name)
 
-    # ====================== 优化后的策略组（根据要求补齐） ======================
+    # ====================== 优化后的策略组 ======================
     proxy_groups = []
     high_priority = ["🇭🇰 香港", "🇹🇼 台湾", "🇯🇵 日本", "🇸🇬 新加坡", "🇺🇸 美国"]
     
     all_names = [p["name"] for p in clash_proxies]
     
     if all_names:
-        # 1. 自动选择分组优化：优先加入高优先级地区节点，提高选择质量
+        # 优化：自动选择分组，优先挑选高优先级地区的节点
         auto_proxies = []
-        for region_prefix in high_priority:
-            for label in region_map.keys():
-                if region_prefix in label:
-                    auto_proxies.extend(region_map[label])
+        for region_tag in high_priority:
+            # 匹配包含对应 Emoji 或地名的节点
+            auto_proxies.extend([n for n in all_names if region_tag in n])
         
-        # 如果没有高优先级节点，则 fallback 到全部节点
+        # 如果高优先级地区没节点，则使用全部节点
         if not auto_proxies:
             auto_proxies = all_names
 
@@ -180,7 +180,7 @@ def main():
             "tolerance": 50
         })
 
-        # 2. 地区分组选择
+        # 地区分组
         for label, names in region_map.items():
             proxy_groups.append({
                 "name": f"📽️ {label}",
@@ -188,20 +188,20 @@ def main():
                 "proxies": ["🚀 自动选择"] + names
             })
 
-        # 3. 总手动选择组
+        # 总选择组
         proxy_groups.append({
             "name": "🔰 节点选择",
             "type": "select",
             "proxies": ["🚀 自动选择"] + [f"📽️ {l}" for l in region_map.keys()] + all_names
         })
 
-    # ====================== 修复：Base64 通用订阅 ======================
-    # 逻辑：将所有 rocket_links 合并为多行字符串后再进行整体编码
+    # ====================== 修复：Base64 导出 ======================
     try:
-        final_sub_text = "\n".join(rocket_links)
-        b64_sub = base64.b64encode(final_sub_text.encode('utf-8')).decode('utf-8')
+        # 修复点：将合并后的完整字符串进行 Base64 编码，确保导入配置正确
+        sub_raw_text = "\n".join(rocket_links)
+        sub_b64_content = base64.b64encode(sub_raw_text.encode('utf-8')).decode('utf-8')
         with open('subscribe.txt', 'w', encoding='utf-8') as f:
-            f.write(b64_sub)
+            f.write(sub_b64_content)
     except Exception as e:
         print(f"❌ 订阅文件导出失败: {e}")
 
@@ -215,7 +215,7 @@ def main():
     try:
         with open('clash_config.yaml', 'w', encoding='utf-8') as f:
             yaml.dump(clash_config, f, allow_unicode=True, sort_keys=False)
-        print(f"✅ 处理完成！节点总数: {len(all_names)}")
+        print(f"✅ 处理完成！已生成 subscribe.txt 和 clash_config.yaml")
     except Exception as e:
         print(f"❌ Clash 配置文件写入失败: {e}")
 
