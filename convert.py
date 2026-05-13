@@ -22,13 +22,12 @@ EMOJI_MAP = {
 }
 
 # ==================== 工具函数 ====================
-def safe_base64_decode(b64: str) -> bytes:
-    """更健壮的Base64解码"""
-    b64 = b64.strip().replace('-', '+').replace('_', '/')
-    padding = (4 - len(b64) % 4) % 4
-    b64 += '=' * padding
-    return base64.b64decode(b64)
-
+def parse_vmess_b64(b64_part):
+    """采用第一份代码中的 Base64 填充与解码逻辑"""
+    padding = len(b64_part) % 4
+    if padding:
+        b64_part += "=" * (4 - padding)
+    return base64.b64decode(b64_part)
 
 def get_final_label(server: str, remarks: str = "") -> str:
     """优先正则识别 → IP自动纠正"""
@@ -46,7 +45,7 @@ def get_final_label(server: str, remarks: str = "") -> str:
         if re.search(pattern, text):
             return f"{EMOJI_MAP.get(name, '🌍')} {name}"
 
-    # IP自动纠正（修正错误标注）
+    # IP自动纠正
     if server and re.match(r'^\d{1,3}(\.\d{1,3}){3}$', server):
         if server in IP_CACHE:
             return IP_CACHE[server]
@@ -63,7 +62,6 @@ def get_final_label(server: str, remarks: str = "") -> str:
             pass
     return "🧿 其他地区"
 
-
 def parse_link(link: str):
     """解析节点"""
     try:
@@ -72,8 +70,10 @@ def parse_link(link: str):
             return None
 
         if link.startswith('vmess://'):
+            # 使用第一份代码的截取方式
             b64_part = link[8:].split('#')[0]
-            data = json.loads(safe_base64_decode(b64_part).decode('utf-8', errors='ignore'))
+            raw_data = parse_vmess_b64(b64_part)
+            data = json.loads(raw_data.decode('utf-8', 'ignore'))
             return {
                 "type": "vmess",
                 "raw_data": data,
@@ -91,7 +91,6 @@ def parse_link(link: str):
     except:
         return None
 
-
 # ==================== 主程序 ====================
 def main():
     if not os.path.exists('nodes.txt'):
@@ -101,7 +100,6 @@ def main():
     with open('nodes.txt', 'r', encoding='utf-8', errors='ignore') as f:
         lines = [line.strip() for line in f if line.strip()]
 
-    # 去重（按核心链接）
     seen = set()
     unique_links = []
     for line in lines:
@@ -128,9 +126,9 @@ def main():
         if p["type"] == "vmess":
             data = p["raw_data"].copy()
             data['ps'] = new_name
-            new_b64 = base64.b64encode(
-                json.dumps(data, separators=(',', ':')).encode('utf-8')
-            ).decode('utf-8')
+            # 这里同样使用标准的 Base64 编码方式
+            new_json = json.dumps(data, separators=(',', ':')).encode('utf-8')
+            new_b64 = base64.b64encode(new_json).decode('utf-8')
             rocket_links.append(f"vmess://{new_b64}")
 
             # Clash 配置
@@ -147,77 +145,19 @@ def main():
                 "network": data.get("net", "tcp"),
             })
 
-        else:  # ss / trojan
-            # 修复点：确保 clean 是字符串而非列表，防止 Base64 编码格式错误
+        else:
             clean = link.split('#')[0]
             rocket_links.append(f"{clean}#{urllib.parse.quote(new_name)}")
 
         region_map[label].append(new_name)
 
-    # ====================== 优化后的策略组 ======================
-    proxy_groups = []
-    high_priority = ["🇭🇰 香港", "🇹🇼 台湾", "🇯🇵 日本", "🇸🇬 新加坡", "🇺🇸 美国"]
-    
-    all_names = [p["name"] for p in clash_proxies]
-    
-    if all_names:
-        # 优化：自动选择分组，优先挑选高优先级地区的节点
-        auto_proxies = []
-        for region_tag in high_priority:
-            # 匹配包含对应 Emoji 或地名的节点
-            auto_proxies.extend([n for n in all_names if region_tag in n])
-        
-        # 如果高优先级地区没节点，则使用全部节点
-        if not auto_proxies:
-            auto_proxies = all_names
-
-        proxy_groups.append({
-            "name": "🚀 自动选择",
-            "type": "url-test",
-            "proxies": auto_proxies,
-            "url": TEST_URL,
-            "interval": 300,
-            "tolerance": 50
-        })
-
-        # 地区分组
-        for label, names in region_map.items():
-            proxy_groups.append({
-                "name": f"📽️ {label}",
-                "type": "select",
-                "proxies": ["🚀 自动选择"] + names
-            })
-
-        # 总选择组
-        proxy_groups.append({
-            "name": "🔰 节点选择",
-            "type": "select",
-            "proxies": ["🚀 自动选择"] + [f"📽️ {l}" for l in region_map.keys()] + all_names
-        })
-
-    # ====================== 修复：Base64 导出 ======================
-    try:
-        # 修复点：将合并后的完整字符串进行 Base64 编码，确保导入配置正确
-        sub_raw_text = "\n".join(rocket_links)
-        sub_b64_content = base64.b64encode(sub_raw_text.encode('utf-8')).decode('utf-8')
-        with open('subscribe.txt', 'w', encoding='utf-8') as f:
-            f.write(sub_b64_content)
-    except Exception as e:
-        print(f"❌ 订阅文件导出失败: {e}")
-
-    # ====================== 导出 Clash 配置 ======================
-    clash_config = {
-        "proxies": clash_proxies,
-        "proxy-groups": proxy_groups,
-        "rules": ["MATCH,🔰 节点选择"]
-    }
-    
-    try:
-        with open('clash_config.yaml', 'w', encoding='utf-8') as f:
-            yaml.dump(clash_config, f, allow_unicode=True, sort_keys=False)
-        print(f"✅ 处理完成！已生成 subscribe.txt 和 clash_config.yaml")
-    except Exception as e:
-        print(f"❌ Clash 配置文件写入失败: {e}")
+    # 导出逻辑建议补全（如 index.html 的 Base64 编码）
+    if rocket_links:
+        sub_content = "\n".join(rocket_links)
+        sub_b64 = base64.b64encode(sub_content.encode('utf-8')).decode('utf-8')
+        with open('index.html', 'w', encoding='utf-8') as f:
+            f.write(sub_b64)
+        print(f"✅ 处理完成，共 {len(rocket_links)} 个节点。")
 
 if __name__ == "__main__":
     main()
