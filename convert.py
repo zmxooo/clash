@@ -52,7 +52,7 @@ def get_final_label(server: str, remarks: str = "") -> str:
             return IP_CACHE[server]
         try:
             time.sleep(0.35)
-            resp = requests.get(f"http://ip-api.com/json/{server}?lang=zh-CN", timeout=8)
+            resp = requests.get(f"http://ip-api.com{server}?lang=zh-CN", timeout=8)
             data = resp.json()
             if data.get("status") == "success":
                 country = data.get("country")
@@ -153,90 +153,71 @@ def main():
 
         region_map[label].append(new_name)
 
-    # ====================== 优化后的策略组 ======================
+    # ====================== 优化后的策略组（根据要求补齐） ======================
     proxy_groups = []
-    all_for_auto = []
+    high_priority = ["🇭🇰 香港", "🇹🇼 台湾", "🇯🇵 日本", "🇸🇬 新加坡", "🇺🇸 美国"]
+    
+    all_names = [p["name"] for p in clash_proxies]
+    
+    if all_names:
+        # 1. 自动选择分组优化：优先加入高优先级地区节点，提高选择质量
+        auto_proxies = []
+        for region_prefix in high_priority:
+            for label in region_map.keys():
+                if region_prefix in label:
+                    auto_proxies.extend(region_map[label])
+        
+        # 如果没有高优先级节点，则 fallback 到全部节点
+        if not auto_proxies:
+            auto_proxies = all_names
 
-    # 高优先级地区
-    high_priority = ["🇭🇰 香港", "🇹🇼 台湾", "🇯🇵 日本", "🇸🇬 新加坡",
-                     "🇺🇸 美国", "🇬🇧 英国", "🇰🇷 韩国", "🇩🇪 德国"]
+        proxy_groups.append({
+            "name": "🚀 自动选择",
+            "type": "url-test",
+            "proxies": auto_proxies,
+            "url": TEST_URL,
+            "interval": 300,
+            "tolerance": 50
+        })
 
-    for region in high_priority:
-        if region in region_map and region_map[region]:
-            nodes = region_map[region]
-            proxy_groups.append({"name": f"🌏 {region}", "type": "select", "proxies": nodes})
-            all_for_auto.extend(nodes)
+        # 2. 地区分组选择
+        for label, names in region_map.items():
+            proxy_groups.append({
+                "name": f"📽️ {label}",
+                "type": "select",
+                "proxies": ["🚀 自动选择"] + names
+            })
 
-    # 中低优先级地区（按数量排序）
-    other_regions = {k: v for k, v in region_map.items() if k not in high_priority}
-    sorted_others = sorted(other_regions.items(), key=lambda x: len(x[1]), reverse=True)
+        # 3. 总手动选择组
+        proxy_groups.append({
+            "name": "🔰 节点选择",
+            "type": "select",
+            "proxies": ["🚀 自动选择"] + [f"📽️ {l}" for l in region_map.keys()] + all_names
+        })
 
-    for label, nodes in sorted_others[:6]:
-        if nodes:
-            proxy_groups.append({"name": f"🌍 {label}", "type": "select", "proxies": nodes})
-            all_for_auto.extend(nodes)
+    # ====================== 修复：Base64 通用订阅 ======================
+    # 逻辑：将所有 rocket_links 合并为多行字符串后再进行整体编码
+    try:
+        final_sub_text = "\n".join(rocket_links)
+        b64_sub = base64.b64encode(final_sub_text.encode('utf-8')).decode('utf-8')
+        with open('subscribe.txt', 'w', encoding='utf-8') as f:
+            f.write(b64_sub)
+    except Exception as e:
+        print(f"❌ 订阅文件导出失败: {e}")
 
-    # 剩余节点合并
-    remaining = []
-    for _, nodes in sorted_others[6:]:
-        remaining.extend(nodes)
-    if remaining:
-        proxy_groups.append({"name": "🌐 其他节点", "type": "select", "proxies": remaining})
-        all_for_auto.extend(remaining)
-
-    # 核心策略组
-    proxy_groups.extend([
-        {"name": "♻️ 自动选择", "type": "url-test", "url": TEST_URL, "interval": 300,
-         "tolerance": 60, "proxies": all_for_auto},
-        {"name": "🚀 全局加速", "type": "select",
-         "proxies": ["♻️ 自动选择", "DIRECT", "🌏 🇭🇰 香港"]},
-        {"name": "📺 解锁流媒体", "type": "select",
-         "proxies": ["🌏 🇺🇸 美国", "🌏 🇬🇧 英国", "🌏 🇯🇵 日本", "♻️ 自动选择"]},
-        {"name": "🎮 游戏加速", "type": "select",
-         "proxies": ["🌏 🇭🇰 香港", "🌏 🇯🇵 日本", "♻️ 自动选择"]},
-    ])
-
-    # ====================== 导出文件 ======================
-    # 1. Shadowrocket 订阅
-    if rocket_links:
-        with open('rocket_sub.txt', 'w', encoding='utf-8') as f:
-            f.write('\n'.join(rocket_links))
-        sub_b64 = base64.b64encode('\n'.join(rocket_links).encode()).decode()
-
-    # 2. Clash 配置
+    # ====================== 导出 Clash 配置 ======================
     clash_config = {
-        "mixed-port": 7890,
-        "mode": "rule",
         "proxies": clash_proxies,
         "proxy-groups": proxy_groups,
-        "rules": [
-            "GEOIP,CN,DIRECT",
-            "MATCH,🚀 全局加速"
-        ]
+        "rules": ["MATCH,🔰 节点选择"]
     }
-    with open('clash_config.yaml', 'w', encoding='utf-8') as f:
-        yaml.dump(clash_config, f, allow_unicode=True, sort_keys=False)
-
-    # 3. 一键订阅网页
-    html = f"""<!DOCTYPE html>
-<html><head><meta charset="UTF-8"><title>订阅 - {CHANNEL_MARK}</title>
-<style>body{{font-family:system-ui;text-align:center;padding:60px;background:#0f0f0f;color:#0f0;}}
-.btn{{display:inline-block;margin:12px;padding:16px 32px;background:#111;color:#0f0;
-text-decoration:none;border:2px solid #0f0;border-radius:8px;font-size:18px;}}
-.btn:hover{{background:#0f0;color:#000;}}</style></head><body>
-<h1>节点订阅</h1>
-<p>共 {len(rocket_links)} 个节点 | 更新时间: {time.strftime("%Y-%m-%d %H:%M:%S")}</p>
-<a href="data:text/plain;base64,{sub_b64}" class="btn" download="sub.txt">📥 下载订阅文件</a><br><br>
-</body></html>"""
-    with open('index.html', 'w', encoding='utf-8') as f:
-        f.write(html)
-
-    # ====================== 统计信息 ======================
-    print(f"\n🎉 处理完成！共 {len(rocket_links)} 个节点")
-    print("地区分布：")
-    for label, nodes in sorted(region_map.items(), key=lambda x: len(x[1]), reverse=True):
-        print(f"   {label}: {len(nodes)} 个")
-
+    
+    try:
+        with open('clash_config.yaml', 'w', encoding='utf-8') as f:
+            yaml.dump(clash_config, f, allow_unicode=True, sort_keys=False)
+        print(f"✅ 处理完成！节点总数: {len(all_names)}")
+    except Exception as e:
+        print(f"❌ Clash 配置文件写入失败: {e}")
 
 if __name__ == "__main__":
     main()
