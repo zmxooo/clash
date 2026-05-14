@@ -1,32 +1,41 @@
-name: Auto Convert
+name: 节点自动提纯转换流
 
 on:
   push:
-    branches: [ main ]
+    branches:
+      - main
+  schedule:
+    - cron: '0 */6 * * *' # 每 6 小时全自动在后台抓取和净化一次配置
   workflow_dispatch:
 
 jobs:
-  convert:
+  build:
     runs-on: ubuntu-latest
     steps:
-      - name: 检查仓库代码
-        uses: actions/checkout@v4
+    - name: 检出当前仓库主干代码
+      uses: actions/checkout@v4
 
-      - name: 设置 Python 环境
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.10'
+    - name: 部署标准 Python 环境
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.10'
 
-      - name: 安装必要插件
-        run: pip install pyyaml requests
+    - name: 安装核心序列化依赖库
+      run: |
+        pip install requests pyyaml
 
-      - name: 运行转换脚本
-        run: python convert.py
+    - name: 强力驱动提纯脚本运行
+      run: python convert.py
 
-      - name: 推送生成的文件到仓库
-        run: |
-          git config --local user.email "actions@github.com"
-          git config --local user.name "GitHub Action"
-          git add config.yaml index.html sub.txt || true
-          git commit -m "自动更新订阅文件" || exit 0
-          git push
+    - name: 安全反向同步推送回主干分支
+      run: |
+        git config --local user.email "github-actions[bot]@://github.com"
+        git config --local user.name "github-actions[bot]"
+        # 抓取状态，只有发生文件变化时才触发真实的物理推送，防止无限闭环构建崩溃
+        git add config.yaml rocket_links.txt rocket_subscription.txt || true
+        if ! git diff --staged --quiet; then
+          git commit -m "🤖 自动净化同步：Clash/小火箭规则集更新完毕 [skip ci]"
+          git push origin main
+        else
+          echo "检测到物理配置无实质变化，终止空白推送。"
+        fi
