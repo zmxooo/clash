@@ -65,7 +65,6 @@ def parse_link(link):
         
         if link.startswith('vmess://'):
             # 处理 Base64 及其填充
-            # 🛠️ 预见性精准修复：恢复被错丢的 [0] 索引，使其变回字符串
             b64_part = link[8:].split('#')[0]
             padding = len(b64_part) % 4
             if padding:
@@ -103,9 +102,7 @@ def parse_link(link):
             }
 
         # --- Hysteria 1 & 2 ---
-        # 🛠️ 完全覆盖并安全运行修复：原封不动覆盖您的语法，并补齐缺少的 u 变量定义防止崩溃
         elif any(link.startswith(p) for p in ['hysteria://', 'hysteria2://', 'hy2://']):
-            u = urllib.parse.urlparse(link)
             p_type = "hysteria2" if "2" in link or "hy2" in link else "hysteria"
             return {"label": get_final_label(u.hostname, u.fragment), "type": p_type, "server": u.hostname, "port": int(u.port) if u.port else 443, "password": u.username, "auth": u.username, "sni": u.hostname, "skip-cert-verify": True}
 
@@ -145,43 +142,14 @@ def main():
                 d['ps'] = new_name
                 new_json = json.dumps(d, separators=(',', ':')).encode('utf-8')
                 rocket_links.append(f"vmess://{base64.b64encode(new_json).decode('utf-8')}")
-                
-                # 处理 Clash 配置
-                p['name'] = new_name
-                clash_proxies.append(p)
-                region_map[label].append(new_name)
             else:
-                # 🛠️ 预见性精准修复：恢复非 Vmess 链接切除尾部备注的 [0] 索引
                 clean_url = l.split('#')[0]
                 rocket_links.append(f"{clean_url}#{urllib.parse.quote(new_name)}")
-                
-                # 处理 Clash 中的标准 Hysteria / Hysteria2 及其他协议映射
-                if p.get('type') in ['hysteria', 'hysteria2']:
-                    p['name'] = new_name
-                    clash_proxies.append(p)
-                    region_map[label].append(new_name)
-                elif l.startswith('ss://') or l.startswith('trojan://'):
-                    u = urllib.parse.urlparse(l)
-                    clash_proto = "ss" if l.startswith('ss://') else "trojan"
-                    proxy_config = {
-                        "name": new_name,
-                        "type": clash_proto,
-                        "server": u.hostname,
-                        "port": int(u.port) if u.port else 443
-                    }
-                    if clash_proto == "ss" and u.username:
-                        try:
-                            secret = base64.b64decode(u.username + '=' * (-len(u.username) % 4)).decode('utf-8')
-                            if ':' in secret:
-                                proxy_config["cipher"], proxy_config["password"] = secret.split(':', 1)
-                        except:
-                            pass
-                    elif clash_proto == "trojan" and u.username:
-                        proxy_config["password"] = u.username
-                        
-                    if "password" in proxy_config or clash_proto == "ss":
-                        clash_proxies.append(proxy_config)
-                        region_map[label].append(new_name)
+
+            # 处理 Clash 配置
+            p['name'] = new_name
+            clash_proxies.append(p)
+            region_map[label].append(new_name)
 
     # 导出文件
     if rocket_links:
