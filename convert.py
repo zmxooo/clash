@@ -1,757 +1,214 @@
-mixed-port: 7890
-allow-lan: true
-mode: rule
-log-level: info
-ipv6: true
-tun:
-  enable: true
-  stack: mixed
-  auto-route: true
-  auto-detect-interface: true
-dns:
-  enable: true
-  enhanced-mode: fake-ip
-  nameserver:
-  - 223.5.5.5
-  - 119.29.29.29
-  - 8.8.8.8
-proxies:
-- type: hysteria2
-  server: 202.146.222.41
-  port: 443
-  password: qQe1z5kU8kN6SlKnDt9Ru3Qp
-  sni: 202.146.222.41
-  skip-cert-verify: true
-  udp: true
-  name: 🇭🇰 香港节点 @zmxooo 01
-- type: hysteria2
-  server: 202.146.222.13
-  port: 443
-  password: qQe1z5kU8kN6SlKnDt9Ru3Qp
-  sni: 202.146.222.13
-  skip-cert-verify: true
-  udp: true
-  name: 🇭🇰 香港节点 @zmxooo 02
-- type: hysteria2
-  server: 202.146.222.93
-  port: 443
-  password: qQe1z5kU8kN6SlKnDt9Ru3Qp
-  sni: 202.146.222.93
-  skip-cert-verify: true
-  udp: true
-  name: 🇭🇰 香港节点 @zmxooo 03
-- type: hysteria2
-  server: 202.146.222.89
-  port: 443
-  password: qQe1z5kU8kN6SlKnDt9Ru3Qp
-  sni: 202.146.222.89
-  skip-cert-verify: true
-  udp: true
-  name: 🇭🇰 香港节点 @zmxooo 04
-- type: hysteria2
-  server: 202.146.222.11
-  port: 443
-  password: qQe1z5kU8kN6SlKnDt9Ru3Qp
-  sni: 202.146.222.11
-  skip-cert-verify: true
-  udp: true
-  name: 🇭🇰 香港节点 @zmxooo 05
-- type: hysteria2
-  server: 202.146.222.29
-  port: 443
-  password: qQe1z5kU8kN6SlKnDt9Ru3Qp
-  sni: 202.146.222.29
-  skip-cert-verify: true
-  udp: true
-  name: 🇭🇰 香港节点 @zmxooo 06
-- type: hysteria2
-  server: 202.146.222.16
-  port: 443
-  password: qQe1z5kU8kN6SlKnDt9Ru3Qp
-  sni: 202.146.222.16
-  skip-cert-verify: true
-  udp: true
-  name: 🇭🇰 香港节点 @zmxooo 07
-- type: hysteria2
-  server: 202.146.222.85
-  port: 443
-  password: qQe1z5kU8kN6SlKnDt9Ru3Qp
-  sni: 202.146.222.85
-  skip-cert-verify: true
-  udp: true
-  name: 🇭🇰 香港节点 @zmxooo 08
-- type: hysteria2
-  server: 202.146.222.45
-  port: 443
-  password: qQe1z5kU8kN6SlKnDt9Ru3Qp
-  sni: 202.146.222.45
-  skip-cert-verify: true
-  udp: true
-  name: 🇭🇰 香港节点 @zmxooo 09
-- type: hysteria2
-  server: 160.187.100.109
-  port: 443
-  password: qQe1z5kU8kN6SlKnDt9Ru3Qp
-  sni: 160.187.100.109
-  skip-cert-verify: true
-  udp: true
-  name: 🇹🇼 台湾节点 @zmxooo 01
-- type: hysteria2
-  server: 43.200.123.45
-  port: 443
-  password: qQe1z5kU8kN6SlKnDt9Ru3Qp
-  sni: 43.200.123.45
-  skip-cert-verify: true
-  udp: true
-  name: 🇹🇼 台湾节点 @zmxooo 02
-- type: hysteria2
-  server: 23.144.12.162
-  port: 443
-  password: qQe1z5kU8kN6SlKnDt9Ru3Qp
-  sni: 23.144.12.162
-  skip-cert-verify: true
-  udp: true
-  name: 🇺🇸 美国节点 @zmxooo 01
-- type: vmess
-  server: 82.198.246.9
-  port: 180
-  uuid: d13fc2f5-3e05-4795-81eb-44143a09e552
-  alterId: 0
-  cipher: auto
-  tls: false
-  skip-cert-verify: true
-  udp: true
-  name: 🇬🇧 英国节点 @zmxooo 01
-- type: vmess
-  server: 82.198.246.233
-  port: 180
-  uuid: d13fc2f5-3e05-4795-81eb-44143a09e552
-  alterId: 0
-  cipher: auto
-  tls: false
-  skip-cert-verify: true
-  udp: true
-  name: 🇬🇧 英国节点 @zmxooo 02
-- type: vmess
-  server: 82.198.246.233
-  port: 180
-  uuid: d13fc2f5-3e05-4795-81eb-44143a09e552
-  alterId: 0
-  cipher: auto
-  tls: false
-  skip-cert-verify: true
-  udp: true
-  name: 🇬🇧 英国节点 @zmxooo 03
-- type: vmess
-  server: 82.198.246.9
-  port: 180
-  uuid: d13fc2f5-3e05-4795-81eb-44143a09e552
-  alterId: 0
-  cipher: auto
-  tls: false
-  skip-cert-verify: true
-  udp: true
-  name: 🇬🇧 英国节点 @zmxooo 04
-- type: vmess
-  server: 82.198.246.233
-  port: 180
-  uuid: d13fc2f5-3e05-4795-81eb-44143a09e552
-  alterId: 0
-  cipher: auto
-  tls: false
-  skip-cert-verify: true
-  udp: true
-  name: 🇬🇧 英国节点 @zmxooo 05
-- type: vmess
-  server: 82.198.246.37
-  port: 180
-  uuid: d13fc2f5-3e05-4795-81eb-44143a09e552
-  alterId: 0
-  cipher: auto
-  tls: false
-  skip-cert-verify: true
-  udp: true
-  name: 🇬🇧 英国节点 @zmxooo 06
-- type: vmess
-  server: 82.198.246.9
-  port: 180
-  uuid: d13fc2f5-3e05-4795-81eb-44143a09e552
-  alterId: 0
-  cipher: auto
-  tls: false
-  skip-cert-verify: true
-  udp: true
-  name: 🇬🇧 英国节点 @zmxooo 07
-- type: vmess
-  server: 82.198.246.214
-  port: 180
-  uuid: d13fc2f5-3e05-4795-81eb-44143a09e552
-  alterId: 0
-  cipher: auto
-  tls: false
-  skip-cert-verify: true
-  udp: true
-  name: 🇬🇧 英国节点 @zmxooo 08
-- type: vmess
-  server: 82.198.246.233
-  port: 180
-  uuid: d13fc2f5-3e05-4795-81eb-44143a09e552
-  alterId: 0
-  cipher: auto
-  tls: false
-  skip-cert-verify: true
-  udp: true
-  name: 🇬🇧 英国节点 @zmxooo 09
-- type: vmess
-  server: 82.198.246.250
-  port: 180
-  uuid: d13fc2f5-3e05-4795-81eb-44143a09e552
-  alterId: 0
-  cipher: auto
-  tls: false
-  skip-cert-verify: true
-  udp: true
-  name: 🇬🇧 英国节点 @zmxooo 10
-- type: vmess
-  server: 82.198.246.214
-  port: 180
-  uuid: d13fc2f5-3e05-4795-81eb-44143a09e552
-  alterId: 0
-  cipher: auto
-  tls: false
-  skip-cert-verify: true
-  udp: true
-  name: 🇬🇧 英国节点 @zmxooo 11
-- type: vmess
-  server: 82.198.246.214
-  port: 180
-  uuid: d13fc2f5-3e05-4795-81eb-44143a09e552
-  alterId: 0
-  cipher: auto
-  tls: false
-  skip-cert-verify: true
-  udp: true
-  name: 🇺🇸 美国节点 @zmxooo 02
-- type: vmess
-  server: 82.198.246.233
-  port: 180
-  uuid: d13fc2f5-3e05-4795-81eb-44143a09e552
-  alterId: 0
-  cipher: auto
-  tls: false
-  skip-cert-verify: true
-  udp: true
-  name: 🇺🇸 美国节点 @zmxooo 03
-- type: vmess
-  server: 82.198.246.9
-  port: 180
-  uuid: d13fc2f5-3e05-4795-81eb-44143a09e552
-  alterId: 0
-  cipher: auto
-  tls: false
-  skip-cert-verify: true
-  udp: true
-  name: 🇺🇸 美国节点 @zmxooo 04
-- type: vmess
-  server: 82.198.246.37
-  port: 180
-  uuid: d13fc2f5-3e05-4795-81eb-44143a09e552
-  alterId: 0
-  cipher: auto
-  tls: false
-  skip-cert-verify: true
-  udp: true
-  name: 🇺🇸 美国节点 @zmxooo 05
-- type: ss
-  server: 103.186.155.79
-  port: 38388
-  cipher: aes-256-cfb
-  password: Xn8jKdmDM00IeO%#$#fJAMtsEAEUOpH/YWYtYqDFnT0SV
-  udp: true
-  name: 🇻🇳 越南节点 @zmxooo 01
-- type: ss
-  server: 103.186.155.75
-  port: 38388
-  cipher: aes-256-cfb
-  password: Xn8jKdmDM00IeO%#$#fJAMtsEAEUOpH/YWYtYqDFnT0SV
-  udp: true
-  name: 🇻🇳 越南节点 @zmxooo 02
-- type: ss
-  server: 103.186.155.109
-  port: 38388
-  cipher: aes-256-cfb
-  password: Xn8jKdmDM00IeO%#$#fJAMtsEAEUOpH/YWYtYqDFnT0SV
-  udp: true
-  name: 🇻🇳 越南节点 @zmxooo 03
-- type: ss
-  server: 103.186.155.8
-  port: 38388
-  cipher: aes-256-cfb
-  password: Xn8jKdmDM00IeO%#$#fJAMtsEAEUOpH/YWYtYqDFnT0SV
-  udp: true
-  name: 🇻🇳 越南节点 @zmxooo 04
-- type: ss
-  server: 103.186.155.49
-  port: 38388
-  cipher: aes-256-cfb
-  password: Xn8jKdmDM00IeO%#$#fJAMtsEAEUOpH/YWYtYqDFnT0SV
-  udp: true
-  name: 🇻🇳 越南节点 @zmxooo 05
-- type: ss
-  server: 34.229.121.217
-  port: 80
-  cipher: aes-256-gcm
-  password: dada1203
-  udp: true
-  name: 🇺🇸 美国节点 @zmxooo 06
-- type: ss
-  server: 3.137.174.85
-  port: 443
-  cipher: aes-256-cfb
-  password: amazonskr05
-  udp: true
-  name: 🇺🇸 美国节点 @zmxooo 07
-- type: ss
-  server: 3.144.123.157
-  port: 443
-  cipher: aes-256-cfb
-  password: amazonskr05
-  udp: true
-  name: 🇺🇸 美国节点 @zmxooo 08
-- type: hysteria2
-  server: vpn-kr-003.fastervpn.world
-  port: 443
-  password: qQe1z5kU8kN6SlKnDt9Ru3Qp
-  sni: vpn-kr-003.fastervpn.world
-  skip-cert-verify: true
-  udp: true
-  name: 🇰🇷 韩国节点 @zmxooo 01
-- type: hysteria2
-  server: 5.83.129.90
-  port: 54177
-  password: ''
-  sni: 5.83.129.90
-  skip-cert-verify: true
-  udp: true
-  name: 🌍 德国 @zmxooo 01
-- type: vmess
-  server: v13.zgtfqs.click
-  port: 30813
-  uuid: cbb3f877-d1fb-344c-87a9-d153bffd5484
-  alterId: 0
-  cipher: auto
-  tls: false
-  skip-cert-verify: true
-  udp: true
-  name: 🇹🇼 台湾节点 @zmxooo 03
-- type: vmess
-  server: v11.zgtfqs.click
-  port: 30811
-  uuid: cbb3f877-d1fb-344c-87a9-d153bffd5484
-  alterId: 0
-  cipher: auto
-  tls: false
-  skip-cert-verify: true
-  udp: true
-  name: 🇹🇼 台湾节点 @zmxooo 04
-- type: vmess
-  server: 103.127.243.55
-  port: 58051
-  uuid: 8e5b521a-4a56-4bd7-baf1-bfcdf55d6cf1
-  alterId: 0
-  cipher: auto
-  tls: false
-  skip-cert-verify: true
-  udp: true
-  name: 🇯🇵 日本节点 @zmxooo 01
-- type: ss
-  server: 103.186.155.75
-  port: 38388
-  cipher: aes-256-cfb
-  password: Xn8jKdmDM00IeO%#$#fJAMtsEAEUOpH/YWYtYqDFnT0SV
-  udp: true
-  name: 🇻🇳 越南节点 @zmxooo 06
-- type: trojan
-  server: 172.66.44.230
-  port: 8443
-  password: 8r%3C%5B9%27l6hAO%238ZQi
-  sni: Koma-YT.PAGeS.Dev
-  tls: true
-  skip-cert-verify: true
-  udp: true
-  name: 🇺🇸 美国节点 @zmxooo 09
-- type: trojan
-  server: 220.118.248.123
-  port: 18001
-  password: 8r%3C%5B9%27l6hAO%238ZQi
-  sni: Koma-YT.PAGeS.Dev
-  tls: true
-  skip-cert-verify: true
-  udp: true
-  name: 🇰🇷 韩国节点 @zmxooo 02
-- type: trojan
-  server: 183.107.78.213
-  port: 20880
-  password: 8r%3C%5B9%27l6hAO%238ZQi
-  sni: Koma-YT.PAGeS.Dev
-  tls: true
-  skip-cert-verify: true
-  udp: true
-  name: 🇰🇷 韩国节点 @zmxooo 03
-- type: trojan
-  server: 59.16.228.103
-  port: 18469
-  password: 8r%3C%5B9%27l6hAO%238ZQi
-  sni: Koma-YT.PAGeS.Dev
-  tls: true
-  skip-cert-verify: true
-  udp: true
-  name: 🇰🇷 韩国节点 @zmxooo 04
-- type: trojan
-  server: 59.0.95.106
-  port: 32773
-  password: 8r%3C%5B9%27l6hAO%238ZQi
-  sni: Koma-YT.PAGeS.Dev
-  tls: true
-  skip-cert-verify: true
-  udp: true
-  name: 🇰🇷 韩国节点 @zmxooo 05
-- type: trojan
-  server: 59.12.232.18
-  port: 12345
-  password: 8r%3C%5B9%27l6hAO%238ZQi
-  sni: Koma-YT.PAGeS.Dev
-  tls: true
-  skip-cert-verify: true
-  udp: true
-  name: 🇰🇷 韩国节点 @zmxooo 06
-- type: vmess
-  server: 82.198.246.9
-  port: 180
-  uuid: d13fc2f5-3e05-4795-81eb-44143a09e552
-  alterId: 0
-  cipher: auto
-  tls: false
-  skip-cert-verify: true
-  udp: true
-  name: 🇺🇸 美国节点 @zmxooo 10
-- type: vmess
-  server: 82.198.246.37
-  port: 180
-  uuid: d13fc2f5-3e05-4795-81eb-44143a09e552
-  alterId: 0
-  cipher: auto
-  tls: false
-  skip-cert-verify: true
-  udp: true
-  name: 🇺🇸 美国节点 @zmxooo 11
-- type: vmess
-  server: 82.198.246.233
-  port: 180
-  uuid: d13fc2f5-3e05-4795-81eb-44143a09e552
-  alterId: 0
-  cipher: auto
-  tls: false
-  skip-cert-verify: true
-  udp: true
-  name: 🇺🇸 美国节点 @zmxooo 12
-- type: vmess
-  server: 82.198.246.233
-  port: 180
-  uuid: d13fc2f5-3e05-4795-81eb-44143a09e552
-  alterId: 0
-  cipher: auto
-  tls: false
-  skip-cert-verify: true
-  udp: true
-  name: 🇺🇸 美国节点 @zmxooo 13
-- type: ss
-  server: 3.137.174.85
-  port: 443
-  cipher: aes-256-cfb
-  password: amazonskr05
-  udp: true
-  name: 🇺🇸 美国节点 @zmxooo 14
-- type: ss
-  server: 82.38.31.155
-  port: 8080
-  cipher: chacha20-ietf-poly1305
-  password: oZIoA69Q8yhcQV8ka3Pa3A
-  udp: true
-  name: 🇬🇧 英国节点 @zmxooo 12
-- type: ss
-  server: 82.38.31.35
-  port: 8080
-  cipher: chacha20-ietf-poly1305
-  password: oZIoA69Q8yhcQV8ka3Pa3A
-  udp: true
-  name: 🇬🇧 英国节点 @zmxooo 13
-- type: trojan
-  server: lt-sin.ltdns.top
-  port: 37043
-  password: abb011d5-2749-4fba-9a66-0eb7b1b14d1e
-  sni: ://ithome.com
-  tls: true
-  skip-cert-verify: true
-  udp: true
-  name: 🇱🇹 立陶宛节点 @zmxooo 01
-- type: vmess
-  server: 82.198.246.214
-  port: 180
-  uuid: d13fc2f5-3e05-4795-81eb-44143a09e552
-  alterId: 0
-  cipher: auto
-  tls: false
-  skip-cert-verify: true
-  udp: true
-  name: 🇺🇸 美国节点 @zmxooo 15
-- type: vmess
-  server: 82.198.246.37
-  port: 180
-  uuid: d13fc2f5-3e05-4795-81eb-44143a09e552
-  alterId: 0
-  cipher: auto
-  tls: false
-  skip-cert-verify: true
-  udp: true
-  name: 🇺🇸 美国节点 @zmxooo 16
-- type: vmess
-  server: 82.198.246.233
-  port: 180
-  uuid: d13fc2f5-3e05-4795-81eb-44143a09e552
-  alterId: 0
-  cipher: auto
-  tls: false
-  skip-cert-verify: true
-  udp: true
-  name: 🇺🇸 美国节点 @zmxooo 17
-- name: Direct
-  type: direct
-proxy-groups:
-- name: 🚀 节点选择
-  type: select
-  proxies:
-  - ⚡ 自动选择
-  - ☢ 负载均衡
-  - 🇭🇰 香港节点
-  - 🇹🇼 台湾节点
-  - 🇺🇸 美国节点
-  - 🇬🇧 英国节点
-  - 🇻🇳 越南节点
-  - 🇰🇷 韩国节点
-  - 🌍 德国
-  - 🇯🇵 日本节点
-  - 🇱🇹 立陶宛节点
-  - Direct
-- name: ⚡ 自动选择
-  type: url-test
-  url: http://www.gstatic.com/generate_204
-  interval: 300
-  proxies: &id001
-  - 🇭🇰 香港节点 @zmxooo 01
-  - 🇭🇰 香港节点 @zmxooo 02
-  - 🇭🇰 香港节点 @zmxooo 03
-  - 🇭🇰 香港节点 @zmxooo 04
-  - 🇭🇰 香港节点 @zmxooo 05
-  - 🇭🇰 香港节点 @zmxooo 06
-  - 🇭🇰 香港节点 @zmxooo 07
-  - 🇭🇰 香港节点 @zmxooo 08
-  - 🇭🇰 香港节点 @zmxooo 09
-  - 🇹🇼 台湾节点 @zmxooo 01
-  - 🇹🇼 台湾节点 @zmxooo 02
-  - 🇺🇸 美国节点 @zmxooo 01
-  - 🇬🇧 英国节点 @zmxooo 01
-  - 🇬🇧 英国节点 @zmxooo 02
-  - 🇬🇧 英国节点 @zmxooo 03
-  - 🇬🇧 英国节点 @zmxooo 04
-  - 🇬🇧 英国节点 @zmxooo 05
-  - 🇬🇧 英国节点 @zmxooo 06
-  - 🇬🇧 英国节点 @zmxooo 07
-  - 🇬🇧 英国节点 @zmxooo 08
-  - 🇬🇧 英国节点 @zmxooo 09
-  - 🇬🇧 英国节点 @zmxooo 10
-  - 🇬🇧 英国节点 @zmxooo 11
-  - 🇺🇸 美国节点 @zmxooo 02
-  - 🇺🇸 美国节点 @zmxooo 03
-  - 🇺🇸 美国节点 @zmxooo 04
-  - 🇺🇸 美国节点 @zmxooo 05
-  - 🇻🇳 越南节点 @zmxooo 01
-  - 🇻🇳 越南节点 @zmxooo 02
-  - 🇻🇳 越南节点 @zmxooo 03
-  - 🇻🇳 越南节点 @zmxooo 04
-  - 🇻🇳 越南节点 @zmxooo 05
-  - 🇺🇸 美国节点 @zmxooo 06
-  - 🇺🇸 美国节点 @zmxooo 07
-  - 🇺🇸 美国节点 @zmxooo 08
-  - 🇰🇷 韩国节点 @zmxooo 01
-  - 🌍 德国 @zmxooo 01
-  - 🇹🇼 台湾节点 @zmxooo 03
-  - 🇹🇼 台湾节点 @zmxooo 04
-  - 🇯🇵 日本节点 @zmxooo 01
-  - 🇻🇳 越南节点 @zmxooo 06
-  - 🇺🇸 美国节点 @zmxooo 09
-  - 🇰🇷 韩国节点 @zmxooo 02
-  - 🇰🇷 韩国节点 @zmxooo 03
-  - 🇰🇷 韩国节点 @zmxooo 04
-  - 🇰🇷 韩国节点 @zmxooo 05
-  - 🇰🇷 韩国节点 @zmxooo 06
-  - 🇺🇸 美国节点 @zmxooo 10
-  - 🇺🇸 美国节点 @zmxooo 11
-  - 🇺🇸 美国节点 @zmxooo 12
-  - 🇺🇸 美国节点 @zmxooo 13
-  - 🇺🇸 美国节点 @zmxooo 14
-  - 🇬🇧 英国节点 @zmxooo 12
-  - 🇬🇧 英国节点 @zmxooo 13
-  - 🇱🇹 立陶宛节点 @zmxooo 01
-  - 🇺🇸 美国节点 @zmxooo 15
-  - 🇺🇸 美国节点 @zmxooo 16
-  - 🇺🇸 美国节点 @zmxooo 17
-- name: ☢ 负载均衡
-  type: load-balance
-  strategy: consistent-hashing
-  url: http://www.gstatic.com/generate_204
-  interval: 300
-  proxies: *id001
-- name: 📹 YouTube
-  type: select
-  proxies:
-  - 🚀 节点选择
-  - 🇭🇰 香港节点
-  - 🇹🇼 台湾节点
-  - 🇺🇸 美国节点
-  - 🇬🇧 英国节点
-  - 🇻🇳 越南节点
-  - 🇰🇷 韩国节点
-  - 🌍 德国
-  - 🇯🇵 日本节点
-  - 🇱🇹 立陶宛节点
-- name: 📲 Telegram
-  type: select
-  proxies:
-  - 🚀 节点选择
-- name: 🤖 AI
-  type: select
-  proxies:
-  - 🚀 节点选择
-- name: 📹 哔哩哔哩
-  type: select
-  proxies:
-  - Direct
-- name: 🎥 Netflix
-  type: select
-  proxies:
-  - 🚀 节点选择
-- name: 🇭🇰 香港节点
-  type: url-test
-  url: http://www.gstatic.com/generate_204
-  interval: 300
-  proxies:
-  - 🇭🇰 香港节点 @zmxooo 01
-  - 🇭🇰 香港节点 @zmxooo 02
-  - 🇭🇰 香港节点 @zmxooo 03
-  - 🇭🇰 香港节点 @zmxooo 04
-  - 🇭🇰 香港节点 @zmxooo 05
-  - 🇭🇰 香港节点 @zmxooo 06
-  - 🇭🇰 香港节点 @zmxooo 07
-  - 🇭🇰 香港节点 @zmxooo 08
-  - 🇭🇰 香港节点 @zmxooo 09
-- name: 🇹🇼 台湾节点
-  type: url-test
-  url: http://www.gstatic.com/generate_204
-  interval: 300
-  proxies:
-  - 🇹🇼 台湾节点 @zmxooo 01
-  - 🇹🇼 台湾节点 @zmxooo 02
-  - 🇹🇼 台湾节点 @zmxooo 03
-  - 🇹🇼 台湾节点 @zmxooo 04
-- name: 🇺🇸 美国节点
-  type: url-test
-  url: http://www.gstatic.com/generate_204
-  interval: 300
-  proxies:
-  - 🇺🇸 美国节点 @zmxooo 01
-  - 🇺🇸 美国节点 @zmxooo 02
-  - 🇺🇸 美国节点 @zmxooo 03
-  - 🇺🇸 美国节点 @zmxooo 04
-  - 🇺🇸 美国节点 @zmxooo 05
-  - 🇺🇸 美国节点 @zmxooo 06
-  - 🇺🇸 美国节点 @zmxooo 07
-  - 🇺🇸 美国节点 @zmxooo 08
-  - 🇺🇸 美国节点 @zmxooo 09
-  - 🇺🇸 美国节点 @zmxooo 10
-  - 🇺🇸 美国节点 @zmxooo 11
-  - 🇺🇸 美国节点 @zmxooo 12
-  - 🇺🇸 美国节点 @zmxooo 13
-  - 🇺🇸 美国节点 @zmxooo 14
-  - 🇺🇸 美国节点 @zmxooo 15
-  - 🇺🇸 美国节点 @zmxooo 16
-  - 🇺🇸 美国节点 @zmxooo 17
-- name: 🇬🇧 英国节点
-  type: url-test
-  url: http://www.gstatic.com/generate_204
-  interval: 300
-  proxies:
-  - 🇬🇧 英国节点 @zmxooo 01
-  - 🇬🇧 英国节点 @zmxooo 02
-  - 🇬🇧 英国节点 @zmxooo 03
-  - 🇬🇧 英国节点 @zmxooo 04
-  - 🇬🇧 英国节点 @zmxooo 05
-  - 🇬🇧 英国节点 @zmxooo 06
-  - 🇬🇧 英国节点 @zmxooo 07
-  - 🇬🇧 英国节点 @zmxooo 08
-  - 🇬🇧 英国节点 @zmxooo 09
-  - 🇬🇧 英国节点 @zmxooo 10
-  - 🇬🇧 英国节点 @zmxooo 11
-  - 🇬🇧 英国节点 @zmxooo 12
-  - 🇬🇧 英国节点 @zmxooo 13
-- name: 🇻🇳 越南节点
-  type: url-test
-  url: http://www.gstatic.com/generate_204
-  interval: 300
-  proxies:
-  - 🇻🇳 越南节点 @zmxooo 01
-  - 🇻🇳 越南节点 @zmxooo 02
-  - 🇻🇳 越南节点 @zmxooo 03
-  - 🇻🇳 越南节点 @zmxooo 04
-  - 🇻🇳 越南节点 @zmxooo 05
-  - 🇻🇳 越南节点 @zmxooo 06
-- name: 🇰🇷 韩国节点
-  type: url-test
-  url: http://www.gstatic.com/generate_204
-  interval: 300
-  proxies:
-  - 🇰🇷 韩国节点 @zmxooo 01
-  - 🇰🇷 韩国节点 @zmxooo 02
-  - 🇰🇷 韩国节点 @zmxooo 03
-  - 🇰🇷 韩国节点 @zmxooo 04
-  - 🇰🇷 韩国节点 @zmxooo 05
-  - 🇰🇷 韩国节点 @zmxooo 06
-- name: 🌍 德国
-  type: url-test
-  url: http://www.gstatic.com/generate_204
-  interval: 300
-  proxies:
-  - 🌍 德国 @zmxooo 01
-- name: 🇯🇵 日本节点
-  type: url-test
-  url: http://www.gstatic.com/generate_204
-  interval: 300
-  proxies:
-  - 🇯🇵 日本节点 @zmxooo 01
-- name: 🇱🇹 立陶宛节点
-  type: url-test
-  url: http://www.gstatic.com/generate_204
-  interval: 300
-  proxies:
-  - 🇱🇹 立陶宛节点 @zmxooo 01
-rules:
-- DOMAIN-SUFFIX,youtube.com,📹 YouTube
-- DOMAIN-SUFFIX,googlevideo.com,📹 YouTube
-- DOMAIN-SUFFIX,telegram.org,📲 Telegram
-- DOMAIN-KEYWORD,telegram,📲 Telegram
-- DOMAIN-KEYWORD,openai,🤖 AI
-- DOMAIN-SUFFIX,chatgpt.com,🤖 AI
-- DOMAIN-SUFFIX,bilibili.com,📹 哔哩哔哩
-- DOMAIN-SUFFIX,netflix.com,🎥 Netflix
-- GEOIP,CN,Direct
-- MATCH,🚀 节点选择
+import base64
+import json
+import yaml
+import urllib.parse
+import os
+import re
+import requests
+import time
+from collections import defaultdict
+
+# --- 配置区 ---
+CHANNEL_MARK = "@zmxooo"
+TEST_URL = "http://gstatic.com"
+IP_CACHE = {}
+
+# 常用图标映射
+EMOJI_MAP = {
+    "香港": "🇭🇰", "台湾": "🇹🇼", "美国": "🇺🇸", "英国": "🇬🇧", "韩国": "🇰🇷", 
+    "日本": "🇯🇵", "新加坡": "🇸🇬", "越南": "🇻🇳", "立陶宛": "🇱🇹", "科威特": "🇰🇼",
+    "德国": "🇩🇪", "法国": "🇫🇷", "俄罗斯": "🇷🇺", "中国": "🇨🇳", "加拿大": "🇨🇦"
+}
+
+def get_final_label(server, remarks):
+    """
+    国家识别逻辑：优先正则匹配备注，其次查询 IP 库
+    """
+    text = urllib.parse.unquote(str(remarks)).lower().strip()
+    meta = [
+        ("香港", r"hk|香港|hongkong"), ("台湾", r"tw|台湾|台灣|taiwan"), 
+        ("美国", r"us|美国|美國|united states"), ("英国", r"gb|uk|英国|英國"), 
+        ("韩国", r"kr|韩国|韓國|korea"), ("日本", r"jp|日本|japan"),
+        ("新加坡", r"sg|新加坡|singapore"), ("越南", r"vn|越南|vietnam"), 
+        ("科威特", r"kw|科威特|kuwait"), ("德国", r"de|德国|germany"),
+        ("立陶宛", r"lt|立陶宛|lithuania")
+    ]
+    for name, pattern in meta:
+        if re.search(pattern, text): 
+            return f"{EMOJI_MAP.get(name, '🌍')} {name}"
+    
+    if server in IP_CACHE: return IP_CACHE[server]
+
+    try:
+        # 限制请求频率，防止被 API 封锁
+        time.sleep(0.1) 
+        response = requests.get(f"http://ip-api.com/json/{server}?lang=zh-CN", timeout=5).json()
+        if response.get("status") == "success":
+            country = response.get("country")
+            label = f"{EMOJI_MAP.get(country, '🌍')} {country}"
+            IP_CACHE[server] = label
+            return label
+    except:
+        pass
+    return "🧿 其它地区"
+
+def fix_base64(s):
+    """
+    修正 Base64 格式：去除空白符并自动补齐等号
+    """
+    if not s: return ""
+    s = "".join(s.split()) # 移除换行、空格
+    return s + '=' * (-len(s) % 4)
+
+def rebuild_node(link, new_name):
+    """
+    重构节点：剥离一切原始信息，强制使用标准格式和新命名
+    """
+    try:
+        # --- VMess 协议重构 ---
+        if link.startswith('vmess://'):
+            b64_part = link[8:].split('#')[0]
+            decoded_bytes = base64.b64decode(fix_base64(b64_part))
+            d = json.loads(decoded_bytes.decode('utf-8', 'ignore'))
+            
+            # 1. 识别国家（用于返回 label）
+            label = get_final_label(d.get("add"), d.get("ps", ""))
+            
+            # 2. 构建纯净版 VMess 字典，强制 v=2 和 ps=new_name
+            std_vmess = {
+                "v": "2",
+                "ps": new_name,
+                "add": str(d.get("add", "")).strip(),
+                "port": str(d.get("port", "443")),
+                "id": str(d.get("id", "")).strip(),
+                "aid": str(d.get("aid", "0")),
+                "scy": d.get("scy", "auto"),
+                "net": d.get("net", "tcp"),
+                "type": d.get("type", "none"),
+                "host": d.get("host", ""),
+                "path": d.get("path", ""),
+                "tls": d.get("tls", ""),
+                "sni": d.get("sni", ""),
+                "alpn": d.get("alpn", "")
+            }
+            
+            # 3. 生成 Clash 节点对象
+            proxy = {
+                "name": new_name,
+                "type": "vmess",
+                "server": std_vmess["add"],
+                "port": int(std_vmess["port"]),
+                "uuid": std_vmess["id"],
+                "alterId": int(std_vmess["aid"]),
+                "cipher": "auto",
+                "tls": True if str(std_vmess["tls"]).lower() in ["tls", "1", "true"] else False,
+                "skip-cert-verify": True,
+                "network": std_vmess["net"]
+            }
+            # 处理传输层配置
+            if proxy["network"] == "ws":
+                proxy["ws-opts"] = {"path": std_vmess["path"], "headers": {"Host": std_vmess["host"]}}
+            elif proxy["network"] == "grpc":
+                proxy["grpc-opts"] = {"grpc-service-name": std_vmess["path"]}
+
+            # 4. 生成通用链接 (Base64)
+            new_json_str = json.dumps(std_vmess, separators=(',', ':'), ensure_ascii=False)
+            new_b64 = base64.b64encode(new_json_str.encode('utf-8')).decode('utf-8')
+            return label, proxy, f"vmess://{new_b64}"
+
+        # --- 其他协议 (Hysteria2 / SS / Trojan / VLESS) 重构 ---
+        elif "://" in link:
+            # 1. 彻底切断原始备注 (# 之后的内容)
+            base_url = link.split('#')[0].strip()
+            old_remarks = urllib.parse.unquote(link.split('#')[1]) if '#' in link else ""
+            
+            # 2. 识别国家
+            u = urllib.parse.urlparse(link)
+            label = get_final_label(u.hostname, old_remarks)
+            
+            # 3. 构建 Clash 对象 (简易版，直接存 link)
+            proxy = {"name": new_name, "type": "other", "link": link}
+            
+            # 4. 生成通用链接：地址 + URL 编码后的新名字
+            safe_name = urllib.parse.quote(new_name)
+            return label, proxy, f"{base_url}#{safe_name}"
+
+    except Exception:
+        return None, None, None
+
+def main():
+    if not os.path.exists('nodes.txt'):
+        print("❌ 未找到 nodes.txt")
+        return
+
+    # 读取并初步清洗链接
+    with open('nodes.txt', 'r', encoding='utf-8') as f:
+        # 只保留包含协议头的行，并去重
+        raw_links = list(dict.fromkeys([l.strip() for l in f if "://" in l]))
+
+    region_map = defaultdict(list)
+    clash_proxies = []
+    rocket_links = []
+
+    print("开始处理节点...")
+
+    # 第一轮：预解析，确定国家并分配编号
+    node_previews = []
+    for l in raw_links:
+        # 这里仅为了获取国家 label
+        if l.startswith('vmess://'):
+            try:
+                b64 = l[8:].split('#')[0]
+                d = json.loads(base64.b64decode(fix_base64(b64)).decode('utf-8', 'ignore'))
+                lbl = get_final_label(d.get("add"), d.get("ps", ""))
+            except: continue
+        else:
+            u = urllib.parse.urlparse(l)
+            rem = l.split('#')[1] if '#' in l else ""
+            lbl = get_final_label(u.hostname, rem)
+        
+        node_previews.append((l, lbl))
+
+    # 第二轮：正式生成重构后的数据
+    for l, lbl in node_previews:
+        idx = len(region_map[lbl]) + 1
+        new_name = f"{lbl} {idx:02d} {CHANNEL_MARK}"
+        
+        label, proxy, r_link = rebuild_node(l, new_name)
+        if proxy and r_link:
+            region_map[label].append(new_name)
+            clash_proxies.append(proxy)
+            rocket_links.append(r_link)
+
+    # 导出 index.html (通用 Base64 订阅)
+    if rocket_links:
+        with open('index.html', 'w', encoding='utf-8') as f:
+            sub_text = "\n".join(rocket_links)
+            f.write(base64.b64encode(sub_text.encode('utf-8')).decode('utf-8'))
+
+    # 导出 clash_config.yaml
+    if clash_proxies:
+        active_regions = list(region_map.keys())
+        # 构建分组
+        groups = [
+            {"name": "🚀 节点选择", "type": "select", "proxies": ["🎬 自动选择"] + active_regions + ["DIRECT"]},
+            {"name": "🎬 自动选择", "type": "url-test", "url": TEST_URL, "interval": 300, "proxies": [p['name'] for p in clash_proxies]}
+        ]
+        for r in active_regions:
+            groups.append({"name": r, "type": "url-test", "url": TEST_URL, "interval": 300, "proxies": region_map[r]})
+
+        config = {
+            "mixed-port": 7890,
+            "allow-lan": True,
+            "mode": "rule",
+            "proxies": clash_proxies,
+            "proxy-groups": groups,
+            "rules": ["MATCH,🚀 节点选择"]
+        }
+        with open('clash_config.yaml', 'w', encoding='utf-8') as f:
+            yaml.dump(config, f, allow_unicode=True, sort_keys=False)
+
+    print(f"✅ 处理完成！成功生成 {len(rocket_links)} 个节点。")
+
+if __name__ == "__main__":
+    main()
