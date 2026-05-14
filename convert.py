@@ -31,7 +31,10 @@ def parse_vmess_b64(b64_part):
     padding = len(b64_part) % 4
     if padding:
         b64_part += "=" * (4 - padding)
-    return base64.b64decode(b64_part)
+    try:
+        return base64.b64decode(b64_part)
+    except:
+        return b""
 
 def get_final_label(server: str, remarks: str = "") -> str:
     """国家/地区识别：优先正则规则，其次调用开源 IP 库 API 纠正"""
@@ -71,19 +74,22 @@ def get_final_label(server: str, remarks: str = "") -> str:
     return "🧿 其他地区"
 
 def parse_link(link: str):
-    """使用标准 URL 状态机解析协议，杜绝由于切片导致的协议头识别错误"""
+    """【防错升级】引入安全机制解包，对解析中发生的异常协议强制剔除"""
     try:
         link = link.strip()
         if not link or link.startswith(('import', 'def', '#', 'git')):
             return None
 
         # 优先剥离备注别名
-        raw_url = link.split('#')[0]
-        raw_ps = urllib.parse.unquote(link.split('#')[1]) if '#' in link else ""
+        parts = link.split('#', 1)
+        raw_url = parts[0]
+        raw_ps = urllib.parse.unquote(parts[1]) if len(parts) > 1 else ""
 
         if raw_url.startswith('vmess://'):
             b64_part = raw_url[8:]
             raw_data = parse_vmess_b64(b64_part)
+            if not raw_data:
+                return None
             data = json.loads(raw_data.decode('utf-8', 'ignore'))
             return {
                 "label": get_final_label(data.get("add"), data.get("ps")),
@@ -101,8 +107,10 @@ def parse_link(link: str):
         if proto not in SUPPORTED_TYPES:
             return None
 
+        # 提取更干净的主机名（过滤自带的端口干扰）
+        hostname = parsed.hostname or parsed.netloc.split('@')[-1].split(':')[0]
         return {
-            "label": get_final_label(parsed.hostname or "", raw_ps),
+            "label": get_final_label(hostname, raw_ps),
             "type": proto, 
             "link": link
         }
@@ -110,7 +118,7 @@ def parse_link(link: str):
         return None
 
 def clean_clash_proxy(p, new_name):
-    """交叉双向白名单过滤清洗锁，从源头上抹杀 type: other 异常脏数据"""
+    """【类型防错锁】强制所有端口转型为 int，重构安全型 SS 双轨解析层"""
     if not p or p.get("type") not in SUPPORTED_TYPES:
         return None
 
@@ -121,7 +129,7 @@ def clean_clash_proxy(p, new_name):
                 "name": new_name,
                 "type": "vmess",
                 "server": data.get("add"),
-                "port": int(data.get("port", 443)),
+                "port": int(data.get("port", 443)), # 强锁整型
                 "uuid": data.get("id"),
                 "alterId": int(data.get("aid", 0)),
                 "cipher": "auto",
@@ -131,39 +139,52 @@ def clean_clash_proxy(p, new_name):
                 "udp": True
             }
         
-        raw_url = p['link'].split('#')[0]
+        parts = p['link'].split('#', 1)
+        raw_url = parts[0]
         parsed = urllib.parse.urlparse(raw_url)
         queries = dict(urllib.parse.parse_qsl(parsed.query))
+
+        # 稳健提取端口，避免 null 的发生
+        try:
+            port_val = int(parsed.port) if parsed.port else int(parsed.netloc.split(':')[-1].split('?')[0])
+        except:
+            port_val = 443
+
+        hostname = parsed.hostname or parsed.netloc.split('@')[-1].split(':')[0]
 
         item = {
             "name": new_name,
             "type": p["type"],
-            "server": parsed.hostname,
-            "port": parsed.port if parsed.port else 443,
+            "server": hostname,
+            "port": port_val,
             "udp": True
         }
 
         if p['type'] == "ss":
-            if parsed.username:
-                item.update({"cipher": parsed.username, "password": parsed.password or ""})
+            if parsed.username and parsed.password:
+                item.update({"cipher": parsed.username, "password": parsed.password})
             else:
+                # 触发高级 SS 模块防崩溃：解决 Base64 旧合并包解密
+                userinfo_encoded = parsed.netloc.split('@')[0]
                 try:
-                    user_info = parse_vmess_b64(parsed.netloc.split('@')[0]).decode('utf-8', 'ignore')
+                    user_info = parse_vmess_b64(userinfo_encoded).decode('utf-8', 'ignore')
                     if ':' in user_info:
                         item["cipher"], item["password"] = user_info.split(':', 1)
+                    else:
+                        item.update({"cipher": "aes-256-gcm", "password": userinfo_encoded})
                 except:
-                    item.update({"cipher": "aes-256-gcm", "password": parsed.netloc.split('@')[0]})
+                    item.update({"cipher": "aes-256-gcm", "password": userinfo_encoded})
             
         elif p['type'] == "trojan":
             item.update({
-                "password": parsed.username or "",
-                "sni": queries.get("sni", parsed.hostname),
+                "password": parsed.username or parsed.netloc.split('@')[0],
+                "sni": queries.get("sni", hostname),
                 "skip-cert-verify": True
             })
 
         elif p['type'] == "vless":
             item.update({
-                "uuid": parsed.username or "",
+                "uuid": parsed.username or parsed.netloc.split('@')[0],
                 "cipher": "auto",
                 "tls": True if (queries.get("security") == "tls" or "tls" in p['link']) else False,
                 "network": queries.get("type", "tcp")
@@ -178,12 +199,12 @@ def clean_clash_proxy(p, new_name):
 
         elif p['type'] == "hysteria2":
             item.update({
-                "password": parsed.username or "",  
-                "sni": queries.get("sni", parsed.hostname),
+                "password": parsed.username or parsed.netloc.split('@')[0],  
+                "sni": queries.get("sni", hostname),
                 "skip-cert-verify": True
             })
             
-        if not item.get("server") or not item.get("type"):
+        if not item.get("server") or not item.get("type") or not item.get("port"):
             return None
             
         return item
@@ -193,7 +214,7 @@ def clean_clash_proxy(p, new_name):
 # ==================== 主程序 ====================
 def main():
     if not os.path.exists('nodes.txt'):
-        print("❌ 核心致命错误：未能在当前工作路径下寻找到源节点文件 nodes.txt")
+        print("❌ 核心致命错误：未能在当前工作路径下寻寻找源节点文件 nodes.txt")
         return
 
     with open('nodes.txt', 'r', encoding='utf-8', errors='ignore') as f:
@@ -211,7 +232,7 @@ def main():
     clash_proxies = []
     rocket_links = []
 
-    print(f"🔄 成功加载 {len(unique_links)} 条非重复链路，启动安全提纯清洗机制...")
+    print(f"🔄 成功加载 {len(unique_links)} 条非重复链路，启动精细提纯清洗层...")
 
     for link in unique_links:
         p = parse_link(link)
@@ -304,7 +325,6 @@ def main():
             ]
         }
         
-        # 💡 已锁定修改：将输出文件名直接锁定对接你仓库里的 config.yaml
         with open('config.yaml', 'w', encoding='utf-8') as f:
             yaml.dump(clash_config, f, allow_unicode=True, sort_keys=False, default_flow_style=False)
         print("   -> [OK] 真实有效的标准核心 config.yaml 覆写成功。")
