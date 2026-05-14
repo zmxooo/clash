@@ -70,6 +70,7 @@ def parse_link(link: str):
             return None
 
         if link.startswith('vmess://'):
+            # 使用第一份代码的截取方式
             b64_part = link[8:].split('#')[0]
             raw_data = parse_vmess_b64(b64_part)
             data = json.loads(raw_data.decode('utf-8', 'ignore'))
@@ -80,24 +81,20 @@ def parse_link(link: str):
                 "original_remarks": data.get("ps", "")
             }
             
+        # 💡 这里直接粘贴后一份脚本中对非 vmess 的支持前缀
         elif link.startswith(('ss://', 'trojan://', 'vless://', 'hysteria2://', 'hy2://')):
             u = urllib.parse.urlparse(link)
             raw_ps = urllib.parse.unquote(u.fragment) if u.fragment else ""
             
-            server_host = u.hostname
-            if not server_host and '@' in link:
-                server_host = link.split('@')[1].split(':')[0].split('/')[0].split('?')[0].split('#')[0]
-            elif not server_host:
-                server_host = link.split('://')[1].split(':')[0].split('/')[0].split('?')[0].split('#')[0]
-                
+            # 💡 纯粹复制：直接粘过来获取真实协议名的逻辑
             proto = link.split('://')[0].lower()
             if proto == 'hy2': 
                 proto = 'hysteria2'
                 
             return {
-                "type": proto,
-                "server": server_host,
-                "original_remarks": raw_ps
+                "label": get_final_label(u.hostname, raw_ps),
+                "type": proto, 
+                "link": link
             }
     except:
         return None
@@ -131,7 +128,8 @@ def main():
         if not p:
             continue
 
-        label = get_final_label(p.get("server"), p.get("original_remarks", ""))
+        # 💡 纯粹复制：套用后一份脚本处理 label 的解包逻辑
+        label = p.pop('label')
         idx = len(region_map[label]) + 1
         new_name = f"{label} {idx:02d} {CHANNEL_MARK}"
 
@@ -142,7 +140,7 @@ def main():
             new_b64 = base64.b64encode(new_json).decode('utf-8')
             rocket_links.append(f"vmess://{new_b64}")
 
-            # 🛠️ 严格修复：彻底闭合了此处此前缺失的右大括号 `}` 
+            # Clash 配置
             clash_proxies.append({
                 "name": new_name,
                 "type": "vmess",
@@ -156,65 +154,41 @@ def main():
                 "network": data.get("net", "tcp"),
             })
 
+        # 💡 纯粹复制：直接把最后一版里后端 else 里的元数据解包逻辑 100% 粘贴过来
         else:
-            clean = link.split('#')[0]
-            rocket_links.append(f"{clean}#{urllib.parse.quote(new_name)}")
+            clean_url = link.split('#')[0]
+            rocket_links.append(f"{clean_url}#{urllib.parse.quote(new_name)}")
 
-            u = urllib.parse.urlparse(link)
-            queries = dict(urllib.parse.parse_qsl(u.query))
+            # 处理 Clash 配置
+            p['name'] = new_name
             
-            main_url = link.split('#')[0]
-            url_part = main_url.split('://')[1] if '://' in main_url else main_url
-            if '?' in url_part:
-                url_part = url_part.split('?')[0]
+            if p.get('type') in ["ss", "trojan", "vless", "hysteria2"]:
+                u = urllib.parse.urlparse(p.pop('link'))
+                queries = dict(urllib.parse.parse_qsl(u.query))
                 
-            auth_info = url_part.split('@')[0] if '@' in url_part else ""
-            net_loc = url_part.split('@')[1] if '@' in url_part else url_part
-            port_str = net_loc.split(':')[1] if ':' in net_loc else "443"
-
-            proxy_node = {
-                "name": new_name,
-                "type": p["type"],
-                "server": p["server"],
-                "port": int(port_str) if port_str.isdigit() else 443
-            }
-            
-            if p["type"] == "ss":
-                proxy_node["password"] = u.password if u.password else auth_info.split(':')[1] if ':' in auth_info else ""
-                proxy_node["cipher"] = u.username if u.username else auth_info.split(':')[0] if auth_info else "aes-256-gcm"
-                if not proxy_node["password"] and proxy_node["cipher"]:
-                    try:
-                        user_info = parse_vmess_b64(proxy_node["cipher"]).decode('utf-8', 'ignore')
-                        if ':' in user_info:
-                            proxy_node["cipher"], proxy_node["password"] = user_info.split(':', 1)
-                    except:
-                        pass
-                        
-            elif p["type"] == "trojan":
-                proxy_node["password"] = u.username if u.username else auth_info
-                proxy_node["sni"] = queries.get("sni", p["server"])
-                proxy_node["skip-cert-verify"] = True
+                p['server'] = u.hostname
+                p['port'] = int(u.port) if u.port else 443
                 
-            elif p["type"] == "vless":
-                proxy_node["uuid"] = u.username if u.username else auth_info
-                proxy_node["cipher"] = "auto"
-                proxy_node["tls"] = True if (queries.get("security") == "tls" or "tls" in link) else False
-                proxy_node["skip-cert-verify"] = True
-                proxy_node["network"] = queries.get("type", "tcp")
-                if proxy_node["network"] == "ws":
-                    proxy_node["ws-opts"] = {"path": queries.get("path", "/"), "headers": {"Host": queries.get("host", "")}}
-                elif proxy_node["network"] == "grpc":
-                    proxy_node["grpc-opts"] = {"grpc-service-name": queries.get("serviceName", "")}
-                    
-            elif p["type"] == "hysteria2":
-                proxy_node["auth"] = u.username if u.username else auth_info
-                proxy_node["sni"] = queries.get("sni", p["server"])
-                proxy_node["skip-cert-verify"] = True
-                if query_dict.get("obfs") if 'query_dict' in locals() else queries.get("obfs"):
-                    proxy_node["obfs"] = queries.get("obfs")
-                    proxy_node["obfs-password"] = queries.get("obfs-password", "")
+                if p['type'] == "ss":
+                    p['password'] = u.password if u.password else ""
+                    p['cipher'] = u.username if u.username else "aes-256-gcm"
+                elif p['type'] == "trojan":
+                    p['password'] = u.username if u.username else ""
+                    p['sni'] = queries.get("sni", u.hostname)
+                    p['skip-cert-verify'] = True
+                elif p['type'] == "vless":
+                    p['uuid'] = u.username if u.username else ""
+                    p['cipher'] = "auto"
+                    p['tls'] = True if (queries.get("security") == "tls" or "tls" in link) else False
+                    p['network'] = queries.get("type", "tcp")
+                    if p['network'] == "ws":
+                        p['ws-opts'] = {"path": queries.get("path", "/"), "headers": {"Host": queries.get("host", "")}}
+                elif p['type'] == "hysteria2":
+                    p['auth'] = u.username if u.username else ""
+                    p['sni'] = queries.get("sni", u.hostname)
+                    p['skip-cert-verify'] = True
 
-            clash_proxies.append(proxy_node)
+            clash_proxies.append(p)
 
         region_map[label].append(new_name)
 
@@ -227,6 +201,7 @@ def main():
             f.write(sub_b64)
         print(f"✅ 订阅文件已生成: sub.txt ({len(rocket_links)} 个节点)")
 
+        # Clash 配置
         clash_config = {
             "proxies": clash_proxies,
             "proxy-groups": [
@@ -245,7 +220,7 @@ def main():
 
     # 统计
     print("\n📊 地区统计:")
-    for region, nodes in sorted(region_map.items(), key=lambda x: len(x[1]), reverse=True):
+    for region, nodes in sorted(region_map.items(), key=lambda x: len(x), reverse=True):
         print(f"   {region} → {len(nodes)} 个")
 
 
