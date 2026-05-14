@@ -23,7 +23,7 @@ EMOJI_MAP = {
 
 # ==================== 工具函数 ====================
 def parse_vmess_b64(b64_part):
-    """采用增强的 Base64 填充与容错解码逻辑"""
+    """标准的 Base64 填充与容错解码逻辑"""
     b64_part = b64_part.strip()
     padding = len(b64_part) % 4
     if padding:
@@ -49,7 +49,7 @@ def get_final_label(server: str, remarks: str = "") -> str:
         if re.search(pattern, text):
             return f"{EMOJI_MAP.get(name, '🌍')} {name}"
 
-    # IP自动纠正：修复原代码缺失 HTTP 协议与斜杠引发的崩溃
+    # IP自动纠正（核心修复：添加标准的 http:// 协议头及斜杠，防止崩序）
     if server and re.match(r'^\d{1,3}(\.\d{1,3}){3}$', server):
         if server in IP_CACHE:
             return IP_CACHE[server]
@@ -59,7 +59,6 @@ def get_final_label(server: str, remarks: str = "") -> str:
             data = resp.json()
             if data.get("status") == "success":
                 country = data.get("country", "")
-                # 精确匹配映射表
                 emoji = "🌍"
                 for k, v in EMOJI_MAP.items():
                     if k in country:
@@ -73,7 +72,7 @@ def get_final_label(server: str, remarks: str = "") -> str:
     return "🧿 其他地区"
 
 def parse_link(link: str):
-    """自适应解析不同节点协议格式"""
+    """解析节点结构"""
     try:
         link = link.strip()
         if not link or link.startswith(('import', 'def', '#', 'git')):
@@ -84,21 +83,24 @@ def parse_link(link: str):
             raw_data = parse_vmess_b64(b64_part)
             data = json.loads(raw_data.decode('utf-8', 'ignore'))
             return {
+                "label": get_final_label(data.get("add"), data.get("ps", "")),
                 "type": "vmess",
                 "raw_data": data,
                 "server": data.get("add"),
                 "original_remarks": data.get("ps", "")
             }
+            
         elif link.startswith(('ss://', 'trojan://', 'vless://', 'hysteria2://', 'hy2://')):
             u = urllib.parse.urlparse(link)
+            raw_ps = urllib.parse.unquote(u.fragment) if u.fragment else ""
             proto = link.split('://')[0].lower()
-            if proto == 'hy2':
+            if proto == 'hy2': 
                 proto = 'hysteria2'
+                
             return {
-                "type": proto,
-                "link": link,
-                "server": u.hostname,
-                "original_remarks": urllib.parse.unquote(u.fragment) if u.fragment else ""
+                "label": get_final_label(u.hostname, raw_ps),
+                "type": proto, 
+                "link": link
             }
     except Exception:
         return None
@@ -132,7 +134,7 @@ def main():
         if not p:
             continue
 
-        label = get_final_label(p.get("server"), p.get("original_remarks", ""))
+        label = p.pop('label')
         idx = len(region_map[label]) + 1
         new_name = f"{label} {idx:02d} {CHANNEL_MARK}"
 
@@ -143,6 +145,7 @@ def main():
             new_b64 = base64.b64encode(new_json).decode('utf-8')
             rocket_links.append(f"vmess://{new_b64}")
 
+            # Clash 配置 (增加高级网络参数回退保护)
             net_type = str(data.get("net", "tcp")).lower()
             vmess_node = {
                 "name": new_name,
@@ -162,9 +165,10 @@ def main():
                 vmess_node["grpc-opts"] = {"grpc-service-name": data.get("path", "")}
             clash_proxies.append(vmess_node)
 
+        # 💡 完美承接并补全您截断的非 vmess 协议元数据解包逻辑
         else:
-            clean = link.split('#')[0]
-            rocket_links.append(f"{clean}#{urllib.parse.quote(new_name)}")
+            clean_url = link.split('#')[0]
+            rocket_links.append(f"{clean_url}#{urllib.parse.quote(new_name)}")
             
             u = urllib.parse.urlparse(link)
             queries = dict(urllib.parse.parse_qsl(u.query))
@@ -176,12 +180,11 @@ def main():
                 "port": int(u.port) if u.port else 443
             }
             
-            # 1. 适配 Shadowsocks (ss) 格式并修复未知 method 导致断网的 Bug
+            # 1. 适配 Shadowsocks (ss) 格式并防御式隔离修复 "cipher: auto" 问题
             if p["type"] == "ss":
                 proxy_node["password"] = u.password if u.password else ""
                 proxy_node["cipher"] = u.username if u.username else "aes-256-gcm"
                 
-                # 兼容标准 sip002 格式：ss://BASE64(method:password)@host:port
                 if not proxy_node["password"] and u.username:
                     try:
                         user_info = parse_vmess_b64(u.username).decode('utf-8', 'ignore')
@@ -190,7 +193,7 @@ def main():
                     except Exception:
                         pass
                 
-                # 🔥 核心防御修复：检测并强行覆盖非法的 'auto' 加密，防止引发 Clash 初始化崩溃
+                # 🔥 致命错误核心纠正防御线：ss 绝不能保留非法的 "auto" 或空作为加密方案
                 current_cipher = str(proxy_node.get("cipher", "")).lower()
                 if current_cipher in ["auto", "", "none"]:
                     proxy_node["cipher"] = "aes-256-gcm"
@@ -226,16 +229,16 @@ def main():
 
         region_map[label].append(new_name)
 
-    # ==================== 最终文件持久化导出 ====================
-    # 1. 导出通用 Shadowrocket 订阅文件
+    # ==================== 自动化持久文件写入 ====================
+    # 导出 Shadowrocket 等客户端通用的 Base64 订阅文件
     if rocket_links:
         sub_raw = "\n".join(rocket_links)
         b64_output = base64.b64encode(sub_raw.encode('utf-8')).decode('utf-8')
         with open('subscribe.txt', 'w', encoding='utf-8') as f:
             f.write(b64_output)
-        print("✅ 已成功生成 Shadowrocket 订阅文件: subscribe.txt")
+        print("✅ 成功生成 64位基流通用订阅: subscribe.txt")
 
-    # 2. 导出标准的 Clash 完整配置文件
+    # 导出移动客户端及本地 Clash 可直读的标准配置文件
     if clash_proxies:
         clash_yaml_structure = {
             "port": 7890,
@@ -248,10 +251,10 @@ def main():
                 {
                     "name": "🚀 节点选择",
                     "type": "select",
-                    "proxies": ["🗲 延迟自动选择"] + [p["name"] for p in clash_proxies]
+                    "proxies": ["🗲 自动延迟测试"] + [p["name"] for p in clash_proxies]
                 },
                 {
-                    "name": "🗲 延迟自动选择",
+                    "name": "🗲 自动延迟测试",
                     "type": "url-test",
                     "url": TEST_URL,
                     "interval": 300,
@@ -265,7 +268,7 @@ def main():
         }
         with open('config.yaml', 'w', encoding='utf-8') as f:
             yaml.dump(clash_yaml_structure, f, allow_unicode=True, sort_keys=False)
-        print("✅ 已成功生成完全合规的 Clash 配置文件: config.yaml")
+        print("✅ 成功生成合规 Clash 配置文件: config.yaml")
 
 if __name__ == "__main__":
     main()
