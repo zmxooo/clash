@@ -1,6 +1,5 @@
 proxies:
 - name: 🇩🇪 德国 01 | @zmxooo
-  type: hysteria
   server: 5.83.129.90
   port: 54177
   udp: true
@@ -155,62 +154,101 @@ proxies:
   skip-cert-verify: true
   network: tcp
 - name: 🇬🇧 英国 12 | @zmxooo
-  type: ss
   server: 82.38.31.155
   port: 8080
   udp: true
-- name: 🇬🇧 英国 13 | @zmxooo
   type: ss
+  cipher: chacha20-ietf-poly1305
+  password: oZIoA69Q8yhcQV8ka3Pa3A
+- name: 🇬🇧 英国 13 | @zmxooo
   server: 82.38.31.35
   port: 8080
   udp: true
+  type: ss
+  cipher: chacha20-ietf-poly1305
+  password: oZIoA69Q8yhcQV8ka3Pa3A
 - name: 🇭🇰 香港 01 | @zmxooo
-  type: hysteria2
   server: 202.146.222.41
   port: 443
   udp: true
-- name: 🇭🇰 香港 02 | @zmxooo
   type: hysteria2
+  password: qQe1z5kU8kN6SlKnDt9Ru3Qp
+  up: 15
+  down: 50
+  skip-cert-verify: true
+- name: 🇭🇰 香港 02 | @zmxooo
   server: 202.146.222.13
   port: 443
   udp: true
-- name: 🇭🇰 香港 03 | @zmxooo
   type: hysteria2
+  password: qQe1z5kU8kN6SlKnDt9Ru3Qp
+  up: 15
+  down: 50
+  skip-cert-verify: true
+- name: 🇭🇰 香港 03 | @zmxooo
   server: 202.146.222.93
   port: 443
   udp: true
-- name: 🇭🇰 香港 04 | @zmxooo
   type: hysteria2
+  password: qQe1z5kU8kN6SlKnDt9Ru3Qp
+  up: 15
+  down: 50
+  skip-cert-verify: true
+- name: 🇭🇰 香港 04 | @zmxooo
   server: 202.146.222.89
   port: 443
   udp: true
-- name: 🇭🇰 香港 05 | @zmxooo
   type: hysteria2
+  password: qQe1z5kU8kN6SlKnDt9Ru3Qp
+  up: 15
+  down: 50
+  skip-cert-verify: true
+- name: 🇭🇰 香港 05 | @zmxooo
   server: 202.146.222.11
   port: 443
   udp: true
-- name: 🇭🇰 香港 06 | @zmxooo
   type: hysteria2
+  password: qQe1z5kU8kN6SlKnDt9Ru3Qp
+  up: 15
+  down: 50
+  skip-cert-verify: true
+- name: 🇭🇰 香港 06 | @zmxooo
   server: 202.146.222.29
   port: 443
   udp: true
-- name: 🇭🇰 香港 07 | @zmxooo
   type: hysteria2
+  password: qQe1z5kU8kN6SlKnDt9Ru3Qp
+  up: 15
+  down: 50
+  skip-cert-verify: true
+- name: 🇭🇰 香港 07 | @zmxooo
   server: 202.146.222.16
   port: 443
   udp: true
-- name: 🇭🇰 香港 08 | @zmxooo
   type: hysteria2
+  password: qQe1z5kU8kN6SlKnDt9Ru3Qp
+  up: 15
+  down: 50
+  skip-cert-verify: true
+- name: 🇭🇰 香港 08 | @zmxooo
   server: 202.146.222.85
   port: 443
   udp: true
-- name: 🇭🇰 香港 09 | @zmxooo
   type: hysteria2
+  password: qQe1z5kU8kN6SlKnDt9Ru3Qp
+  up: 15
+  down: 50
+  skip-cert-verify: true
+- name: 🇭🇰 香港 09 | @zmxooo
   server: 202.146.222.45
   port: 443
   udp: true
+  type: hysteria2
+  password: qQe1z5kU8kN6SlKnDt9Ru3Qp
+  up: 15
+  down: 50
+  skip-cert-verify: true
 - name: 🇯🇵 日本 01 | @zmxooo
-  type: https
   server: a3cdfe9b-texls0-tjilbf-1o8ak.jp.oshuawei.com
   port: 443
   udp: true
@@ -225,50 +263,56 @@ proxies:
   skip-cert-verify: true
   network: tcp
 - name: 🇰🇷 韩国 01 | @zmxooo
-  type: hy2
   server: vpn-kr-003.fastervpn.world
   port: 443
   udp: true
+  type: hysteria2
+  password: qQe1z5kU8kN6SlKnDt9Ru3Qp
+  up: 15
+  down: 50
+  skip-cert-verify: true
 - name: 🇰🇷 韩国 02 | @zmxooo
-  type: trojan
   server: 220.118.248.123
   port: 18001
   udp: true
 - name: 🇰🇷 韩国 03 | @zmxooo
-  type: trojan
   server: 183.107.78.213
   port: 20880
   udp: true
 - name: 🇰🇷 韩国 04 | @zmxooo
-  type: trojan
   server: 59.16.228.103
   port: 18469
   udp: true
 - name: 🇰🇷 韩国 05 | @zmxooo
-  type: trojan
   server: 59.0.95.106
   port: 32773
   udp: true
 - name: 🇰🇷 韩国 06 | @zmxooo
-  type: trojan
   server: 59.12.232.18
   port: 12345
   udp: true
 - name: 🇸🇬 新加坡 01 | @zmxooo
-  type: trojan
   server: lt-sin.ltdns.top
   port: 37043
   udp: true
 - name: 🇹🇼 台湾 01 | @zmxooo
-  type: hysteria2
   server: 160.187.100.109
   port: 443
   udp: true
-- name: 🇹🇼 台湾 02 | @zmxooo
   type: hysteria2
+  password: qQe1z5kU8kN6SlKnDt9Ru3Qp
+  up: 15
+  down: 50
+  skip-cert-verify: true
+- name: 🇹🇼 台湾 02 | @zmxooo
   server: 43.200.123.45
   port: 443
   udp: true
+  type: hysteria2
+  password: qQe1z5kU8kN6SlKnDt9Ru3Qp
+  up: 15
+  down: 50
+  skip-cert-verify: true
 - name: 🇹🇼 台湾 03 | @zmxooo
   type: vmess
   server: v13.zgtfqs.click
@@ -290,10 +334,14 @@ proxies:
   skip-cert-verify: true
   network: tcp
 - name: 🇺🇸 美国 01 | @zmxooo
-  type: hysteria2
   server: 23.144.12.162
   port: 443
   udp: true
+  type: hysteria2
+  password: qQe1z5kU8kN6SlKnDt9Ru3Qp
+  up: 15
+  down: 50
+  skip-cert-verify: true
 - name: 🇺🇸 美国 02 | @zmxooo
   type: vmess
   server: 82.198.246.214
@@ -335,22 +383,27 @@ proxies:
   skip-cert-verify: true
   network: tcp
 - name: 🇺🇸 美国 06 | @zmxooo
-  type: ss
   server: 34.229.121.217
   port: 80
   udp: true
-- name: 🇺🇸 美国 07 | @zmxooo
   type: ss
+  cipher: aes-256-gcm
+  password: dada1203
+- name: 🇺🇸 美国 07 | @zmxooo
   server: 3.137.174.85
   port: 443
   udp: true
-- name: 🇺🇸 美国 08 | @zmxooo
   type: ss
+  cipher: aes-256-cfb
+  password: amazonskr05
+- name: 🇺🇸 美国 08 | @zmxooo
   server: 3.144.123.157
   port: 443
   udp: true
+  type: ss
+  cipher: aes-256-cfb
+  password: amazonskr05
 - name: 🇺🇸 美国 09 | @zmxooo
-  type: trojan
   server: 172.66.44.230
   port: 8443
   udp: true
@@ -395,37 +448,51 @@ proxies:
   skip-cert-verify: true
   network: tcp
 - name: 🇺🇸 美国 14 | @zmxooo
-  type: ss
   server: 3.137.174.85
   port: 443
   udp: true
-- name: 🇻🇳 越南 01 | @zmxooo
   type: ss
+  cipher: aes-256-cfb
+  password: amazonskr05
+- name: 🇻🇳 越南 01 | @zmxooo
   server: 103.186.155.79
   port: 38388
   udp: true
-- name: 🇻🇳 越南 02 | @zmxooo
   type: ss
+  cipher: aes-256-cfb
+  password: Xn8jKdmDM00IeO%#$#fJAMtsEAEUOpH/YWYtYqDFnT0SV
+- name: 🇻🇳 越南 02 | @zmxooo
   server: 103.186.155.75
   port: 38388
   udp: true
-- name: 🇻🇳 越南 03 | @zmxooo
   type: ss
+  cipher: aes-256-cfb
+  password: Xn8jKdmDM00IeO%#$#fJAMtsEAEUOpH/YWYtYqDFnT0SV
+- name: 🇻🇳 越南 03 | @zmxooo
   server: 103.186.155.109
   port: 38388
   udp: true
-- name: 🇻🇳 越南 04 | @zmxooo
   type: ss
+  cipher: aes-256-cfb
+  password: Xn8jKdmDM00IeO%#$#fJAMtsEAEUOpH/YWYtYqDFnT0SV
+- name: 🇻🇳 越南 04 | @zmxooo
   server: 103.186.155.8
   port: 38388
   udp: true
-- name: 🇻🇳 越南 05 | @zmxooo
   type: ss
+  cipher: aes-256-cfb
+  password: Xn8jKdmDM00IeO%#$#fJAMtsEAEUOpH/YWYtYqDFnT0SV
+- name: 🇻🇳 越南 05 | @zmxooo
   server: 103.186.155.49
   port: 38388
   udp: true
-- name: 🇻🇳 越南 06 | @zmxooo
   type: ss
+  cipher: aes-256-cfb
+  password: Xn8jKdmDM00IeO%#$#fJAMtsEAEUOpH/YWYtYqDFnT0SV
+- name: 🇻🇳 越南 06 | @zmxooo
   server: 103.186.155.75
   port: 38388
   udp: true
+  type: ss
+  cipher: aes-256-cfb
+  password: Xn8jKdmDM00IeO%#$#fJAMtsEAEUOpH/YWYtYqDFnT0SV
