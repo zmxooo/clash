@@ -80,7 +80,8 @@ def parse_link(link: str):
                 "server": data.get("add"),
                 "original_remarks": data.get("ps", "")
             }
-        elif link.startswith(('ss://', 'trojan://')):
+        # 支持 hy2 及常见协议
+        elif link.startswith(('ss://', 'trojan://', 'vless://', 'hysteria2://', 'hy2://', 'clw://')):
             u = urllib.parse.urlparse(link)
             return {
                 "type": "other",
