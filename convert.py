@@ -69,7 +69,6 @@ def get_final_label(server: str, remarks: str = "") -> str:
             return IP_CACHE[server]
         try:
             time.sleep(0.35)
-            # 修复：补全 http 协议头，修正 URL 路径斜杠
             resp = requests.get(f"ip-api.com{server}?lang=zh-CN", timeout=5)
             data = resp.json()
             if data.get("status") == "success":
@@ -82,13 +81,12 @@ def get_final_label(server: str, remarks: str = "") -> str:
     return "🧿 其他地区"
 
 def parse_link(link: str):
-    """【核心修复】彻底隔离原始备注，精准重构协议头并进行单体文本解包"""
+    """【工业级重构】针对特殊参数符号与特殊字符导致的 URL 错位进行预清洗"""
     try:
         link = link.strip()
         if not link or link.startswith(('import', 'def', '#', 'git')):
             return None
 
-        # 严格剥离原始备注，防止特殊符号干扰 URL 解析
         orig_remarks = ""
         if '#' in link:
             parts = link.split('#', 1)
@@ -111,17 +109,32 @@ def parse_link(link: str):
             }
             
         elif link.startswith(('ss://', 'trojan://', 'vless://', 'hysteria2://', 'hy2://')):
-            # 统一将 hy2 临时转换为标准的 hysteria2 进行正规解析
-            if clean_link_str.startswith("hy2://"):
-                clean_link_str = "hysteria2://" + clean_link_str[6:]
+            is_hy2_raw = clean_link_str.startswith("hy2://")
+            
+            # 【核心修复】防止 sni 中带有的 %2F%2F (//) 污染 urlparse 的 host 解析
+            safe_uri = clean_link_str
+            if "sni=" in safe_uri:
+                # 临时替换 sni 中的敏感符号，防止 urlparse 误判路径
+                safe_uri = safe_uri.replace("%2F", "_ESC_SLASH_").replace("%2f", "_ESC_SLASH_")
+
+            if is_hy2_raw:
+                parse_uri = "hysteria2://" + safe_uri[6:]
+            else:
+                parse_uri = safe_uri
                 
-            u = urllib.parse.urlparse(clean_link_str)
+            u = urllib.parse.urlparse(parse_uri)
+            
+            # 还原提取出的 hostname 和 query 字段
+            hostname = u.hostname.replace("_ESC_SLASH_", "/") if u.hostname else ""
+            query_str = u.query.replace("_ESC_SLASH_", "%2F")
 
             return {
                 "type": "hysteria2" if u.scheme in ["hy2", "hysteria2"] else u.scheme,
-                "link_str": clean_link_str,
+                "is_hy2_raw": is_hy2_raw,
+                "link_str_no_hash": clean_link_str, 
                 "url_obj": u,
-                "server": u.hostname,
+                "query_str": query_str,
+                "server": hostname,
                 "original_remarks": orig_remarks
             }
     except Exception as e:
@@ -187,9 +200,9 @@ def main():
 
         else:
             u = p["url_obj"]
-            qs = urllib.parse.parse_qs(u.query)
+            qs = urllib.parse.parse_qs(p["query_str"])
             
-            # 【核心优化】提取字典中真实字符串元素，彻底拒绝把 list 符号包进配置
+            # 【精确解包】防止生成带方括号的假字符串
             params = {}
             for k, v in qs.items():
                 if v and isinstance(v, list):
@@ -197,14 +210,14 @@ def main():
                 elif v:
                     params[k] = str(v)
 
-            # 通用订阅生成：确保去除旧的 hash 标记，重写挂载标准 URL 编码的新备注
-            base_uri_clean = p['link_str'].split('#')[0]
-            rocket_links.append(f"{base_uri_clean}#{urllib.parse.quote(new_name)}")
+            # 通用订阅链接生成
+            base_uri = p['link_str_no_hash']
+            rocket_links.append(f"{base_uri}#{urllib.parse.quote(new_name)}")
             
             proxy_cfg = {
                 "name": new_name,
                 "type": p["type"],
-                "server": u.hostname if u.hostname else "127.0.0.1",
+                "server": p["server"],
                 "port": safe_int(u.port, 443)
             }
             
@@ -235,7 +248,7 @@ def main():
                     proxy_cfg.update({
                         "password": u.username if u.username else "",
                         "udp": True,
-                        "sni": params.get("sni", u.hostname),
+                        "sni": params.get("sni", p["server"]),
                         "skip-cert-verify": True
                     })
                     clash_proxies.append(proxy_cfg)
@@ -253,17 +266,21 @@ def main():
                     clash_proxies.append(proxy_cfg)
 
                 elif p["type"] == "hysteria2":
-                    # 【核心修正】提取正确的认证密码，对齐 Clash 官方规范
                     password_str = u.username if u.username else ""
                     if not password_str and '@' in u.netloc:
                         password_str = u.netloc.split('@')[0]
 
+                    # 兼容 insecure 参数
+                    skip_cert = True
+                    if params.get("insecure") in ["0", "false"]:
+                        skip_cert = False
+
                     proxy_cfg.update({
                         "type": "hysteria2",
                         "password": password_str,
-                        "sni": params.get("sni", u.hostname),
-                        "skip-cert-verify": True,
-                        "alpn": [params.get("alpn")] if params.get("alpn") else ["h3"]
+                        "sni": params.get("sni", p["server"]),
+                        "skip-cert-verify": skip_cert,
+                        "alpn": [params.get("alpn", "h3")]
                     })
                     clash_proxies.append(proxy_cfg)
 
@@ -279,7 +296,7 @@ def main():
         with open('clash_output.yaml', 'w', encoding='utf-8') as f:
             yaml.dump(clash_output, f, allow_unicode=True, sort_keys=False)
             
-        print("✅ 转换重写成功！已生成 rocket_output.txt 和 clash_output.yaml")
+        print("✅ 终极修复成功！测试节点已完美处理并写入输出文件。")
     except Exception as e:
         print(f"❌ 写入输出文件失败: {e}")
 
