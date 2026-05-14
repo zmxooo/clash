@@ -41,6 +41,7 @@ def parse_base64(data: str):
         data = data.replace('-', '+').replace('_', '/')
 
         padding = len(data) % 4
+
         if padding:
             data += '=' * (4 - padding)
 
@@ -50,14 +51,17 @@ def parse_base64(data: str):
         return b''
 
 
-# ==================== 安全转换 ====================
+# ==================== INT ====================
 
 def safe_int(val, default=443):
+
     try:
+
         if isinstance(val, int):
             return val
 
         val = re.sub(r'\D', '', str(val))
+
         return int(val) if val else default
 
     except:
@@ -67,6 +71,7 @@ def safe_int(val, default=443):
 # ==================== 清理 SNI ====================
 
 def clean_sni(sni: str):
+
     if not sni:
         return ""
 
@@ -80,9 +85,10 @@ def clean_sni(sni: str):
     return sni
 
 
-# ==================== 清理 URL fragment ====================
+# ==================== 清理 URI ====================
 
 def clean_base_uri(link: str):
+
     parsed = urllib.parse.urlparse(link)
 
     return urllib.parse.urlunparse(
@@ -100,7 +106,10 @@ def clean_base_uri(link: str):
 # ==================== 国家识别 ====================
 
 def get_country_label(server: str, remarks: str = ""):
-    text = urllib.parse.unquote(str(remarks)).lower()
+
+    text = urllib.parse.unquote(
+        str(remarks)
+    ).lower()
 
     rules = [
         ("香港", r"hk|hongkong|香港"),
@@ -115,15 +124,21 @@ def get_country_label(server: str, remarks: str = ""):
     ]
 
     for country, pattern in rules:
+
         if re.search(pattern, text):
+
             return f"{EMOJI_MAP.get(country, '🌍')} {country}"
 
-    if server and re.match(r'^\d{1,3}(\.\d{1,3}){3}$', server):
+    if server and re.match(
+            r'^\d{1,3}(\.\d{1,3}){3}$',
+            server
+    ):
 
         if server in IP_CACHE:
             return IP_CACHE[server]
 
         try:
+
             time.sleep(0.05)
 
             resp = requests.get(
@@ -135,9 +150,15 @@ def get_country_label(server: str, remarks: str = ""):
 
             if data.get("status") == "success":
 
-                country = data.get("country", "其他地区")
+                country = data.get(
+                    "country",
+                    "其他地区"
+                )
 
-                label = f"{EMOJI_MAP.get(country, '🌍')} {country}"
+                label = (
+                    f"{EMOJI_MAP.get(country, '🌍')} "
+                    f"{country}"
+                )
 
                 IP_CACHE[server] = label
 
@@ -154,6 +175,7 @@ def get_country_label(server: str, remarks: str = ""):
 def parse_vmess(link: str):
 
     try:
+
         raw = link[8:].split('#')[0]
 
         decoded = parse_base64(raw)
@@ -161,7 +183,12 @@ def parse_vmess(link: str):
         if not decoded:
             return None
 
-        data = json.loads(decoded.decode('utf-8', 'ignore'))
+        data = json.loads(
+            decoded.decode(
+                'utf-8',
+                'ignore'
+            )
+        )
 
         return {
             "type": "vmess",
@@ -179,24 +206,36 @@ def parse_vmess(link: str):
 def parse_hysteria(link: str):
 
     try:
+
         parsed = urllib.parse.urlparse(link)
 
-        query = urllib.parse.parse_qs(parsed.query)
+        query = urllib.parse.parse_qs(
+            parsed.query
+        )
 
-        proto = "hysteria2" if parsed.scheme in [
-            "hy2",
+        proto = (
             "hysteria2"
-        ] else "hysteria"
+            if parsed.scheme in [
+                "hy2",
+                "hysteria2"
+            ]
+            else "hysteria"
+        )
 
         sni = clean_sni(
-            query.get("sni", [parsed.hostname])[0]
+            query.get(
+                "sni",
+                [parsed.hostname]
+            )[0]
         )
 
         return {
             "type": proto,
             "server": parsed.hostname,
             "port": parsed.port or 443,
-            "password": parsed.username or "",
+            "password": urllib.parse.unquote(
+                parsed.username or ""
+            ),
             "query": query,
             "sni": sni,
             "raw_link": link,
@@ -212,13 +251,16 @@ def parse_hysteria(link: str):
 def parse_standard(link: str):
 
     try:
+
         parsed = urllib.parse.urlparse(link)
 
         return {
             "type": parsed.scheme,
             "server": parsed.hostname,
             "url": parsed,
-            "query": urllib.parse.parse_qs(parsed.query),
+            "query": urllib.parse.parse_qs(
+                parsed.query
+            ),
             "raw_link": link,
             "remarks": parsed.fragment
         }
@@ -271,12 +313,20 @@ def build_vmess_clash(node_name, data):
         "name": node_name,
         "type": "vmess",
         "server": data.get("add", "127.0.0.1"),
-        "port": safe_int(data.get("port"), 443),
+        "port": safe_int(
+            data.get("port"),
+            443
+        ),
         "uuid": data.get("id", ""),
-        "alterId": safe_int(data.get("aid"), 0),
+        "alterId": safe_int(
+            data.get("aid"),
+            0
+        ),
         "cipher": "auto",
         "udp": True,
-        "tls": str(data.get("tls", "")).lower() in [
+        "tls": str(
+            data.get("tls", "")
+        ).lower() in [
             "tls",
             "1",
             "true"
@@ -321,11 +371,18 @@ def build_vmess_clash(node_name, data):
 def build_vless_clash(node_name, parsed):
 
     u = parsed["url"]
+
     q = parsed["query"]
 
-    security = q.get("security", [""])[0]
+    security = q.get(
+        "security",
+        [""]
+    )[0]
 
-    network = q.get("type", ["tcp"])[0]
+    network = q.get(
+        "type",
+        ["tcp"]
+    )[0]
 
     proxy = {
         "name": node_name,
@@ -334,28 +391,46 @@ def build_vless_clash(node_name, parsed):
         "port": safe_int(u.port, 443),
         "uuid": u.username or "",
         "udp": True,
-        "tls": security in ["tls", "reality"],
+        "tls": security in [
+            "tls",
+            "reality"
+        ],
         "network": network,
         "skip-cert-verify": True
     }
 
     if q.get("sni"):
-        proxy["servername"] = q["sni"][0]
+
+        proxy["servername"] = q[
+            "sni"
+        ][0]
 
     if network == "ws":
 
         proxy["ws-opts"] = {
-            "path": q.get("path", ["/"])[0],
+            "path": q.get(
+                "path",
+                ["/"]
+            )[0],
             "headers": {
-                "Host": q.get("host", [""])[0]
+                "Host": q.get(
+                    "host",
+                    [""]
+                )[0]
             }
         }
 
     if security == "reality":
 
         proxy["reality-opts"] = {
-            "public-key": q.get("pbk", [""])[0],
-            "short-id": q.get("sid", [""])[0]
+            "public-key": q.get(
+                "pbk",
+                [""]
+            )[0],
+            "short-id": q.get(
+                "sid",
+                [""]
+            )[0]
         }
 
         proxy["client-fingerprint"] = q.get(
@@ -371,6 +446,7 @@ def build_vless_clash(node_name, parsed):
 def build_trojan_clash(node_name, parsed):
 
     u = parsed["url"]
+
     q = parsed["query"]
 
     proxy = {
@@ -381,7 +457,10 @@ def build_trojan_clash(node_name, parsed):
         "password": u.username or "",
         "udp": True,
         "skip-cert-verify": True,
-        "sni": q.get("sni", [u.hostname])[0]
+        "sni": q.get(
+            "sni",
+            [u.hostname]
+        )[0]
     }
 
     return proxy
@@ -394,8 +473,11 @@ def build_ss_clash(node_name, parsed):
     u = parsed["url"]
 
     method = "aes-256-gcm"
+
     password = ""
+
     server = u.hostname
+
     port = safe_int(u.port, 443)
 
     try:
@@ -406,7 +488,10 @@ def build_ss_clash(node_name, parsed):
 
             if ':' in userinfo:
 
-                method, password = userinfo.split(':', 1)
+                method, password = userinfo.split(
+                    ':',
+                    1
+                )
 
             else:
 
@@ -417,7 +502,10 @@ def build_ss_clash(node_name, parsed):
                     'ignore'
                 )
 
-                method, password = decoded.split(':', 1)
+                method, password = decoded.split(
+                    ':',
+                    1
+                )
 
         else:
 
@@ -430,13 +518,22 @@ def build_ss_clash(node_name, parsed):
 
             if '@' in decoded:
 
-                userinfo, hostinfo = decoded.split('@', 1)
+                userinfo, hostinfo = decoded.split(
+                    '@',
+                    1
+                )
 
-                method, password = userinfo.split(':', 1)
+                method, password = userinfo.split(
+                    ':',
+                    1
+                )
 
                 if ':' in hostinfo:
 
-                    server, p = hostinfo.rsplit(':', 1)
+                    server, p = hostinfo.rsplit(
+                        ':',
+                        1
+                    )
 
                     port = safe_int(p, 443)
 
@@ -459,7 +556,9 @@ def build_ss_clash(node_name, parsed):
 def main():
 
     if not os.path.exists("nodes.txt"):
+
         print("❌ 未找到 nodes.txt")
+
         return
 
     with open(
@@ -476,7 +575,9 @@ def main():
         ]
 
     # 去重
+
     seen = set()
+
     unique_links = []
 
     for line in raw_lines:
@@ -489,7 +590,10 @@ def main():
 
             unique_links.append(line)
 
-    print(f"🔄 去重后节点数量: {len(unique_links)}")
+    print(
+        f"🔄 去重后节点数量: "
+        f"{len(unique_links)}"
+    )
 
     region_map = defaultdict(list)
 
@@ -513,7 +617,11 @@ def main():
 
         idx = len(region_map[label]) + 1
 
-        node_name = f"{label} {idx:02d} {CHANNEL_MARK}"
+        node_name = (
+            f"{label} "
+            f"{idx:02d} "
+            f"{CHANNEL_MARK}"
+        )
 
         region_map[label].append(node_name)
 
@@ -557,9 +665,31 @@ def main():
 
                 query = parsed["query"]
 
-                query["sni"] = [parsed["sni"]]
+                query["sni"] = [
+                    parsed["sni"]
+                ]
 
-                query["insecure"] = ["1"]
+                query["security"] = [
+                    "tls"
+                ]
+
+                query["insecure"] = [
+                    "true"
+                ]
+
+                auth = urllib.parse.unquote(
+                    parsed.get(
+                        "password",
+                        ""
+                    )
+                )
+
+                if not auth:
+
+                    auth = query.get(
+                        "auth",
+                        [""]
+                    )[0]
 
                 new_query = urllib.parse.urlencode(
                     query,
@@ -567,14 +697,14 @@ def main():
                 )
 
                 prefix = (
-                    "hy2"
+                    "hysteria2"
                     if parsed["type"] == "hysteria2"
                     else "hysteria"
                 )
 
                 rebuilt = (
                     f"{prefix}://"
-                    f"{parsed['password']}@"
+                    f"{auth}@"
                     f"{parsed['server']}:"
                     f"{parsed['port']}?"
                     f"{new_query}"
@@ -588,7 +718,6 @@ def main():
                     "type": parsed["type"],
                     "server": parsed["server"],
                     "port": parsed["port"],
-                    "password": parsed["password"],
                     "sni": parsed["sni"],
                     "skip-cert-verify": True,
                     "alpn": ["h3"]
@@ -596,7 +725,37 @@ def main():
 
                 if parsed["type"] == "hysteria":
 
-                    clash_node["auth-str"] = parsed["password"]
+                    clash_node["auth-str"] = auth
+
+                else:
+
+                    clash_node["password"] = auth
+
+                if query.get("obfs"):
+
+                    clash_node["obfs"] = query[
+                        "obfs"
+                    ][0]
+
+                if query.get("obfs-password"):
+
+                    clash_node["obfs-password"] = query[
+                        "obfs-password"
+                    ][0]
+
+                if query.get("upmbps"):
+
+                    clash_node["up"] = safe_int(
+                        query["upmbps"][0],
+                        100
+                    )
+
+                if query.get("downmbps"):
+
+                    clash_node["down"] = safe_int(
+                        query["downmbps"][0],
+                        100
+                    )
 
                 clash_proxies.append(clash_node)
 
@@ -656,15 +815,20 @@ def main():
 
         except Exception as e:
 
-            print(f"⚠️ 节点解析失败: {e}")
+            print(
+                f"⚠️ 节点解析失败: "
+                f"{e}"
+            )
 
             continue
 
-    # ==================== 导出 ====================
+    # ==================== 输出 ====================
 
     try:
 
-        rocket_raw = '\n'.join(rocket_links)
+        rocket_raw = '\n'.join(
+            rocket_links
+        )
 
         rocket_b64 = base64.b64encode(
             rocket_raw.encode('utf-8')
@@ -696,9 +860,18 @@ def main():
             )
 
         print("\n✅ 修复完成")
-        print(f"✅ Clash 节点数量: {len(clash_proxies)}")
-        print(f"✅ Rocket 节点数量: {len(rocket_links)}")
+        print(
+            f"✅ Clash 节点数量: "
+            f"{len(clash_proxies)}"
+        )
+
+        print(
+            f"✅ Rocket 节点数量: "
+            f"{len(rocket_links)}"
+        )
+
         print("✅ 已输出 clash_output.yaml")
+
         print("✅ 已输出 rocket_output.txt")
 
     except Exception as e:
