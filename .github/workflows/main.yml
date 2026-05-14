@@ -5,7 +5,7 @@ on:
     branches:
       - main
   schedule:
-    - cron: '0 */6 * * *' # 每 6 小时全自动在后台抓取和净化一次配置
+    - cron: '0 */6 * * *' # 每 6 小时全自动运行一次
   workflow_dispatch:
 
 jobs:
@@ -14,6 +14,8 @@ jobs:
     steps:
     - name: 检出当前仓库主干代码
       uses: actions/checkout@v4
+      with:
+        persist-credentials: true
 
     - name: 部署标准 Python 环境
       uses: actions/setup-python@v5
@@ -27,14 +29,17 @@ jobs:
     - name: 强力驱动提纯脚本运行
       run: python convert.py
 
-    - name: 安全反向同步推送回主干分支
+    - name: 强制反向同步推送所有文件
       run: |
         git config --local user.email "github-actions[bot]@://github.com"
         git config --local user.name "github-actions[bot]"
-        # 抓取状态，只有发生文件变化时才触发真实的物理推送，防止无限闭环构建崩溃
-        git add config.yaml rocket_links.txt rocket_subscription.txt || true
+        
+        # 💡 核心修复点：使用 -f (force) 参数强行全量追踪生成的文件，击穿任何 .gitignore 屏蔽
+        git add -f config.yaml rocket_links.txt rocket_subscription.txt || true
+        
+        # 只有在文件内容确实发生改变时才提交，防止死循环
         if ! git diff --staged --quiet; then
-          git commit -m "🤖 自动净化同步：Clash/小火箭规则集更新完毕 [skip ci]"
+          git commit -m "🤖 自动净化同步：Clash 与小火箭 Base64 订阅文件同步更新 [skip ci]"
           git push origin main
         else
           echo "检测到物理配置无实质变化，终止空白推送。"
