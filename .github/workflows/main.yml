@@ -1,46 +1,33 @@
-name: 节点自动提纯转换流
-
+name: Auto Convert
 on:
   push:
-    branches:
-      - main
-  schedule:
-    - cron: '0 */6 * * *' # 每 6 小时全自动运行一次
+    branches: [ main ]
   workflow_dispatch:
 
 jobs:
-  build:
+  convert:
     runs-on: ubuntu-latest
     steps:
-    - name: 检出当前仓库主干代码
-      uses: actions/checkout@v4
-      with:
-        persist-credentials: true
+      - name: 检查仓库代码
+        uses: actions/checkout@v4
 
-    - name: 部署标准 Python 环境
-      uses: actions/setup-python@v5
-      with:
-        python-version: '3.10'
+      - name: 设置 Python 环境
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
 
-    - name: 安装核心序列化依赖库
-      run: |
-        pip install requests pyyaml
+      - name: 安装必要插件
+        # 修改 1: 增加了 requests，这是 IP 查询必须的插件
+        run: pip install pyyaml requests
 
-    - name: 强力驱动提纯脚本运行
-      run: python convert.py
+      - name: 运行转换脚本
+        run: python convert.py
 
-    - name: 强制反向同步推送所有文件
-      run: |
-        git config --local user.email "github-actions[bot]@://github.com"
-        git config --local user.name "github-actions[bot]"
-        
-        # 💡 核心修复点：使用 -f (force) 参数强行全量追踪生成的文件，击穿任何 .gitignore 屏蔽
-        git add -f config.yaml rocket_links.txt rocket_subscription.txt || true
-        
-        # 只有在文件内容确实发生改变时才提交，防止死循环
-        if ! git diff --staged --quiet; then
-          git commit -m "🤖 自动净化同步：Clash 与小火箭 Base64 订阅文件同步更新 [skip ci]"
-          git push origin main
-        else
-          echo "检测到物理配置无实质变化，终止空白推送。"
-        fi
+      - name: 推送生成的文件到仓库
+        run: |
+          git config --local user.email "actions@github.com"
+          git config --local user.name "GitHub Action"
+          # 修改 2: 确保 GitHub 同时更新 config.yaml 和 index.html (小火箭订阅)
+          git add config.yaml index.html
+          git commit -m "自动更新订阅文件" || exit 0
+          git push
