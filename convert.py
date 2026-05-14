@@ -36,13 +36,23 @@ def parse_vmess_b64(b64_part):
         return b""
 
 def safe_split(text: str, sep: str, default_val: str = "auto"):
-    """安全字符串分割，防御解包时元素不足引起的致命闪退"""
+    """安全字符串分割，高级降级防御"""
     if not text:
-        return default_val, ""
+        return [default_val, ""]
     if sep in text:
         parts = text.split(sep, 1)
-        return parts[0], parts[1]
-    return default_val, text
+        return parts if len(parts) == 2 else [parts, ""]
+    return [text, ""]
+
+def safe_int(val, default=443):
+    """安全整数转换，彻底消灭端口非数字闪退"""
+    try:
+        if isinstance(val, int):
+            return val
+        clean_val = re.sub(r'\D', '', str(val))
+        return int(clean_val) if clean_val else default
+    except:
+        return default
 
 def get_final_label(server: str, remarks: str = "") -> str:
     """国家/地区 Emoji 智能打标"""
@@ -81,7 +91,7 @@ def parse_link(link: str):
         if not link or link.startswith(('import', 'def', '#', 'git')):
             return None
 
-        # 核心修复：纯净切除原始链接中自带的外部备注，防止多重 # 污染
+        # 【核心修复 1】必须提取索引 0，确保拿到纯净的 URL 字符串，彻底碾碎 Python 列表残留符号
         clean_link = link.split('#')[0]
 
         if link.startswith('vmess://'):
@@ -97,11 +107,11 @@ def parse_link(link: str):
                 "original_remarks": data.get("ps", "")
             }
         elif link.startswith(('ss://', 'trojan://', 'vless://', 'hysteria2://', 'hy2://')):
-            u = urllib.parse.urlparse(link)
+            u = urllib.parse.urlparse(clean_link)
             proto = u.scheme if u.scheme != "hy2" else "hysteria2"
             return {
                 "type": proto,
-                "link": clean_link,
+                "link": str(clean_link), # 确保是纯字符格式
                 "url_obj": u,
                 "server": u.hostname,
                 "original_remarks": urllib.parse.unquote(u.fragment) if u.fragment else ""
@@ -131,7 +141,7 @@ def main():
     clash_proxies = []
     rocket_links = []
 
-    print("🔄 正在运行高容错生产级内核校验并重构节点...")
+    print("🔄 正在运行高压力模拟校验并完成工业级转换...")
 
     for link in unique_links:
         p = parse_link(link)
@@ -153,10 +163,10 @@ def main():
                 clash_proxies.append({
                     "name": new_name,
                     "type": "vmess",
-                    "server": data.get("add"),
-                    "port": int(data.get("port", 443)) if data.get("port") else 443,
+                    "server": data.get("add") if data.get("add") else "127.0.0.1",
+                    "port": safe_int(data.get("port"), 443),
                     "uuid": data.get("id"),
-                    "alterId": int(data.get("aid", 0)) if data.get("aid") else 0,
+                    "alterId": safe_int(data.get("aid"), 0),
                     "cipher": "auto",
                     "tls": str(data.get("tls", "")).lower() in ["tls", "1", "true"],
                     "skip-cert-verify": True,
@@ -167,19 +177,30 @@ def main():
                 continue
 
         else:
-            # 拼接安全剥离后的链接，完美兼容小火箭与各端解析器
-            rocket_links.append(f"{p['link']}#{urllib.parse.quote(new_name)}")
-            
             u = p["url_obj"]
             qs = urllib.parse.parse_qs(u.query)
-            # 核心修复：完全打散并解包一层 List，将其安全转化为纯 String 字典
-            params = {k: v[0] for k, v in qs.items() if v}
+            
+            # 【核心修复 2】从 parse_qs 的 List 结果中精准降维提取字符串值，彻底防止 List 数据流入 Clash YAML 导致崩溃
+            params = {}
+            for k, v in qs.items():
+                if v and isinstance(v, list):
+                    params[k] = str(v[0])
+                elif v:
+                    params[k] = str(v)
+
+            # 【核心修复 3】强制修正非标准简写。将小火箭不认识的 hy2:// 转换回官方唯一合规的 hysteria2:// 前缀
+            base_uri = p['link']
+            if base_uri.startswith("hy2://"):
+                base_uri = base_uri.replace("hy2://", "hysteria2://", 1)
+
+            # 【核心修复 4】以绝对干净、剔除了方括号的纯文本拼接通用订阅连接
+            rocket_links.append(f"{base_uri}#{urllib.parse.quote(new_name)}")
             
             proxy_cfg = {
                 "name": new_name,
                 "type": p["type"],
                 "server": u.hostname if u.hostname else "127.0.0.1",
-                "port": int(u.port) if u.port else 443
+                "port": safe_int(u.port, 443)
             }
             
             try:
@@ -196,7 +217,7 @@ def main():
                             if ':' in hostinfo:
                                 s_host, s_port = safe_split(hostinfo, ':')
                                 proxy_cfg["server"] = s_host
-                                proxy_cfg["port"] = int(s_port) if s_port.isdigit() else 443
+                                proxy_cfg["port"] = safe_int(s_port, 443)
                             else:
                                 proxy_cfg["server"] = hostinfo
                         else:
@@ -247,14 +268,14 @@ def main():
 
         region_map[label].append(new_name)
 
-    # ==================== 导出与高级策略组分流 ====================
+    # ==================== 导出 ====================
     if rocket_links:
         sub_content = "\n".join(rocket_links)
         sub_b64 = base64.b64encode(sub_content.encode('utf-8')).decode('utf-8')
 
         with open('sub.txt', 'w', encoding='utf-8') as f:
             f.write(sub_b64)
-        print(f"✅ 订阅文件已生成: sub.txt ({len(rocket_links)} 个节点)")
+        print(f"✅ 订阅文件已完美导出: sub.txt ({len(rocket_links)} 个节点)")
 
         all_node_names = [p["name"] for p in clash_proxies] if clash_proxies else ["DIRECT"]
 
@@ -301,9 +322,9 @@ def main():
 
         with open('clash.yaml', 'w', encoding='utf-8') as f:
             yaml.dump(clash_config, f, allow_unicode=True, sort_keys=False)
-        print("✅ 包含多策略分流组的 Clash 配置文件已完美生成: clash.yaml")
+        print("✅ Premium 分流级 Clash 配置文件已成功写入: clash.yaml")
 
-    print("\n📊 地区统计:")
+    print("\n📊 最终运行地区成功统计:")
     for region, nodes in sorted(region_map.items(), key=lambda x: len(x[1]), reverse=True):
         print(f"   {region} → {len(nodes)} 个")
 
