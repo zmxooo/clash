@@ -23,7 +23,6 @@ EMOJI_MAP = {
 
 # ==================== 工具函数 ====================
 def parse_vmess_b64(b64_part):
-    """采用第一份代码中的 Base64 填充与解码逻辑"""
     padding = len(b64_part) % 4
     if padding:
         b64_part += "=" * (4 - padding)
@@ -33,7 +32,6 @@ def get_final_label(server: str, remarks: str = "") -> str:
     """优先正则识别 → IP自动纠正"""
     text = urllib.parse.unquote(str(remarks)).lower()
 
-    # 正则优先匹配
     meta = [
         ("香港", r"hk|hongkong|香港"), ("台湾", r"tw|taiwan|台灣|台湾"),
         ("美国", r"us|unitedstates|美国|美國"), ("英国", r"gb|uk|britain|英国|英國"),
@@ -45,13 +43,11 @@ def get_final_label(server: str, remarks: str = "") -> str:
         if re.search(pattern, text):
             return f"{EMOJI_MAP.get(name, '🌍')} {name}"
 
-    # IP自动纠正
     if server and re.match(r'^\d{1,3}(\.\d{1,3}){3}$', server):
         if server in IP_CACHE:
             return IP_CACHE[server]
         try:
             time.sleep(0.35)
-            # 💡 修复点：原代码缺少 http:// 及 / 导致请求失败，此处已修正
             resp = requests.get(f"ip-api.com{server}?lang=zh-CN", timeout=8)
             data = resp.json()
             if data.get("status") == "success":
@@ -64,26 +60,37 @@ def get_final_label(server: str, remarks: str = "") -> str:
     return "🧿 其他地区"
 
 def parse_link(link: str):
-    """解析节点"""
+    """一站式精准解析所有主流协议，直接输出标准 Clash 代理字典"""
     try:
         link = link.strip()
         if not link or link.startswith(('import', 'def', '#', 'git')):
             return None
 
-        if link.startswith('vmess://'):
+        # 1. 独立处理 VMess 协议
+        if link.lower().startswith('vmess://'):
             b64_part = link[8:].split('#')[0]
             raw_data = parse_vmess_b64(b64_part)
             data = json.loads(raw_data.decode('utf-8', 'ignore'))
+            server_host = data.get("add")
+            raw_ps = data.get("ps", "")
             
             return {
-                "label": get_final_label(data.get("add"), data.get("ps")),
+                "label": get_final_label(server_host, raw_ps),
                 "type": "vmess",
-                "raw_data": data,
-                "server": data.get("add"),
-                "original_remarks": data.get("ps", "")
+                "server": server_host,
+                "port": int(data.get("port", 443)),
+                "uuid": data.get("id"),
+                "alterId": int(data.get("aid", 0)),
+                "cipher": "auto",
+                "tls": str(data.get("tls", "")).lower() in ["tls", "1", "true"],
+                "skip-cert-verify": True,
+                "network": data.get("net", "tcp"),
+                "is_vmess_raw": True, # 打上标记方便 main 函数二次编码订阅链接
+                "raw_data": data
             }
             
-        elif link.startswith(('ss://', 'trojan://', 'vless://', 'hysteria2://', 'hy2://')):
+        # 2. 通用解析其他标准 URI 协议 (ss, trojan, vless, hy2)
+        elif link.lower().startswith(('ss://', 'trojan://', 'vless://', 'hysteria2://', 'hy2://')):
             main_part = link.split('#')[0]
             raw_ps = urllib.parse.unquote(link.split('#')[1]) if '#' in link else ""
             
@@ -91,21 +98,72 @@ def parse_link(link: str):
             if proto == 'hy2': 
                 proto = 'hysteria2'
                 
-            server_host = ""
             netloc = main_part.split('://')[1].split('/')[0].split('?')[0]
+            auth_str = ""
             if '@' in netloc:
-                server_host = netloc.split('@')[1].split(':')[0]
+                auth_str = netloc.split('@')[0]
+                server_part = netloc.split('@')[1]
             else:
-                server_host = netloc.split(':')[0]
+                server_part = netloc
                 
-            return {
+            server_host = server_part.split(':')[0]
+            port = int(server_part.split(':')[1]) if ':' in server_part else 443
+                
+            queries = {}
+            if '?' in main_part:
+                queries = dict(urllib.parse.parse_qsl(main_part.split('?')[1]))
+                
+            result = {
                 "label": get_final_label(server_host, raw_ps),
-                "type": proto, 
-                "link": link
+                "type": proto,
+                "server": server_host,
+                "port": port
             }
-    except:
-        return None
 
+            # Hysteria 2 特征注入
+            if proto == "hysteria2":
+                result.update({
+                    "auth": auth_str,
+                    "sni": queries.get("sni", server_host),
+                    "skip-cert-verify": True,
+                    "up": queries.get("up", "100"),
+                    "down": queries.get("down", "100")
+                })
+                if queries.get("obfs"):
+                    result["obfs"] = queries.get("obfs")
+                    result["obfs-password"] = queries.get("obfs-password", "")
+                    
+            # Shadowsocks 特征注入
+            elif proto == "ss":
+                result['password'] = auth_str.split(':')[1] if ':' in auth_str else ""
+                result['cipher'] = auth_str.split(':')[0] if auth_str else "aes-256-gcm"
+                if not result['password'] and result['cipher']:
+                    try:
+                        user_info = parse_vmess_b64(result['cipher']).decode('utf-8', 'ignore')
+                        if ':' in user_info:
+                            result['cipher'], result['password'] = user_info.split(':', 1)
+                    except:
+                        pass
+                        
+            # Trojan 特征注入
+            elif proto == "trojan":
+                result['password'] = auth_str
+                result['sni'] = queries.get("sni", server_host)
+                result['skip-cert-verify'] = True
+                
+            # VLESS 特征注入
+            elif proto == "vless":
+                result['uuid'] = auth_str
+                result['cipher'] = "auto"
+                result['tls'] = True if (queries.get("security") == "tls" or "tls" in link.lower()) else False
+                result['network'] = queries.get("type", "tcp")
+                if result['network'] == "ws":
+                    result['ws-opts'] = {"path": queries.get("path", "/"), "headers": {"Host": queries.get("host", "")}}
+
+            return result
+    except Exception as e:
+        print(f"❌ 解析单行节点失败: {e}")
+        return None
 
 # ==================== 主程序 ====================
 def main():
@@ -128,7 +186,7 @@ def main():
     clash_proxies = []
     rocket_links = []
 
-    print("🔄 正在处理节点...")
+    print(f"🔄 正在处理共 {len(unique_links)} 个去重节点...")
 
     for link in unique_links:
         p = parse_link(link)
@@ -139,150 +197,68 @@ def main():
         idx = len(region_map[label]) + 1
         new_name = f"{label} {idx:02d} {CHANNEL_MARK}"
 
-        if p["type"] == "vmess":
-            data = p["raw_data"].copy()
+        # 区分重组小火箭订阅链接的逻辑
+        if p.get("is_vmess_raw"):
+            p.pop("is_vmess_raw")
+            data = p.pop("raw_data")
             data['ps'] = new_name
             new_json = json.dumps(data, separators=(',', ':')).encode('utf-8')
             new_b64 = base64.b64encode(new_json).decode('utf-8')
             rocket_links.append(f"vmess://{new_b64}")
-
-            clash_proxies.append({
-                "name": new_name,
-                "type": "vmess",
-                "server": data.get("add"),
-                "port": int(data.get("port", 443)),
-                "uuid": data.get("id"),
-                "alterId": int(data.get("aid", 0)),
-                "cipher": "auto",
-                "tls": str(data.get("tls", "")).lower() in ["tls", "1", "true"],
-                "skip-cert-verify": True,
-                "network": data.get("net", "tcp"),
-            })
-
         else:
             clean_url = link.split('#')[0]
+            # 兼容非标的 hy2:// 统一输出标准小火箭命名
+            if clean_url.startswith('hy2://'):
+                clean_url = 'hysteria2://' + clean_url[6:]
             rocket_links.append(f"{clean_url}#{urllib.parse.quote(new_name)}")
 
-            p['name'] = new_name
-            
-            if p.get('type') in ["ss", "trojan", "vless", "hysteria2"]:
-                main_part = p['link'].split('#')[0]
-                netloc = main_part.split('://')[1].split('/')[0].split('?')[0]
-                
-                if '@' in netloc:
-                    p['server'] = netloc.split('@')[1].split(':')[0]
-                    auth_str = netloc.split('@')[0]
-                else:
-                    p['server'] = netloc.split(':')[0]
-                    auth_str = ""
-                    
-                if ':' in netloc.split('@')[-1]:
-                    p['port'] = int(netloc.split('@')[-1].split(':')[1])
-                else:
-                    p['port'] = 443
-                    
-                queries = {}
-                if '?' in main_part:
-                    queries = dict(urllib.parse.parse_qsl(main_part.split('?')[1]))
-                
-                if p['type'] == "ss":
-                    p['password'] = auth_str.split(':')[1] if ':' in auth_str else ""
-                    p['cipher'] = auth_str.split(':')[0] if auth_str else "aes-256-gcm"
-                    if not p['password'] and p['cipher']:
-                        try:
-                            user_info = parse_vmess_b64(p['cipher']).decode('utf-8', 'ignore')
-                            if ':' in user_info:
-                                p['cipher'], p['password'] = user_info.split(':', 1)
-                        except:
-                            pass
-                elif p['type'] == "trojan":
-                    p['password'] = auth_str
-                    p['sni'] = queries.get("sni", p['server'])
-                    p['skip-cert-verify'] = True
-                elif p['type'] == "vless":
-                    p['uuid'] = auth_str
-                    p['cipher'] = "auto"
-                    p['tls'] = True if (queries.get("security") == "tls" or "tls" in p['link']) else False
-                    p['network'] = queries.get("type", "tcp")
-                    if p['network'] == "ws":
-                        p['ws-opts'] = {"path": queries.get("path", "/"), "headers": {"Host": queries.get("host", "")}}
-                elif p['type'] == "hysteria2":
-                    p['auth'] = auth_str
-                    p['sni'] = queries.get("sni", p['server'])
-                    p['skip-cert-verify'] = True
-
-                if 'link' in p: p.pop('link')
-
-            clash_proxies.append(p)
-
+        # 统一注入标准名称并归档至 Clash 核心列表
+        p['name'] = new_name
+        clash_proxies.append(p)
         region_map[label].append(new_name)
 
-    # ============ 补全：持久化输出逻辑 ============
-    
-    # 1. 输出 Shadowrocket 订阅格式（通用明文行 / 或 Base64 订阅文件）
+    # ==================== 持久化数据落地 ====================
+    if not clash_proxies:
+        print("❌ 未成功解析出任何有效代理节点。")
+        return
+
+    # 1. 导出小火箭订阅文本
     try:
-        # 写入明文链接
         with open('rocket_links.txt', 'w', encoding='utf-8') as f:
             f.write('\n'.join(rocket_links))
-        
-        # 写入 Shadowrocket 标准 Base64 订阅
         rocket_b64 = base64.b64encode('\n'.join(rocket_links).encode('utf-8')).decode('utf-8')
         with open('rocket_subscription.txt', 'w', encoding='utf-8') as f:
             f.write(rocket_b64)
-        print("✅ Shadowrocket 订阅生成成功 -> rocket_subscription.txt")
+        print("✅ 成功生成 Shadowrocket 订阅 -> rocket_subscription.txt")
     except Exception as e:
-        print(f"❌ 导出 Shadowrocket 订阅失败: {e}")
+        print(f"❌ 导出小火箭订阅失败: {e}")
 
-    # 2. 输出 Clash 配置文件
+    # 2. 导出 Clash (Mihomo) YAML 配置
     try:
-        # 获取所有生成的新节点名称列表，用于代理组
         all_proxy_names = [p['name'] for p in clash_proxies]
+        clash_config = {
+            "port": 7890,
+            "socks-port": 7891,
+            "allow-lan": True,
+            "mode": "Rule",
+            "log-level": "info",
+            "external-controller": "127.0.0.1:9090",
+            "proxies": clash_proxies,
+            "proxy-groups": [
+                {"name": "🚀 节点选择", "type": "select", "proxies": ["📌 自动选择", "🔮 直连"] + all_proxy_names},
+                {"name": "📌 自动选择", "type": "url-test", "url": TEST_URL, "interval": 300, "tolerance": 50, "proxies": all_proxy_names},
+                {"name": "🔮 直连", "type": "select", "proxies": ["DIRECT"]}
+            ],
+            "rules": ["MATCH,🚀 节点选择"]
+        }
         
-        if all_proxy_names:
-            clash_config = {
-                "port": 7890,
-                "socks-port": 7891,
-                "allow-lan": True,
-                "mode": "Rule",
-                "log-level": "info",
-                "external-controller": "127.0.0.1:9090",
-                "proxies": clash_proxies,
-                "proxy-groups": [
-                    {
-                        "name": "🚀 节点选择",
-                        "type": "select",
-                        "proxies": ["📌 自动选择", "🔮 直连"] + all_proxy_names
-                    },
-                    {
-                        "name": "📌 自动选择",
-                        "type": "url-test",
-                        "url": TEST_URL,
-                        "interval": 300,
-                        "tolerance": 50,
-                        "proxies": all_proxy_names
-                    },
-                    {
-                        "name": "🔮 直连",
-                        "type": "select",
-                        "proxies": ["DIRECT"]
-                    }
-                ],
-                "rules": [
-                    "MATCH,🚀 节点选择"
-                ]
-            }
-            
-            # 使用 safe_dump 生成标准的 YAML 配置，确保中文不乱码
-            with open('clash_config.yaml', 'w', encoding='utf-8') as f:
-                yaml.safe_dump(clash_config, f, allow_unicode=True, sort_keys=False)
-            print("✅ Clash 配置文件生成成功 -> clash_config.yaml")
-        else:
-            print("⚠️ 未发现有效节点，未生成 Clash 配置。")
-            
+        with open('clash_config.yaml', 'w', encoding='utf-8') as f:
+            yaml.safe_dump(clash_config, f, allow_unicode=True, sort_keys=False)
+        print("✅ 成功生成 Clash 配置文件 -> clash_config.yaml")
     except Exception as e:
         print(f"❌ 导出 Clash 配置文件失败: {e}")
 
-    print(f"🎉 处理完成！共成功清洗并分流了 {len(clash_proxies)} 个独立节点。")
+    print(f"🎉 脚本运行成功，共顺利清洗、规范化和分类了 {len(clash_proxies)} 个主流协议节点！")
 
 if __name__ == '__main__':
     main()
