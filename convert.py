@@ -10,11 +10,12 @@ from collections import defaultdict
 
 CHANNEL_MARK = "@zmxooo"
 
+# ==================== 配置 ====================
 IP_CACHE = {}
 
 EMOJI_MAP = {
     "香港": "🇭🇰", "台湾": "🇹🇼", "美国": "🇺🇸", "英国": "🇬🇧", "韩国": "🇰🇷",
-    "日本": "🇯🇵", "新加坡": "🇸🇬", "越南": "🇻🇳", "德国": "🇩🇪", "立桃宛": "🇱🇹",
+    "日本": "🇯🇵", "新加坡": "🇸🇬", "越南": "🇻🇳", "德国": "🇩🇪", "立陶宛": "🇱🇹",
     "法国": "🇫🇷", "俄罗斯": "🇷🇺", "加拿大": "🇨🇦", "荷兰": "🇳🇱", "澳大利亚": "🇦🇺",
     "阿联酋": "🇦🇪", "土耳其": "🇹🇷",
 }
@@ -33,6 +34,14 @@ def parse_vmess_b64(b64_part):
     except:
         return b""
 
+def safe_split(text: str, sep: str, default_val: str = "auto"):
+    if not text:
+        return [default_val, ""]
+    if sep in text:
+        parts = text.split(sep, 1)
+        return parts if len(parts) == 2 else [parts, ""]
+    return [str(text), ""]
+
 def safe_int(val, default=443):
     try:
         if isinstance(val, int):
@@ -49,7 +58,7 @@ def get_final_label(server: str, remarks: str = "") -> str:
         ("美国", r"us|unitedstates|美国|美國"), ("英国", r"gb|uk|britain|英国|英國"),
         ("韩国", r"kr|korea|韩国|韓國"), ("日本", r"jp|japan|日本"),
         ("新加坡", r"sg|singapore|新加坡"), ("德国", r"de|germany|德国"),
-        ("立桃宛", r"lt|lithuania|立桃宛|立陶宛"),
+        ("立陶宛", r"lt|lithuania|立桃宛|立陶宛"),
     ]
     for name, pattern in meta:
         if re.search(pattern, text):
@@ -59,8 +68,9 @@ def get_final_label(server: str, remarks: str = "") -> str:
         if server in IP_CACHE:
             return IP_CACHE[server]
         try:
-            time.sleep(0.3)
-            resp = requests.get(f"http://ip-api.com/json/{server}?lang=zh-CN", timeout=5)
+            time.sleep(0.35)
+            # 修复：补全 http 协议头，修正 URL 路径斜杠
+            resp = requests.get(f"ip-api.com{server}?lang=zh-CN", timeout=5)
             data = resp.json()
             if data.get("status") == "success":
                 country = data.get("country")
@@ -72,10 +82,20 @@ def get_final_label(server: str, remarks: str = "") -> str:
     return "🧿 其他地区"
 
 def parse_link(link: str):
+    """【核心修复】彻底隔离原始备注，精准重构协议头并进行单体文本解包"""
     try:
         link = link.strip()
         if not link or link.startswith(('import', 'def', '#', 'git')):
             return None
+
+        # 严格剥离原始备注，防止特殊符号干扰 URL 解析
+        orig_remarks = ""
+        if '#' in link:
+            parts = link.split('#', 1)
+            clean_link_str = parts[0]
+            orig_remarks = parts[1]
+        else:
+            clean_link_str = link
 
         if link.startswith('vmess://'):
             b64_part = link[8:].split('#')[0]
@@ -89,31 +109,29 @@ def parse_link(link: str):
                 "server": data.get("add"),
                 "original_remarks": data.get("ps", "")
             }
+            
         elif link.startswith(('ss://', 'trojan://', 'vless://', 'hysteria2://', 'hy2://')):
-            original_link = link
-            clean_link_str = link.split('#')[0]
+            # 统一将 hy2 临时转换为标准的 hysteria2 进行正规解析
             if clean_link_str.startswith("hy2://"):
-                clean_link_str = clean_link_str.replace("hy2://", "hysteria2://", 1)
+                clean_link_str = "hysteria2://" + clean_link_str[6:]
                 
             u = urllib.parse.urlparse(clean_link_str)
-            
-            orig_remarks = link.split('#', 1)[1] if '#' in link else ""
 
             return {
-                "type": "hysteria2",
-                "link_str": original_link.split('#')[0],
+                "type": "hysteria2" if u.scheme in ["hy2", "hysteria2"] else u.scheme,
+                "link_str": clean_link_str,
                 "url_obj": u,
                 "server": u.hostname,
                 "original_remarks": orig_remarks
             }
-    except:
+    except Exception as e:
         return None
     return None
 
 # ==================== 主程序 ====================
 def main():
     if not os.path.exists('nodes.txt'):
-        print("未找到 nodes.txt 文件")
+        print("❌ 未找到 nodes.txt 文件")
         return
 
     with open('nodes.txt', 'r', encoding='utf-8', errors='ignore') as f:
@@ -131,79 +149,139 @@ def main():
     clash_proxies = []
     rocket_links = []
 
-    print(f"正在处理 {len(unique_links)} 个节点...\n")
+    print(f"🔄 正在处理去重后的 {len(unique_links)} 个节点...")
 
-    for i, link in enumerate(unique_links, 1):
+    for link in unique_links:
         p = parse_link(link)
         if not p or not p.get("server"):
-            print(f"[{i}] 跳过无效节点")
             continue
 
         label = get_final_label(p.get("server"), p.get("original_remarks", ""))
         idx = len(region_map[label]) + 1
         new_name = f"{label} {idx:02d} {CHANNEL_MARK}"
-
-        print(f"[{i}] 处理 {p['type']} 节点 → {new_name}")
+        region_map[label].append(new_name)
 
         if p["type"] == "vmess":
-            # vmess 处理（保持原样）
             try:
                 data = p["raw_data"].copy()
                 data['ps'] = new_name
-                new_b64 = base64.b64encode(json.dumps(data, separators=(',', ':')).encode()).decode()
+                new_json = json.dumps(data, separators=(',', ':')).encode('utf-8')
+                new_b64 = base64.b64encode(new_json).decode('utf-8')
                 rocket_links.append(f"vmess://{new_b64}")
-                # clash vmess 配置...
-                clash_proxies.append({"name": new_name, "type": "vmess", ...})  # 简化
+
+                clash_proxies.append({
+                    "name": new_name,
+                    "type": "vmess",
+                    "server": data.get("add") if data.get("add") else "127.0.0.1",
+                    "port": safe_int(data.get("port"), 443),
+                    "uuid": data.get("id"),
+                    "alterId": safe_int(data.get("aid"), 0),
+                    "cipher": "auto",
+                    "tls": str(data.get("tls", "")).lower() in ["tls", "1", "true"],
+                    "skip-cert-verify": True,
+                    "network": data.get("net", "tcp"),
+                    "ws-opts": {"path": data.get("path", "/")} if data.get("net") == "ws" else {}
+                })
             except:
                 continue
+
         else:
-            # 强化后的 hy2 / 其他协议处理
+            u = p["url_obj"]
+            qs = urllib.parse.parse_qs(u.query)
+            
+            # 【核心优化】提取字典中真实字符串元素，彻底拒绝把 list 符号包进配置
+            params = {}
+            for k, v in qs.items():
+                if v and isinstance(v, list):
+                    params[k] = str(v[0])
+                elif v:
+                    params[k] = str(v)
+
+            # 通用订阅生成：确保去除旧的 hash 标记，重写挂载标准 URL 编码的新备注
+            base_uri_clean = p['link_str'].split('#')[0]
+            rocket_links.append(f"{base_uri_clean}#{urllib.parse.quote(new_name)}")
+            
+            proxy_cfg = {
+                "name": new_name,
+                "type": p["type"],
+                "server": u.hostname if u.hostname else "127.0.0.1",
+                "port": safe_int(u.port, 443)
+            }
+            
             try:
-                u = p["url_obj"]
-                qs = urllib.parse.parse_qs(u.query)
-                params = {k: str(v[0]) if isinstance(v, list) and v else str(v) for k, v in qs.items() if v}
+                if p["type"] == "ss":
+                    if '@' in u.netloc:
+                        userinfo, _ = safe_split(u.netloc, '@')
+                        method, password = safe_split(userinfo, ':', 'auto')
+                    else:
+                        netloc_clean = u.netloc.split('#')[0]
+                        decoded_ui = parse_vmess_b64(netloc_clean).decode('utf-8', 'ignore')
+                        if '@' in decoded_ui:
+                            userinfo, hostinfo = safe_split(decoded_ui, '@')
+                            method, password = safe_split(userinfo, ':', 'auto')
+                            if ':' in hostinfo:
+                                s_host, s_port = safe_split(hostinfo, ':')
+                                proxy_cfg["server"] = s_host
+                                proxy_cfg["port"] = safe_int(s_port, 443)
+                            else:
+                                proxy_cfg["server"] = hostinfo
+                        else:
+                            continue
+                            
+                    proxy_cfg.update({"cipher": method, "password": password, "udp": True})
+                    clash_proxies.append(proxy_cfg)
+                    
+                elif p["type"] == "trojan":
+                    proxy_cfg.update({
+                        "password": u.username if u.username else "",
+                        "udp": True,
+                        "sni": params.get("sni", u.hostname),
+                        "skip-cert-verify": True
+                    })
+                    clash_proxies.append(proxy_cfg)
 
-                base_uri = p['link_str']
-                rocket_links.append(f"{base_uri}#{urllib.parse.quote(new_name)}")
-                print(f"  ✓ 已加入 rocket_links (hy2)")
+                elif p["type"] == "vless":
+                    proxy_cfg.update({
+                        "uuid": u.username if u.username else "",
+                        "cipher": "auto",
+                        "udp": True,
+                        "tls": params.get("security") == "tls",
+                        "reality-opts": {"public-key": params.get("pbk")} if params.get("security") == "reality" else {},
+                        "network": params.get("type", "tcp"),
+                        "skip-cert-verify": True
+                    })
+                    clash_proxies.append(proxy_cfg)
 
-                # Clash 配置
-                proxy_cfg = {
-                    "name": new_name,
-                    "type": "hysteria2",
-                    "server": u.hostname or "127.0.0.1",
-                    "port": safe_int(u.port, 443),
-                    "password": u.username or "",
-                    "sni": urllib.parse.unquote(params.get("sni", u.hostname or "")),
-                    "skip-cert-verify": True
-                }
-                if params.get("up"): proxy_cfg["up"] = params.get("up")
-                if params.get("down"): proxy_cfg["down"] = params.get("down")
+                elif p["type"] == "hysteria2":
+                    # 【核心修正】提取正确的认证密码，对齐 Clash 官方规范
+                    password_str = u.username if u.username else ""
+                    if not password_str and '@' in u.netloc:
+                        password_str = u.netloc.split('@')[0]
 
-                clash_proxies.append(proxy_cfg)
-                print(f"  ✓ 已加入 Clash 配置")
+                    proxy_cfg.update({
+                        "type": "hysteria2",
+                        "password": password_str,
+                        "sni": params.get("sni", u.hostname),
+                        "skip-cert-verify": True,
+                        "alpn": [params.get("alpn")] if params.get("alpn") else ["h3"]
+                    })
+                    clash_proxies.append(proxy_cfg)
 
             except Exception as e:
-                print(f"  ✗ 处理失败: {e}")
                 continue
 
-        region_map[label].append(new_name)
-
-    # ==================== 导出 ====================
-    if rocket_links:
-        sub_content = "\n".join(rocket_links)
-        sub_b64 = base64.b64encode(sub_content.encode('utf-8')).decode('utf-8')
-
-        with open('sub.txt', 'w', encoding='utf-8') as f:
-            f.write(sub_b64)
-        print(f"\n✅ 订阅生成成功: sub.txt 共 {len(rocket_links)} 个节点")
-    else:
-        print("\n⚠️ 没有成功添加任何节点到订阅！")
-
-    print("\n地区统计:")
-    for region, nodes in sorted(region_map.items(), key=lambda x: len(x), reverse=True):
-        print(f"   {region} → {len(nodes)} 个")
-
+    # ==================== 输出文件保存 ====================
+    try:
+        with open('rocket_output.txt', 'w', encoding='utf-8') as f:
+            f.write("\n".join(rocket_links))
+        
+        clash_output = {"proxies": clash_proxies}
+        with open('clash_output.yaml', 'w', encoding='utf-8') as f:
+            yaml.dump(clash_output, f, allow_unicode=True, sort_keys=False)
+            
+        print("✅ 转换重写成功！已生成 rocket_output.txt 和 clash_output.yaml")
+    except Exception as e:
+        print(f"❌ 写入输出文件失败: {e}")
 
 if __name__ == "__main__":
     main()
