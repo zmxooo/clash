@@ -20,7 +20,7 @@ EMOJI_MAP = {
     "阿联酋": "🇦🇪", "土耳其": "🇹🇷",
 }
 
-# ==================== 工具函数 ====================
+# ==================== 工具函数 (保持脚本 A 原型) ====================
 def parse_vmess_b64(b64_part):
     if not isinstance(b64_part, str):
         b64_part = str(b64_part)
@@ -43,7 +43,7 @@ def safe_int(val, default=443):
     except:
         return default
 
-def get_final_label(server, remarks=""):
+def get_final_label(server: str, remarks: str = "") -> str:
     text = urllib.parse.unquote(str(remarks)).lower()
     meta = [
         ("香港", r"hk|hongkong|香港"), ("台湾", r"tw|taiwan|台灣|台湾"),
@@ -56,13 +56,14 @@ def get_final_label(server, remarks=""):
             return f"{EMOJI_MAP.get(name, '🌍')} {name}"
     return "🧿 其他地区"
 
-# ==================== 全协议解析器 (合并修复版) ====================
-def parse_link(link):
+# ==================== 核心解析函数 (兼容 A 的 VMess & B 的 Hy2) ====================
+def parse_link(link: str):
     try:
         link = link.strip()
-        if not link: return None
+        if not link or link.startswith(('import', 'def', '#', 'git')):
+            return None
 
-        # --- 保持 A 脚本 VMess 原有逻辑不动 ---
+        # --- 脚本 A 的原生 VMess 解析逻辑 (确保不消失) ---
         if link.startswith('vmess://'):
             b64_part = link[8:].split('#')[0]
             raw_data = parse_vmess_b64(b64_part)
@@ -76,30 +77,29 @@ def parse_link(link):
                 "original_remarks": data.get("ps", "")
             }
 
-        # --- 参考 B 脚本修复 Hy2 逻辑 ---
-        elif any(link.startswith(p) for p in ['hysteria2://', 'hy2://']):
+        # --- 脚本 B 的 Hy2 修复逻辑 (解决 Hy2 不显示) ---
+        elif any(link.startswith(p) for p in ['hysteria2://', 'hy2://', 'hysteria://']):
             u = urllib.parse.urlparse(link)
+            orig_remarks = link.split('#', 1)[1] if '#' in link else ""
             return {
-                "type": "hysteria2",
+                "type": "hysteria2" if "2" in link or "hy2" in link else "hysteria",
                 "server": u.hostname,
                 "port": u.port or 443,
-                "password": u.username,  # Hy2 必须使用 password 字段
-                "auth": u.username,      # 同时兼容部分旧版字段
+                "password": u.username, # 提取密码
                 "sni": u.hostname,
-                "skip-cert-verify": True,
-                "original_remarks": u.fragment
+                "original_remarks": orig_remarks
             }
 
-        # --- 其他协议 (SS/VLESS/Trojan) ---
+        # --- 基础 SS/Trojan/VLESS 解析 ---
         elif link.startswith(('ss://', 'trojan://', 'vless://')):
             u = urllib.parse.urlparse(link)
+            orig_remarks = link.split('#', 1)[1] if '#' in link else ""
             return {
                 "type": u.scheme,
                 "server": u.hostname,
                 "port": u.port or 443,
-                "password": u.username if u.scheme != "vless" else None,
-                "uuid": u.username if u.scheme == "vless" else None,
-                "original_remarks": u.fragment
+                "password": u.username,
+                "original_remarks": orig_remarks
             }
     except:
         return None
@@ -133,10 +133,10 @@ def main():
         region_count[label] += 1
         new_name = f"{label} {region_count[label]:02d} {CHANNEL_MARK}"
 
-        # Clash 节点构建
+        # --- 构建 Clash Proxy 字典 ---
         if p["type"] == "vmess":
             d = p["raw_data"]
-            proxy = {
+            proxy_item = {
                 "name": new_name,
                 "type": "vmess",
                 "server": d.get("add"),
@@ -144,27 +144,37 @@ def main():
                 "uuid": d.get("id"),
                 "alterId": safe_int(d.get("aid", 0)),
                 "cipher": "auto",
-                "tls": d.get("tls") in ["tls", True, 1],
+                "tls": True if str(d.get("tls")).lower() in ["tls", "1"] else False,
                 "network": d.get("net", "tcp"),
                 "ws-opts": {"path": d.get("path"), "headers": {"Host": d.get("host", "")}} if d.get("net") == "ws" else None
             }
+        elif p["type"] == "hysteria2":
+            proxy_item = {
+                "name": new_name,
+                "type": "hysteria2",
+                "server": p["server"],
+                "port": p["port"],
+                "password": p["password"],
+                "sni": p["sni"],
+                "skip-cert-verify": True,
+                "alpn": ["h3"]
+            }
         else:
-            proxy = {
+            # SS / Trojan / VLESS 基础配置
+            proxy_item = {
                 "name": new_name,
                 "type": p["type"],
                 "server": p["server"],
                 "port": p["port"],
+                "password": p.get("password") if p["type"] != "vless" else None,
+                "uuid": p.get("password") if p["type"] == "vless" else None,
                 "skip-cert-verify": True
             }
-            if p.get("password"): proxy["password"] = p["password"]
-            if p.get("uuid"): proxy["uuid"] = p["uuid"]
-            if p.get("sni"): proxy["sni"] = p["sni"]
-            if p["type"] == "hysteria2": proxy["alpn"] = ["h3"]
 
-        clash_proxies.append(proxy)
+        clash_proxies.append(proxy_item)
 
-    # 导出
-    config = {
+    # 生成最终 YAML
+    clash_config = {
         "proxies": clash_proxies,
         "proxy-groups": [
             {"name": "🚀 自动选择", "type": "url-test", "proxies": [p["name"] for p in clash_proxies], "url": "http://www.gstatic.com/generate_204", "interval": 300},
@@ -174,7 +184,9 @@ def main():
     }
 
     with open('config.yaml', 'w', encoding='utf-8') as f:
-        yaml.dump(config, f, allow_unicode=True, sort_keys=False)
+        yaml.dump(clash_config, f, allow_unicode=True, sort_keys=False)
+
+    print(f"处理完成，生成了 {len(clash_proxies)} 个节点。")
 
 if __name__ == "__main__":
     main()
