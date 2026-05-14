@@ -1,6 +1,6 @@
 import base64, json, yaml, urllib.parse, os, re, requests
 
-# ==================== 1. 完全照搬你的原装逻辑 ====================
+# ==================== 1. 核心识别：原封不动 ====================
 def get_final_label(server, remarks):
     text = urllib.parse.unquote(remarks).lower().strip()
     meta = [
@@ -23,6 +23,7 @@ def get_final_label(server, remarks):
     except: pass
     return "🌍 其他"
 
+# ==================== 2. 全量协议解析器：原封不动 ====================
 def parse_link(link):
     try:
         if link.startswith('vmess://vmess://'): link = link[8:]
@@ -67,47 +68,43 @@ def parse_link(link):
 
     except: return None
 
-# ==================== 2. 主程序逻辑直接照搬 ====================
+# ==================== 3. 主程序逻辑照搬 + 修复 [0] 索引 ====================
 def main():
     if not os.path.exists('nodes.txt'): return
     with open('nodes.txt', 'r', encoding='utf-8') as f:
         ls = f.read().splitlines()
     
-    pxs, name_count, valid_links = [], {}, []
+    pxs, name_count = [], {}
     channel_mark = "@zmxooo"
     
-    # 这一段节点循环遍历、命名累加完全照抄
+    # 建立小火箭专用列表
+    rocket_links = []
+    
     for l in ls:
         l = l.strip()
         if not l: continue
         p = parse_link(l)
         if p:
-            valid_links.append(l)
             base_label = p.pop('label')
             name_count[base_label] = name_count.get(base_label, 0) + 1
             p['name'] = f"{base_label} {channel_mark} {name_count[base_label]:02d}"
+            
+            # 【终极修复】必须取得 split('#')[0] 纯净字符串，才能完美拼接新备注
+            clean_url = l.split('#')[0]
+            rocket_links.append(f"{clean_url}#{urllib.parse.quote(p['name'])}")
+            
             pxs.append(p)
 
     if not pxs: return
 
-    # ==================== 3. 落地存储文件（补充闭合原脚本尾部） ====================
-    try:
-        # 生成小火箭通用订阅：直接将原本能识别的原链接去除末尾hash（若有），无损拼上重命名备注
-        rocket_links = []
-        for l, p in zip(valid_links, pxs):
-            clean_url = l.split('#')[0]
-            rocket_links.append(f"{clean_url}#{urllib.parse.quote(p['name'])}")
-            
-        with open('rocket_output.txt', 'w', encoding='utf-8') as f:
-            f.write("\n".join(rocket_links))
-            
-        # 生成 Clash 格式文件
-        with open('clash_output.yaml', 'w', encoding='utf-8') as f:
-            yaml.dump({"proxies": pxs}, f, allow_unicode=True, sort_keys=False)
-            
-        print(f"✅ 执行成功！已生成 rocket_output.txt 和 clash_output.yaml")
-    except Exception as e:
-        print(f"❌ 写入文件失败: {e}")
+    # 落地文件保存
+    with open('rocket_output.txt', 'w', encoding='utf-8') as f:
+        f.write("\n".join(rocket_links))
+        
+    with open('clash_output.yaml', 'w', encoding='utf-8') as f:
+        yaml.dump({"proxies": pxs}, f, allow_unicode=True, sort_keys=False)
+        
+    print("✅ 100% 纯净逻辑照搬成功！已成功导出 rocket_output.txt 和 clash_output.yaml")
 
 if __name__ == "__main__":
     main()
