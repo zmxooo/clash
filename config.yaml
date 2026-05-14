@@ -8,6 +8,7 @@ proxies:
   alterId: 0
   cipher: auto
   tls: false
+  network: tcp
   name: 🇬🇧 英国 01 @zmxooo
 - type: vmess
   server: 82.198.246.233
@@ -16,6 +17,7 @@ proxies:
   alterId: 0
   cipher: auto
   tls: false
+  network: tcp
   name: 🇺🇸 美国 01 @zmxooo
 - type: vmess
   server: 82.198.246.97
@@ -24,6 +26,7 @@ proxies:
   alterId: 0
   cipher: auto
   tls: false
+  network: tcp
   name: 🇬🇧 英国 02 @zmxooo
 - type: hysteria2
   server: 202.146.222.41
@@ -116,6 +119,7 @@ proxies:
   alterId: 0
   cipher: auto
   tls: false
+  network: tcp
   name: 🇬🇧 英国 03 @zmxooo
 - type: vmess
   server: 82.198.246.233
@@ -124,6 +128,7 @@ proxies:
   alterId: 0
   cipher: auto
   tls: false
+  network: tcp
   name: 🇬🇧 英国 04 @zmxooo
 - type: vmess
   server: 82.198.246.233
@@ -132,6 +137,7 @@ proxies:
   alterId: 0
   cipher: auto
   tls: false
+  network: tcp
   name: 🇬🇧 英国 05 @zmxooo
 - type: vmess
   server: 82.198.246.9
@@ -140,6 +146,7 @@ proxies:
   alterId: 0
   cipher: auto
   tls: false
+  network: tcp
   name: 🇬🇧 英国 06 @zmxooo
 - type: vmess
   server: 82.198.246.233
@@ -148,6 +155,7 @@ proxies:
   alterId: 0
   cipher: auto
   tls: false
+  network: tcp
   name: 🇬🇧 英国 07 @zmxooo
 - type: vmess
   server: 82.198.246.37
@@ -156,6 +164,7 @@ proxies:
   alterId: 0
   cipher: auto
   tls: false
+  network: tcp
   name: 🇬🇧 英国 08 @zmxooo
 - type: vmess
   server: 82.198.246.9
@@ -164,6 +173,7 @@ proxies:
   alterId: 0
   cipher: auto
   tls: false
+  network: tcp
   name: 🇬🇧 英国 09 @zmxooo
 - type: vmess
   server: 82.198.246.214
@@ -172,6 +182,7 @@ proxies:
   alterId: 0
   cipher: auto
   tls: false
+  network: tcp
   name: 🇬🇧 英国 10 @zmxooo
 - type: vmess
   server: 82.198.246.233
@@ -180,6 +191,7 @@ proxies:
   alterId: 0
   cipher: auto
   tls: false
+  network: tcp
   name: 🇬🇧 英国 11 @zmxooo
 - type: vmess
   server: 82.198.246.250
@@ -188,6 +200,7 @@ proxies:
   alterId: 0
   cipher: auto
   tls: false
+  network: tcp
   name: 🇬🇧 英国 12 @zmxooo
 - type: vmess
   server: 82.198.246.214
@@ -196,6 +209,7 @@ proxies:
   alterId: 0
   cipher: auto
   tls: false
+  network: tcp
   name: 🇬🇧 英国 13 @zmxooo
 - type: vmess
   server: 82.198.246.214
@@ -204,6 +218,7 @@ proxies:
   alterId: 0
   cipher: auto
   tls: false
+  network: tcp
   name: 🇺🇸 美国 03 @zmxooo
 - type: vmess
   server: 82.198.246.233
@@ -212,6 +227,7 @@ proxies:
   alterId: 0
   cipher: auto
   tls: false
+  network: tcp
   name: 🇺🇸 美国 04 @zmxooo
 - type: vmess
   server: 82.198.246.9
@@ -220,6 +236,7 @@ proxies:
   alterId: 0
   cipher: auto
   tls: false
+  network: tcp
   name: 🇺🇸 美国 05 @zmxooo
 - type: vmess
   server: 82.198.246.37
@@ -228,6 +245,7 @@ proxies:
   alterId: 0
   cipher: auto
   tls: false
+  network: tcp
   name: 🇺🇸 美国 06 @zmxooo
 - type: ss
   server: 103.186.155.79
@@ -288,17 +306,19 @@ proxies:
   server: v13.zgtfqs.click
   port: 30813
   uuid: cbb3f877-d1fb-344c-87a9-d153bffd5484
-  alterId: 0
+  alterId: 2
   cipher: auto
   tls: false
+  network: tcp
   name: 🇹🇼 台湾 03 @zmxooo
 - type: vmess
   server: v11.zgtfqs.click
   port: 30811
   uuid: cbb3f877-d1fb-344c-87a9-d153bffd5484
-  alterId: 0
+  alterId: 2
   cipher: auto
   tls: false
+  network: tcp
   name: 🇹🇼 台湾 04 @zmxooo
 - type: vmess
   server: 103.127.243.55
@@ -307,6 +327,7 @@ proxies:
   alterId: 0
   cipher: auto
   tls: false
+  network: tcp
   name: 🇯🇵 日本 01 @zmxooo
 - type: ss
   server: 103.186.155.75
@@ -369,6 +390,7 @@ proxies:
   alterId: 0
   cipher: auto
   tls: false
+  network: tcp
   name: 🇩🇪 德国 01 @zmxooo
 - type: vmess
   server: 82.198.246.37
@@ -377,6 +399,7 @@ proxies:
   alterId: 0
   cipher: auto
   tls: false
+  network: tcp
   name: 🇩🇪 德国 02 @zmxooo
 - type: vmess
   server: 82.198.246.233
@@ -385,6 +408,7 @@ proxies:
   alterId: 0
   cipher: auto
   tls: false
+  network: tcp
   name: 🇩🇪 德国 03 @zmxooo
 - type: vmess
   server: 82.198.246.233
@@ -393,6 +417,7 @@ proxies:
   alterId: 0
   cipher: auto
   tls: false
+  network: tcp
   name: 🇩🇪 德国 04 @zmxooo
 - type: vmess
   server: 82.198.246.214
@@ -401,6 +426,7 @@ proxies:
   alterId: 0
   cipher: auto
   tls: false
+  network: tcp
   name: 🇺🇸 美国 11 @zmxooo
 - type: vmess
   server: 82.198.246.9
@@ -409,6 +435,7 @@ proxies:
   alterId: 0
   cipher: auto
   tls: false
+  network: tcp
   name: 🇺🇸 美国 12 @zmxooo
 - type: vmess
   server: 82.198.246.37
@@ -417,6 +444,7 @@ proxies:
   alterId: 0
   cipher: auto
   tls: false
+  network: tcp
   name: 🇺🇸 美国 13 @zmxooo
 - type: vmess
   server: 82.198.246.233
@@ -425,6 +453,7 @@ proxies:
   alterId: 0
   cipher: auto
   tls: false
+  network: tcp
   name: 🇺🇸 美国 14 @zmxooo
 - type: ss
   server: 3.137.174.85
