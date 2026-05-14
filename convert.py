@@ -3,17 +3,28 @@ import json
 import urllib.parse
 import os
 import re
+import requests
+import time
 import yaml
 from collections import defaultdict
 
 CHANNEL_MARK = "@zmxooo"
 
-# ==================== 1. 严格保留脚本 A 的解码语法 ====================
+# ==================== 配置 ====================
+IP_CACHE = {}
+
+EMOJI_MAP = {
+    "香港": "🇭🇰", "台湾": "🇹🇼", "美国": "🇺🇸", "英国": "🇬🇧", "韩国": "🇰🇷",
+    "日本": "🇯🇵", "新加坡": "🇸🇬", "越南": "🇻🇳", "德国": "🇩🇪", "立桃宛": "🇱🇹",
+    "法国": "🇫🇷", "俄罗斯": "🇷🇺", "加拿大": "🇨🇦", "荷兰": "🇳🇱", "澳大利亚": "🇦🇺",
+    "阿联酋": "🇦🇪", "土耳其": "🇹🇷",
+}
+
+# ==================== 工具函数 ====================
 def parse_vmess_b64(b64_part):
     if not isinstance(b64_part, str):
         b64_part = str(b64_part)
-    # 核心修复：只保留 Base64 字符，剔除备注等杂质
-    b64_part = re.sub(r'[^a-zA-Z0-9+/=_-]', '', b64_part.split('#')[0].split('?')[0])
+    b64_part = re.sub(r'[^a-zA-Z0-9+/=_-]', '', b64_part)
     b64_part = b64_part.replace('-', '+').replace('_', '/')
     padding = len(b64_part) % 4
     if padding:
@@ -23,99 +34,125 @@ def parse_vmess_b64(b64_part):
     except:
         return b""
 
+def safe_split(text: str, sep: str, default_val: str = "auto"):
+    if not text:
+        return [default_val, ""]
+    if sep in text:
+        parts = text.split(sep, 1)
+        return parts if len(parts) == 2 else [parts, ""]
+    return [str(text), ""]
+
 def safe_int(val, default=443):
     try:
-        if isinstance(val, int): return val
+        if isinstance(val, int):
+            return val
         clean_val = re.sub(r'\D', '', str(val))
         return int(clean_val) if clean_val else default
-    except: return default
+    except:
+        return default
 
-def get_final_label(server, remarks=""):
+def get_final_label(server: str, remarks: str = "") -> str:
     text = urllib.parse.unquote(str(remarks)).lower()
-    meta = [("香港", r"hk|hong|香港"), ("台湾", r"tw|taiwan|台"), ("美国", r"us|america|美国"), ("日本", r"jp|japan|日本"), ("新加坡", r"sg|singapore|新")]
+    meta = [
+        ("香港", r"hk|hongkong|香港"), ("台湾", r"tw|taiwan|台灣|台湾"),
+        ("美国", r"us|unitedstates|美国|美國"), ("英国", r"gb|uk|britain|英国|英國"),
+        ("韩国", r"kr|korea|韩国|韓國"), ("日本", r"jp|japan|日本"),
+        ("新加坡", r"sg|singapore|新加坡"), ("德国", r"de|germany|德国"),
+        ("立桃宛", r"lt|lithuania|立桃宛|立陶宛"),
+    ]
     for name, pattern in meta:
-        if re.search(pattern, text): return f"🌍 {name}"
+        if re.search(pattern, text):
+            return f"{EMOJI_MAP.get(name, '🌍')} {name}"
+
+    if server and re.match(r'^\d{1,3}(\.\d{1,3}){3}$', server):
+        if server in IP_CACHE:
+            return IP_CACHE[server]
+        try:
+            time.sleep(0.35)
+            resp = requests.get(f"http://ip-api.com/json/{server}?lang=zh-CN", timeout=5)
+            data = resp.json()
+            if data.get("status") == "success":
+                country = data.get("country")
+                label = f"{EMOJI_MAP.get(country, '🌍')} {country}"
+                IP_CACHE[server] = label
+                return label
+        except:
+            pass
     return "🧿 其他地区"
 
-# ==================== 2. 全协议解析 (Hy2 修复补丁) ====================
-def parse_link(link):
-    link = link.strip()
-    if not link: return None
-
+def parse_link(link: str):
     try:
-        # --- VMess 逻辑 (完全回归脚本 A) ---
+        link = link.strip()
+        if not link or link.startswith(('import', 'def', '#', 'git')):
+            return None
+
+        clean_link_str = link.split('#')[0]
+
         if link.startswith('vmess://'):
-            b64_part = link[8:]
+            b64_part = link[8:].split('#')[0]
             raw_data = parse_vmess_b64(b64_part)
-            if not raw_data: return None
+            if not raw_data:
+                return None
             data = json.loads(raw_data.decode('utf-8', 'ignore'))
             return {
-                "type": "vmess", "server": data.get("add"), 
-                "port": data.get("port"), "uuid": data.get("id"),
-                "aid": data.get("aid", 0), "net": data.get("net"),
-                "path": data.get("path"), "host": data.get("host"),
-                "tls": data.get("tls"), "remarks": data.get("ps", "")
+                "type": "vmess",
+                "raw_data": data,
+                "server": data.get("add"),
+                "original_remarks": data.get("ps", "")
             }
-
-        # --- Hy2 逻辑 (移植脚本 B 的修复成果) ---
-        elif link.startswith(('hy2://', 'hysteria2://')):
-            u = urllib.parse.urlparse(link)
-            return {
-                "type": "hysteria2", "server": u.hostname, "port": u.port or 443,
-                "password": u.username, "sni": u.hostname, "remarks": u.fragment
-            }
+        elif link.startswith(('ss://', 'trojan://', 'vless://', 'hysteria2://', 'hy2://')):
+            original_link = link
             
-        # --- 其他协议 ---
-        elif link.startswith(('ss://', 'trojan://', 'vless://')):
-            u = urllib.parse.urlparse(link)
+            if clean_link_str.startswith("hy2://"):
+                clean_link_str = clean_link_str.replace("hy2://", "hysteria2://", 1)
+                
+            u = urllib.parse.urlparse(clean_link_str)
+            
+            orig_remarks = ""
+            if '#' in link:
+                orig_remarks = link.split('#', 1)[1]
+
             return {
-                "type": u.scheme, "server": u.hostname, "port": u.port or 443,
-                "password": u.username, "remarks": u.fragment
+                "type": "hysteria2" if u.scheme in ["hy2", "hysteria2"] else u.scheme,
+                "link_str": original_link.split('#')[0],
+                "url_obj": u,
+                "server": u.hostname,
+                "original_remarks": orig_remarks
             }
-    except: return None
+    except:
+        return None
     return None
 
-# ==================== 3. 主程序 ====================
+# ==================== 主程序 ====================
 def main():
-    if not os.path.exists('nodes.txt'): return
+    if not os.path.exists('nodes.txt'):
+        print("未找到 nodes.txt 文件")
+        return
+
     with open('nodes.txt', 'r', encoding='utf-8', errors='ignore') as f:
-        lines = [l.strip() for l in f if l.strip()]
+        lines = [line.strip() for line in f if line.strip()]
 
-    clash_proxies = []
-    region_count = defaultdict(int)
-
+    seen = set()
+    unique_links = []
     for line in lines:
-        p = parse_link(line)
-        if not p: continue
+        core = line.split('#')[0]
+        if core not in seen:
+            seen.add(core)
+            unique_links.append(line)
 
-        label = get_final_label(p.get("server"), p.get("remarks", ""))
-        region_count[label] += 1
-        name = f"{label} {region_count[label]:02d} {CHANNEL_MARK}"
+    region_map = defaultdict(list)
+    clash_proxies = []
+    rocket_links = []
 
-        if p["type"] == "vmess":
-            clash_proxies.append({
-                "name": name, "type": "vmess", "server": p["server"],
-                "port": safe_int(p["port"]), "uuid": p["uuid"], "alterId": safe_int(p["aid"]),
-                "cipher": "auto", "tls": p["tls"] in ["tls", True, 1],
-                "network": p["net"] or "tcp",
-                "ws-opts": {"path": p["path"], "headers": {"Host": p["host"]}} if p["net"] == "ws" else None
-            })
-        elif p["type"] == "hysteria2":
-            clash_proxies.append({
-                "name": name, "type": "hysteria2", "server": p["server"],
-                "port": safe_int(p["port"]), "password": p["password"],
-                "sni": p["sni"], "skip-cert-verify": True, "alpn": ["h3"]
-            })
-        else:
-            clash_proxies.append({
-                "name": name, "type": p["type"], "server": p["server"],
-                "port": safe_int(p["port"]), "password": p["password"], "uuid": p["password"]
-            })
+    print(f"正在处理去重后的 {len(unique_links)} 个节点...")
 
-    # 输出结果
-    res = {"proxies": clash_proxies, "proxy-groups": [{"name": "节点选择", "type": "select", "proxies": [p["name"] for p in clash_proxies]}]}
-    with open('config.yaml', 'w', encoding='utf-8') as f:
-        yaml.dump(res, f, allow_unicode=True, sort_keys=False)
+    for link in unique_links:
+        p = parse_link(link)
+        if not p or not p.get("server"):
+            continue
 
-if __name__ == "__main__":
-    main()
+        label = get_final_label(p.get("server"), p.get("original_remarks", ""))
+        idx = len(region_map[label]) + 1
+        new_name = f"{label} {idx:02d} {CHANNEL_MARK}"
+
+        if p["type"] == "vmess"
