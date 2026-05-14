@@ -24,6 +24,13 @@ EMOJI_MAP = {
 # 严格适配 Mihomo/Clash 内核标准协议白名单
 SUPPORTED_TYPES = ["vmess", "ss", "trojan", "vless", "hysteria2"]
 
+# Clash 官方内核及内核变体支持的合法 SS 加密方式白名单
+VALID_SS_CIPHERS = [
+    "aes-128-gcm", "aes-192-gcm", "aes-256-gcm",
+    "chacha20-ietf-poly1305", "xchacha20-ietf-poly1305",
+    "aes-128-cfb", "aes-256-cfb", "rc4-md5", "chacha20-ietf"
+]
+
 # ==================== 工具函数 ====================
 def parse_vmess_b64(b64_part):
     """安全解码 Base64 字符串并自动补齐填充位"""
@@ -74,7 +81,7 @@ def get_final_label(server: str, remarks: str = "") -> str:
     return "🧿 其他地区"
 
 def parse_link(link: str):
-    """【防错升级】引入安全机制解包，对解析中发生的异常协议强制剔除"""
+    """引入高容错安全解析状态机，防止奇葩参数导致解包位移崩溃"""
     try:
         link = link.strip()
         if not link or link.startswith(('import', 'def', '#', 'git')):
@@ -107,7 +114,7 @@ def parse_link(link: str):
         if proto not in SUPPORTED_TYPES:
             return None
 
-        # 提取更干净的主机名（过滤自带的端口干扰）
+        # 提取主机名，剥离内嵌端口干扰
         hostname = parsed.hostname or parsed.netloc.split('@')[-1].split(':')[0]
         return {
             "label": get_final_label(hostname, raw_ps),
@@ -118,7 +125,7 @@ def parse_link(link: str):
         return None
 
 def clean_clash_proxy(p, new_name):
-    """【类型防错锁】强制所有端口转型为 int，重构安全型 SS 双轨解析层"""
+    """【最终修复版】强制整型端口锁定，完美破译新老版本的一体化 Base64 Shadowsocks 格式"""
     if not p or p.get("type") not in SUPPORTED_TYPES:
         return None
 
@@ -129,7 +136,7 @@ def clean_clash_proxy(p, new_name):
                 "name": new_name,
                 "type": "vmess",
                 "server": data.get("add"),
-                "port": int(data.get("port", 443)), # 强锁整型
+                "port": int(data.get("port", 443)),
                 "uuid": data.get("id"),
                 "alterId": int(data.get("aid", 0)),
                 "cipher": "auto",
@@ -144,7 +151,7 @@ def clean_clash_proxy(p, new_name):
         parsed = urllib.parse.urlparse(raw_url)
         queries = dict(urllib.parse.parse_qsl(parsed.query))
 
-        # 稳健提取端口，避免 null 的发生
+        # 稳健提取强转数值端口，杜绝 null 字段
         try:
             port_val = int(parsed.port) if parsed.port else int(parsed.netloc.split(':')[-1].split('?')[0])
         except:
@@ -161,19 +168,29 @@ def clean_clash_proxy(p, new_name):
         }
 
         if p['type'] == "ss":
-            if parsed.username and parsed.password:
-                item.update({"cipher": parsed.username, "password": parsed.password})
+            # 模式 A: 明文标准型标准解包
+            if parsed.username and parsed.password and parsed.username.lower() in VALID_SS_CIPHERS:
+                item.update({"cipher": parsed.username.lower(), "password": parsed.password})
             else:
-                # 触发高级 SS 模块防崩溃：解决 Base64 旧合并包解密
-                userinfo_encoded = parsed.netloc.split('@')[0]
-                try:
-                    user_info = parse_vmess_b64(userinfo_encoded).decode('utf-8', 'ignore')
-                    if ':' in user_info:
-                        item["cipher"], item["password"] = user_info.split(':', 1)
-                    else:
-                        item.update({"cipher": "aes-256-gcm", "password": userinfo_encoded})
-                except:
-                    item.update({"cipher": "aes-256-gcm", "password": userinfo_encoded})
+                # 模式 B: 新型一体化 Base64 块拦截重组
+                userinfo_encoded = parsed.netloc.split('@')[0] if '@' in parsed.netloc else parsed.netloc.split('/')[0].split('?')[0]
+                if ':' in userinfo_encoded and userinfo_encoded.split(':')[0].lower() in VALID_SS_CIPHERS:
+                    item.update({"cipher": userinfo_encoded.split(':')[0].lower(), "password": userinfo_encoded.split(':', 1)[1]})
+                else:
+                    try:
+                        # 全量对齐解密机制，深度剥离错配
+                        user_info = parse_vmess_b64(userinfo_encoded).decode('utf-8', 'ignore')
+                        if ':' in user_info:
+                            cipher_part, password_part = user_info.split(':', 1)
+                            if cipher_part.lower() in VALID_SS_CIPHERS:
+                                item["cipher"] = cipher_part.lower()
+                                item["password"] = password_part
+                            else:
+                                return None  # 加密方法不合法，直接阻断
+                        else:
+                            return None
+                    except:
+                        return None
             
         elif p['type'] == "trojan":
             item.update({
@@ -204,6 +221,10 @@ def clean_clash_proxy(p, new_name):
                 "skip-cert-verify": True
             })
             
+        # 安全闭环双校验：不通过白名单的加密模型严禁写回
+        if p['type'] == "ss" and item.get("cipher") not in VALID_SS_CIPHERS:
+            return None
+            
         if not item.get("server") or not item.get("type") or not item.get("port"):
             return None
             
@@ -214,7 +235,7 @@ def clean_clash_proxy(p, new_name):
 # ==================== 主程序 ====================
 def main():
     if not os.path.exists('nodes.txt'):
-        print("❌ 核心致命错误：未能在当前工作路径下寻寻找源节点文件 nodes.txt")
+        print("❌ 未在当前工作路径下寻找源节点文件 nodes.txt")
         return
 
     with open('nodes.txt', 'r', encoding='utf-8', errors='ignore') as f:
