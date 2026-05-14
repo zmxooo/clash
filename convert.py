@@ -22,7 +22,6 @@ EMOJI_MAP = {
 
 # ==================== 工具函数 ====================
 def parse_vmess_b64(b64_part):
-    """过滤非法字符并实现高容错 Base64 解码"""
     if not isinstance(b64_part, str):
         b64_part = str(b64_part)
     b64_part = re.sub(r'[^a-zA-Z0-9+/=_-]', '', b64_part)
@@ -36,7 +35,6 @@ def parse_vmess_b64(b64_part):
         return b""
 
 def safe_split(text: str, sep: str, default_val: str = "auto"):
-    """安全字符串分割，高级降级防御"""
     if not text:
         return [default_val, ""]
     if sep in text:
@@ -45,7 +43,6 @@ def safe_split(text: str, sep: str, default_val: str = "auto"):
     return [text, ""]
 
 def safe_int(val, default=443):
-    """安全整数转换，彻底消灭端口非数字闪退"""
     try:
         if isinstance(val, int):
             return val
@@ -55,7 +52,6 @@ def safe_int(val, default=443):
         return default
 
 def get_final_label(server: str, remarks: str = "") -> str:
-    """国家/地区 Emoji 智能打标"""
     text = urllib.parse.unquote(str(remarks)).lower()
     meta = [
         ("香港", r"hk|hongkong|香港"), ("台湾", r"tw|taiwan|台灣|台湾"),
@@ -82,17 +78,17 @@ def get_final_label(server: str, remarks: str = "") -> str:
                 return label
         except:
             pass
-    return "🧿 其他地区"
+    return f"🌍 {server}" if server else "🧿 其他地区"
 
 def parse_link(link: str):
-    """精准、安全的节点协议基础字段提取器"""
+    """【工业级核心修复】精准剥离列表，提取纯粹的单体字符串类型 URL"""
     try:
         link = link.strip()
         if not link or link.startswith(('import', 'def', '#', 'git')):
             return None
 
-        # 【核心修复 1】必须提取索引 0，确保拿到纯净的 URL 字符串，彻底碾碎 Python 列表残留符号
-        clean_link = link.split('#')[0]
+        # 核心修复 1：提取索引 0 保证获取到的是纯粹的单体 String，彻底粉碎 Python 列表残留
+        clean_link_str = link.split('#')[0]
 
         if link.startswith('vmess://'):
             b64_part = link[8:].split('#')[0]
@@ -107,11 +103,14 @@ def parse_link(link: str):
                 "original_remarks": data.get("ps", "")
             }
         elif link.startswith(('ss://', 'trojan://', 'vless://', 'hysteria2://', 'hy2://')):
-            u = urllib.parse.urlparse(clean_link)
-            proto = u.scheme if u.scheme != "hy2" else "hysteria2"
+            # 核心修复 2：在 urlparse 之前就将简写协议强刷对齐为工业标准头
+            if clean_link_str.startswith("hy2://"):
+                clean_link_str = clean_link_str.replace("hy2://", "hysteria2://", 1)
+                
+            u = urllib.parse.urlparse(clean_link_str)
             return {
-                "type": proto,
-                "link": str(clean_link), # 确保是纯字符格式
+                "type": "hysteria2" if u.scheme == "hy2" else u.scheme,
+                "link_str": str(clean_link_str),
                 "url_obj": u,
                 "server": u.hostname,
                 "original_remarks": urllib.parse.unquote(u.fragment) if u.fragment else ""
@@ -141,7 +140,7 @@ def main():
     clash_proxies = []
     rocket_links = []
 
-    print("🔄 正在运行高压力模拟校验并完成工业级转换...")
+    print("🔄 正在进行工业级无死角节点重构与全面对齐...")
 
     for link in unique_links:
         p = parse_link(link)
@@ -180,7 +179,7 @@ def main():
             u = p["url_obj"]
             qs = urllib.parse.parse_qs(u.query)
             
-            # 【核心修复 2】从 parse_qs 的 List 结果中精准降维提取字符串值，彻底防止 List 数据流入 Clash YAML 导致崩溃
+            # 核心修复 3：遍历并彻底粉碎 List 结构，精准抓取首个字符串，消灭 YAML 方括号
             params = {}
             for k, v in qs.items():
                 if v and isinstance(v, list):
@@ -188,12 +187,7 @@ def main():
                 elif v:
                     params[k] = str(v)
 
-            # 【核心修复 3】强制修正非标准简写。将小火箭不认识的 hy2:// 转换回官方唯一合规的 hysteria2:// 前缀
-            base_uri = p['link']
-            if base_uri.startswith("hy2://"):
-                base_uri = base_uri.replace("hy2://", "hysteria2://", 1)
-
-            # 【核心修复 4】以绝对干净、剔除了方括号的纯文本拼接通用订阅连接
+            base_uri = p['link_str']
             rocket_links.append(f"{base_uri}#{urllib.parse.quote(new_name)}")
             
             proxy_cfg = {
@@ -322,10 +316,10 @@ def main():
 
         with open('clash.yaml', 'w', encoding='utf-8') as f:
             yaml.dump(clash_config, f, allow_unicode=True, sort_keys=False)
-        print("✅ Premium 分流级 Clash 配置文件已成功写入: clash.yaml")
+        print("✅ Premium 分流级 Clash 配置文件已完美生成: clash.yaml")
 
     print("\n📊 最终运行地区成功统计:")
-    for region, nodes in sorted(region_map.items(), key=lambda x: len(x[1]), reverse=True):
+    for region, nodes in sorted(region_map.items(), key=lambda x: len(x), reverse=True):
         print(f"   {region} → {len(nodes)} 个")
 
 
