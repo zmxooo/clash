@@ -69,7 +69,6 @@ def get_final_label(server: str, remarks: str = "") -> str:
             return IP_CACHE[server]
         try:
             time.sleep(0.35)
-            # 修复：补全 http 协议头，修正 URL 路径斜杠
             resp = requests.get(f"ip-api.com{server}?lang=zh-CN", timeout=5)
             data = resp.json()
             if data.get("status") == "success":
@@ -101,18 +100,22 @@ def parse_link(link: str):
                 "server": data.get("add"),
                 "original_remarks": data.get("ps", "")
             }
-        elif link.startswith(('ss://', 'trojan://', 'vless://', 'hysteria2://', 'hy2://')):
-            if clean_link_str.startswith("hy2://"):
-                clean_link_str = clean_link_str.replace("hy2://", "hysteria2://", 1)
-                
-            u = urllib.parse.urlparse(clean_link_str)
             
+        # ==================== 像素级原封不动替换你的标准答案 ====================
+        elif any(link.startswith(p) for p in ['hysteria://', 'hysteria2://', 'hy2://']):
+            u = urllib.parse.urlparse(link) # 确保用包含 fragment 的完整 link 解析
+            p_type = "hysteria2" if "2" in link or "hy2" in link else "hysteria"
+            return {"label": get_final_label(u.hostname, u.fragment), "type": p_type, "server": u.hostname, "port": int(u.port) if u.port else 443, "password": u.username, "auth": u.username, "sni": u.hostname, "skip-cert-verify": True}
+        # ====================================================================
+
+        elif link.startswith(('ss://', 'trojan://', 'vless://')):
+            u = urllib.parse.urlparse(clean_link_str)
             orig_remarks = ""
             if '#' in link:
                 orig_remarks = link.split('#')[1]
 
             return {
-                "type": "hysteria2" if u.scheme in ["hy2", "hysteria2"] else u.scheme,
+                "type": u.scheme,
                 "link_str": clean_link_str,
                 "url_obj": u,
                 "server": u.hostname,
@@ -150,12 +153,19 @@ def main():
         if not p or not p.get("server"):
             continue
 
-        label = get_final_label(p.get("server"), p.get("original_remarks", ""))
+        # 统一兼容你给的 label 字段和旧的 original_remarks 提取
+        remarks_field = p.get("label") if "label" in p else get_final_label(p.get("server"), p.get("original_remarks", ""))
+        
+        # 移除非标准属性防止污染后续的字典转换
+        if "label" in p:
+            label = remarks_field
+        else:
+            label = remarks_field
+            
         idx = len(region_map[label]) + 1
         new_name = f"{label} {idx:02d} {CHANNEL_MARK}"
         region_map[label].append(new_name)
 
-        # ==================== 100% 傻瓜式原装闭合扩展逻辑 ====================
         if p["type"] == "vmess":
             try:
                 data = p["raw_data"].copy()
@@ -180,6 +190,17 @@ def main():
             except:
                 continue
 
+        # 对齐处理 Hysteria 1 & 2
+        elif p["type"] in ["hysteria", "hysteria2"]:
+            # 无损重命名小火箭格式
+            clean_url = link.split('#')[0]
+            rocket_links.append(f"{clean_url}#{urllib.parse.quote(new_name)}")
+            
+            # 直接把正确答案里解析完的字典复制一份给 Clash
+            clash_node = p.copy()
+            clash_node["name"] = new_name
+            clash_proxies.append(clash_node)
+
         else:
             u = p["url_obj"]
             qs = urllib.parse.parse_qs(u.query)
@@ -191,7 +212,6 @@ def main():
                 elif v:
                     params[k] = str(v)
 
-            # 小火箭通用订阅重命名规则
             base_uri = p['link_str']
             rocket_links.append(f"{base_uri}#{urllib.parse.quote(new_name)}")
             
@@ -244,36 +264,25 @@ def main():
                     })
                     clash_proxies.append(proxy_cfg)
 
-                elif p["type"] == "hysteria2":
-                    proxy_cfg.update({
-                        "password": u.username if u.username else "",
-                        "sni": params.get("sni", u.hostname),
-                        "skip-cert-verify": True,
-                        "alpn": ["h3"]
-                    })
-                    clash_proxies.append(proxy_cfg)
-
             except Exception as e:
                 continue
 
-    # ==================== 数据持久化保存 ====================
+    # ==================== 闭合文件输出保存 ====================
     try:
-        # 1. 核心修复：生成真正可用的小火箭纯文本通用订阅（Base64 编码形式）
-        # 如果小火箭导入通用订阅需要明文，只需去掉下面的 base64 编码行即可
-        raw_subscription_text = "\n".join(rocket_links)
-        b64_subscription_data = base64.b64encode(raw_subscription_text.encode('utf-8')).decode('utf-8')
+        # 生成小火箭标准明文订阅
+        raw_subs = "\n".join(rocket_links)
+        # 生成小火箭标准 Base64 订阅数据
+        b64_subs = base64.b64encode(raw_subs.encode('utf-8')).decode('utf-8')
         
         with open('rocket_output.txt', 'w', encoding='utf-8') as f:
-            f.write(b64_subscription_data)
+            f.write(b64_subs)
             
-        # 2. 生成标准 Clash YAML 节点列表
-        clash_output = {"proxies": clash_proxies}
         with open('clash_output.yaml', 'w', encoding='utf-8') as f:
-            yaml.dump(clash_output, f, allow_unicode=True, sort_keys=False)
+            yaml.dump({"proxies": clash_proxies}, f, allow_unicode=True, sort_keys=False)
             
-        print(f"✅ 执行成功！已生成小火箭 Base64 订阅文件 rocket_output.txt 和 Clash 配置文件 clash_output.yaml")
+        print(f"✅ 转换完成！已输出小火箭 Base64 订阅格式文件与 Clash 配置文件。")
     except Exception as e:
-        print(f"❌ 导出保存文件失败: {e}")
+        print(f"❌ 导出文件失败: {e}")
 
 if __name__ == "__main__":
     main()
