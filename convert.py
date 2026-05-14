@@ -42,7 +42,7 @@ def get_final_label(server, remarks):
     try:
         # 限制请求频率，防止被 API 封锁
         time.sleep(0.1) 
-        response = requests.get(f"http://ip-api.com/json/{server}?lang=zh-CN", timeout=5).json()
+        response = requests.get(f"http://ip-api.com{server}?lang=zh-CN", timeout=5).json()
         if response.get("status") == "success":
             country = response.get("country")
             label = f"{EMOJI_MAP.get(country, '🌍')} {country}"
@@ -62,7 +62,7 @@ def fix_base64(s):
 
 def rebuild_node(link, new_name):
     """
-    重构节点：剥离一切原始信息，强制使用标准格式和新命名
+    重构节点：剥离一切原始信息，强制使用标准格式 and 新命名
     """
     try:
         # --- VMess 协议重构 ---
@@ -144,71 +144,56 @@ def main():
     # 读取并初步清洗链接
     with open('nodes.txt', 'r', encoding='utf-8') as f:
         # 只保留包含协议头的行，并去重
-        raw_links = list(dict.fromkeys([l.strip() for l in f if "://" in l]))
+        links = list(set([line.strip() for line in f if "://" in line]))
 
-    region_map = defaultdict(list)
     clash_proxies = []
-    rocket_links = []
+    proxy_names = []
+    country_counters = defaultdict(int)
 
-    print("开始处理节点...")
-
-    # 第一轮：预解析，确定国家并分配编号
-    node_previews = []
-    for l in raw_links:
-        # 这里仅为了获取国家 label
-        if l.startswith('vmess://'):
-            try:
-                b64 = l[8:].split('#')[0]
-                d = json.loads(base64.b64decode(fix_base64(b64)).decode('utf-8', 'ignore'))
-                lbl = get_final_label(d.get("add"), d.get("ps", ""))
-            except: continue
-        else:
-            u = urllib.parse.urlparse(l)
-            rem = l.split('#')[1] if '#' in l else ""
-            lbl = get_final_label(u.hostname, rem)
+    for link in links:
+        # 预解析获取真实的节点国家标签
+        temp_label, _, _ = rebuild_node(link, "temp")
+        if not temp_label:
+            continue
+            
+        # 提取国家名称进行计数器累加
+        country_name = temp_label.split()[-1] if " " in temp_label else temp_label
+        country_counters[country_name] += 1
         
-        node_previews.append((l, lbl))
-
-    # 第二轮：正式生成重构后的数据
-    for l, lbl in node_previews:
-        idx = len(region_map[lbl]) + 1
-        new_name = f"{lbl} {idx:02d} {CHANNEL_MARK}"
+        # 严格使用你预设的命名拼接规则
+        new_name = f"{temp_label} {country_counters[country_name]:02d} {CHANNEL_MARK}"
         
-        label, proxy, r_link = rebuild_node(l, new_name)
-        if proxy and r_link:
-            region_map[label].append(new_name)
+        # 正式重构并提取 Clash 节点对象
+        _, proxy, _ = rebuild_node(link, new_name)
+        if proxy:
             clash_proxies.append(proxy)
-            rocket_links.append(r_link)
+            proxy_names.append(new_name)
 
-    # 导出 index.html (通用 Base64 订阅)
-    if rocket_links:
-        with open('index.html', 'w', encoding='utf-8') as f:
-            sub_text = "\n".join(rocket_links)
-            f.write(base64.b64encode(sub_text.encode('utf-8')).decode('utf-8'))
+    yaml_path = 'config.yaml'
+    config_data = {}
+    
+    # 如果 config.yaml 存在则读取，不存在则初始化结构
+    if os.path.exists(yaml_path):
+        with open(yaml_path, 'r', encoding='utf-8') as f:
+            try:
+                config_data = yaml.safe_load(f) or {}
+            except:
+                pass
 
-    # 导出 clash_config.yaml
-    if clash_proxies:
-        active_regions = list(region_map.keys())
-        # 构建分组
-        groups = [
-            {"name": "🚀 节点选择", "type": "select", "proxies": ["🎬 自动选择"] + active_regions + ["DIRECT"]},
-            {"name": "🎬 自动选择", "type": "url-test", "url": TEST_URL, "interval": 300, "proxies": [p['name'] for p in clash_proxies]}
-        ]
-        for r in active_regions:
-            groups.append({"name": r, "type": "url-test", "url": TEST_URL, "interval": 300, "proxies": region_map[r]})
+    # 将生成的代理数据注入配置字典
+    config_data["proxies"] = clash_proxies
+    if "proxy-groups" not in config_data:
+        config_data["proxy-groups"] = [{"name": "🚀 节点选择", "type": "select", "proxies": []}]
+    
+    for group in config_data["proxy-groups"]:
+        if group.get("name") == "🚀 节点选择":
+            group["proxies"] = proxy_names
 
-        config = {
-            "mixed-port": 7890,
-            "allow-lan": True,
-            "mode": "rule",
-            "proxies": clash_proxies,
-            "proxy-groups": groups,
-            "rules": ["MATCH,🚀 节点选择"]
-        }
-        with open('clash_config.yaml', 'w', encoding='utf-8') as f:
-            yaml.dump(config, f, allow_unicode=True, sort_keys=False)
-
-    print(f"✅ 处理完成！成功生成 {len(rocket_links)} 个节点。")
+    # 物理覆盖写入 config.yaml 文件
+    with open(yaml_path, 'w', encoding='utf-8') as f:
+        yaml.dump(config_data, f, allow_unicode=True, sort_keys=False)
+    
+    print(f"✅ 成功将 {len(clash_proxies)} 个节点自动写入到 config.yaml")
 
 if __name__ == "__main__":
     main()
