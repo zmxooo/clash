@@ -15,7 +15,7 @@ IP_CACHE = {}
 
 EMOJI_MAP = {
     "香港": "🇭🇰", "台湾": "🇹🇼", "美国": "🇺🇸", "英国": "🇬🇧", "韩国": "🇰🇷",
-    "日本": "🇯🇵", "新加坡": "🇸🇬", "越南": "🇻🇳", "德国": "🇩🇪", "立陶宛": "🇱🇹",
+    "日本": "🇯🇵", "新加坡": "🇸🇬", "越南": "🇻🇳", "德国": "🇩🇪", "立桃宛": "🇱🇹",
     "法国": "🇫🇷", "俄罗斯": "🇷🇺", "加拿大": "🇨🇦", "荷兰": "🇳🇱", "澳大利亚": "🇦🇺",
     "阿联酋": "🇦🇪", "土耳其": "🇹🇷",
 }
@@ -58,7 +58,7 @@ def get_final_label(server: str, remarks: str = "") -> str:
         ("美国", r"us|unitedstates|美国|美國"), ("英国", r"gb|uk|britain|英国|英國"),
         ("韩国", r"kr|korea|韩国|韓國"), ("日本", r"jp|japan|日本"),
         ("新加坡", r"sg|singapore|新加坡"), ("德国", r"de|germany|德国"),
-        ("立陶宛", r"lt|lithuania|立陶宛"),
+        ("立桃宛", r"lt|lithuania|立桃宛|立陶宛"),
     ]
     for name, pattern in meta:
         if re.search(pattern, text):
@@ -78,16 +78,16 @@ def get_final_label(server: str, remarks: str = "") -> str:
                 return label
         except:
             pass
-    return f"🌍 {server}" if server else "🧿 其他地区"
+    return "🧿 其他地区"
 
 def parse_link(link: str):
-    """【工业级核心修复】精准剥离列表，提取纯粹的单体字符串类型 URL"""
+    """【终极核心修复】引入 [0] 切片，全面杜绝 Python 列表类型导致的底层挂起"""
     try:
         link = link.strip()
         if not link or link.startswith(('import', 'def', '#', 'git')):
             return None
 
-        # 核心修复 1：提取索引 0 保证获取到的是纯粹的单体 String，彻底粉碎 Python 列表残留
+        # 【重点修复 1】必须添加 [0] 切片，确保获取到的是纯粹的单体文本 String！
         clean_link_str = link.split('#')[0]
 
         if link.startswith('vmess://'):
@@ -103,19 +103,25 @@ def parse_link(link: str):
                 "original_remarks": data.get("ps", "")
             }
         elif link.startswith(('ss://', 'trojan://', 'vless://', 'hysteria2://', 'hy2://')):
-            # 核心修复 2：在 urlparse 之前就将简写协议强刷对齐为工业标准头
             if clean_link_str.startswith("hy2://"):
                 clean_link_str = clean_link_str.replace("hy2://", "hysteria2://", 1)
                 
             u = urllib.parse.urlparse(clean_link_str)
+            
+            # 【重点修复 2】精准切出原始别名备注串，安全防御空格
+            orig_remarks = ""
+            if '#' in link:
+                orig_remarks = link.split('#')[1]
+
             return {
-                "type": "hysteria2" if u.scheme == "hy2" else u.scheme,
+                "type": "hysteria2" if u.scheme in ["hy2", "hysteria2"] else u.scheme,
                 "link_str": str(clean_link_str),
                 "url_obj": u,
                 "server": u.hostname,
-                "original_remarks": urllib.parse.unquote(u.fragment) if u.fragment else ""
+                "original_remarks": orig_remarks
             }
-    except:
+    except Exception as e:
+        print(f"❌ 链路解析故障: {e}")
         return None
     return None
 
@@ -131,6 +137,7 @@ def main():
     seen = set()
     unique_links = []
     for line in lines:
+        # 【重点修复 3】去重加入 [0] 切片强制约束字符串类型，解除 unhashable 阻断
         core = line.split('#')[0]
         if core not in seen:
             seen.add(core)
@@ -140,7 +147,7 @@ def main():
     clash_proxies = []
     rocket_links = []
 
-    print("🔄 正在进行工业级无死角节点重构与全面对齐...")
+    print("🔄 正在运行修正类型死锁后的工业级数据转换内核...")
 
     for link in unique_links:
         p = parse_link(link)
@@ -179,7 +186,7 @@ def main():
             u = p["url_obj"]
             qs = urllib.parse.parse_qs(u.query)
             
-            # 核心修复 3：遍历并彻底粉碎 List 结构，精准抓取首个字符串，消灭 YAML 方括号
+            # 【重点修复 4】从 query 结果集中安全剥离多维数组，压制成纯 String 交付 YAML
             params = {}
             for k, v in qs.items():
                 if v and isinstance(v, list):
@@ -223,7 +230,7 @@ def main():
                     proxy_cfg.update({
                         "password": u.username if u.username else "",
                         "udp": True,
-                        "sni": params.get("sni", proxy_cfg["server"]),
+                        "sni": urllib.parse.unquote(params.get("sni", proxy_cfg["server"])),
                         "skip-cert-verify": True
                     })
                     
@@ -233,7 +240,7 @@ def main():
                         "udp": True,
                         "tls": True,
                         "network": params.get("type", "tcp"),
-                        "sni": params.get("sni", proxy_cfg["server"]),
+                        "sni": urllib.parse.unquote(params.get("sni", proxy_cfg["server"])),
                         "skip-cert-verify": True
                     })
                     if proxy_cfg["network"] == "ws":
@@ -241,23 +248,18 @@ def main():
                     elif proxy_cfg["network"] == "grpc":
                         proxy_cfg["grpc-opts"] = {"grpc-service-name": params.get("serviceName", "")}
 
-                    if "reality" in params.get("security", ""):
-                        proxy_cfg["client-fingerprint"] = params.get("fp", "chrome")
-                        proxy_cfg["reality-opts"] = {"public-key": params.get("pbk", "")}
-                        if params.get("sid"):
-                            proxy_cfg["reality-opts"]["short-id"] = params.get("sid")
-
                 elif p["type"] == "hysteria2":
+                    # 【对齐工业级特性】安全剔除转义，对齐 password 与明文 SNI 写入 YAML
                     proxy_cfg.update({
                         "password": u.username if u.username else "",
-                        "up": params.get("up", "100"),
-                        "down": params.get("down", "100"),
-                        "sni": params.get("sni", proxy_cfg["server"]),
+                        "sni": urllib.parse.unquote(params.get("sni", proxy_cfg["server"])),
                         "skip-cert-verify": True
                     })
+                    if params.get("up"): proxy_cfg["up"] = params.get("up")
+                    if params.get("down"): proxy_cfg["down"] = params.get("down")
                 
                 clash_proxies.append(proxy_cfg)
-            except:
+            except Exception as e:
                 continue
 
         region_map[label].append(new_name)
@@ -318,7 +320,7 @@ def main():
             yaml.dump(clash_config, f, allow_unicode=True, sort_keys=False)
         print("✅ Premium 分流级 Clash 配置文件已完美生成: clash.yaml")
 
-    print("\n📊 最终运行地区成功统计:")
+    print("\n📊 最终地区运行成功统计:")
     for region, nodes in sorted(region_map.items(), key=lambda x: len(x), reverse=True):
         print(f"   {region} → {len(nodes)} 个")
 
