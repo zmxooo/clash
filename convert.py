@@ -65,6 +65,7 @@ def parse_link(link):
         
         if link.startswith('vmess://'):
             # 处理 Base64 及其填充
+            # 🛠️ 预见性精准修复：恢复被错丢的 [0] 索引，使其变回字符串
             b64_part = link[8:].split('#')[0]
             padding = len(b64_part) % 4
             if padding:
@@ -138,6 +139,7 @@ def main():
                 new_json = json.dumps(d, separators=(',', ':')).encode('utf-8')
                 rocket_links.append(f"vmess://{base64.b64encode(new_json).decode('utf-8')}")
             else:
+                # 🛠️ 预见性精准修复：恢复非 Vmess 链接切除尾部备注的 [0] 索引
                 clean_url = l.split('#')[0]
                 rocket_links.append(f"{clean_url}#{urllib.parse.quote(new_name)}")
 
