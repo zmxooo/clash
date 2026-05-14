@@ -65,6 +65,7 @@ def parse_link(link: str):
         if not link or link.startswith(('import', 'def', '#', 'git')):
             return None
 
+        # vmess
         if link.startswith('vmess://'):
             b64_part = link[8:].split('#')[0]
             raw_data = parse_vmess_b64(b64_part)
@@ -77,8 +78,9 @@ def parse_link(link: str):
                 "original_remarks": data.get("ps", "")
             }
 
-        # 支持 vless、ss、trojan、clw 等
-        elif any(link.startswith(p) for p in ['vless://', 'ss://', 'trojan://', 'hysteria2://', 'tuic://', 'clw://']):
+        # 支持所有常见协议（关键修复）
+        protocols = ['vless://', 'ss://', 'trojan://', 'hysteria2://', 'hy2://', 'tuic://', 'clw://']
+        if any(link.startswith(p) for p in protocols):
             if '#' in link:
                 main_part, fragment = link.split('#', 1)
                 remarks = urllib.parse.unquote(fragment)
@@ -97,7 +99,8 @@ def parse_link(link: str):
                     _, server_port = auth_part.split('@', 1)
                     if ':' in server_port:
                         server = server_port.split(':')[0]
-                        port = int(server_port.split(':')[1].split('?')[0])
+                        port_str = server_port.split(':')[1].split('?')[0]
+                        port = int(port_str)
 
             return {
                 "type": "other",
@@ -120,18 +123,17 @@ def main():
     with open('nodes.txt', 'r', encoding='utf-8', errors='ignore') as f:
         lines = [line.strip() for line in f if line.strip()]
 
-    # ==================== 恢复最初的简单去重 ====================
+    # 最初的简单去重方式
     seen = set()
     unique_links = []
     for line in lines:
-        core = line.split('#')[0]          # 只取 # 前的部分
+        core = line.split('#')[0]
         if core not in seen:
             seen.add(core)
             unique_links.append(line)
 
     print(f"🔄 原始节点 {len(lines)} 个 → 去重后 {len(unique_links)} 个")
 
-    # ==================== 处理节点 ====================
     region_map = defaultdict(list)
     clash_proxies = []
     rocket_links = []
@@ -139,7 +141,7 @@ def main():
     for link in unique_links:
         p = parse_link(link)
         if not p:
-            continue
+            continue   # hy2 之前就是在这里被过滤掉的
 
         label = get_final_label(p.get("server"), p.get("original_remarks", ""))
         new_name = f"{label} {len(region_map[label]) + 1:02d} {CHANNEL_MARK}"
@@ -164,7 +166,6 @@ def main():
                 "network": data.get("net", "tcp"),
             })
         else:
-            # vless、ss、trojan、clw 等
             clean = link.split('#')[0]
             rocket_links.append(f"{clean}#{urllib.parse.quote(new_name)}")
 
@@ -202,8 +203,7 @@ def main():
         yaml.dump(clash_config, f, allow_unicode=True, sort_keys=False)
 
     print(f"\n🎉 处理完成！最终生成 {len(rocket_links)} 个节点")
-    print("   sub.txt  (订阅链接)")
-    print("   clash.yaml (配置)")
+    print(f"   hy2 / hysteria2 节点已支持")
 
 
 if __name__ == "__main__":
