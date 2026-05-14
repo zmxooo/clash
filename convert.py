@@ -78,7 +78,6 @@ def parse_link(link: str):
                 "original_remarks": data.get("ps", "")
             }
 
-        # 支持所有常见协议（关键修复）
         protocols = ['vless://', 'ss://', 'trojan://', 'hysteria2://', 'hy2://', 'tuic://', 'clw://']
         if any(link.startswith(p) for p in protocols):
             if '#' in link:
@@ -92,7 +91,6 @@ def parse_link(link: str):
             server = u.hostname
             port = u.port
 
-            # vless 特殊格式处理
             if not server and '@' in u.path:
                 auth_part = u.path.lstrip('/')
                 if '@' in auth_part:
@@ -123,7 +121,6 @@ def main():
     with open('nodes.txt', 'r', encoding='utf-8', errors='ignore') as f:
         lines = [line.strip() for line in f if line.strip()]
 
-    # 最初的简单去重方式
     seen = set()
     unique_links = []
     for line in lines:
@@ -141,7 +138,7 @@ def main():
     for link in unique_links:
         p = parse_link(link)
         if not p:
-            continue   # hy2 之前就是在这里被过滤掉的
+            continue
 
         label = get_final_label(p.get("server"), p.get("original_remarks", ""))
         new_name = f"{label} {len(region_map[label]) + 1:02d} {CHANNEL_MARK}"
@@ -165,46 +162,111 @@ def main():
                 "skip-cert-verify": True,
                 "network": data.get("net", "tcp"),
             })
+        elif link.startswith('ss://'):
+            clean = link.split('#')[0]
+            rocket_links.append(f"{clean}#{urllib.parse.quote(new_name)}")
+            try:
+                u = urllib.parse.urlparse(clean)
+                user_info_b64 = u.username
+                user_info_b64 += "=" * (-len(user_info_b64) % 4)
+                user_info = base64.b64decode(user_info_b64).decode('utf-8')
+                method, password = user_info.split(':', 1)
+                clash_proxies.append({
+                    "name": new_name, "type": "ss", "server": u.hostname,
+                    "port": u.port, "cipher": method, "password": password, "udp": True
+                })
+            except: pass
         else:
             clean = link.split('#')[0]
             rocket_links.append(f"{clean}#{urllib.parse.quote(new_name)}")
 
         region_map[label].append(new_name)
 
-    # ==================== 导出 ====================
     if not rocket_links:
         print("⚠️ 没有有效节点")
         return
 
+    # ==================== 策略组完善 (核心修改) ====================
+    all_proxies = [p["name"] for p in clash_proxies]
+    
+    # 地区列表辅助
+    regions = [
+        {"name": "🇭🇰 香港", "icon": "🌐 香港"},
+        {"name": "🇹🇼 台湾", "icon": "🌐 台湾"},
+        {"name": "🇯🇵 日本", "icon": "🌐 日本"},
+        {"name": "🇰🇷 韩国", "icon": "🌐 韩国"},
+        {"name": "🇺🇸 美国", "icon": "🌐 美国"},
+        {"name": "🇸🇬 新加坡", "icon": "🌐 新加坡"}
+    ]
+
+    proxy_groups = []
+    
+    # 1. 自动选择 (全节点)
+    proxy_groups.append({
+        "name": "⚡ 自动选择",
+        "type": "url-test",
+        "proxies": all_proxies,
+        "url": TEST_URL,
+        "interval": 300
+    })
+
+    # 2. 地区分组 (仅当该地区有节点时才创建分组)
+    region_group_names = []
+    for reg in regions:
+        nodes = region_map.get(reg["name"], [])
+        if nodes:
+            proxy_groups.append({
+                "name": reg["icon"],
+                "type": "url-test",
+                "proxies": nodes,
+                "url": TEST_URL,
+                "interval": 300
+            })
+            region_group_names.append(reg["icon"])
+
+    # 3. 其他地区
+    others = region_map.get("🧿 其他地区", [])
+    if others:
+        proxy_groups.append({
+            "name": "🌐 其他地区",
+            "type": "url-test",
+            "proxies": others,
+            "url": TEST_URL,
+            "interval": 300
+        })
+        region_group_names.append("🌐 其他地区")
+
+    # 4. 汇总的主选择组
+    main_select_proxies = ["⚡ 自动选择", "DIRECT"] + region_group_names + all_proxies
+    proxy_groups.insert(0, {
+        "name": "🚀 节点选择",
+        "type": "select",
+        "proxies": main_select_proxies
+    })
+
+    # ==================== 导出文件 ====================
     sub_content = "\n".join(rocket_links)
     sub_b64 = base64.b64encode(sub_content.encode('utf-8')).decode('utf-8')
-
     with open('sub.txt', 'w', encoding='utf-8') as f:
         f.write(sub_b64)
-
-    # Clash 配置
-    all_proxies = [p["name"] for p in clash_proxies]
-    proxy_groups = [
-        {"name": "🚀 全局选择", "type": "select", "proxies": all_proxies},
-        {"name": "🌐 香港", "type": "url-test", "proxies": region_map.get("🇭🇰 香港", []), "url": TEST_URL, "interval": 300},
-        {"name": "🌐 美国", "type": "url-test", "proxies": region_map.get("🇺🇸 美国", []), "url": TEST_URL, "interval": 300},
-        {"name": "🌐 其他", "type": "url-test", "proxies": region_map.get("🧿 其他地区", []), "url": TEST_URL, "interval": 300},
-    ]
 
     clash_config = {
         "mixed-port": 7890,
         "mode": "rule",
         "proxies": clash_proxies,
         "proxy-groups": proxy_groups,
-        "rules": ["GEOIP,CN,DIRECT", "MATCH,🚀 全局选择"]
+        "rules": [
+            "DOMAIN-SUFFIX,google.com,🚀 节点选择",
+            "DOMAIN-KEYWORD,github,🚀 节点选择",
+            "GEOIP,CN,DIRECT",
+            "MATCH,🚀 节点选择"
+        ]
     }
 
     with open('clash.yaml', 'w', encoding='utf-8') as f:
         yaml.dump(clash_config, f, allow_unicode=True, sort_keys=False)
 
     print(f"\n🎉 处理完成！最终生成 {len(rocket_links)} 个节点")
-    print(f"   hy2 / hysteria2 节点已支持")
-
 
 if __name__ == "__main__":
     main()
