@@ -33,108 +33,108 @@ proxies:
   type: hysteria2
   server: 202.146.222.41
   port: 443
-  skip-cert-verify: true
   password: qQe1z5kU8kN6SlKnDt9Ru3Qp
   sni: 202.146.222.41
+  skip-cert-verify: true
   alpn:
   - h3
 - name: 🇭🇰 香港 02 @zmxooo
   type: hysteria2
   server: 202.146.222.13
   port: 443
-  skip-cert-verify: true
   password: qQe1z5kU8kN6SlKnDt9Ru3Qp
   sni: 202.146.222.13
+  skip-cert-verify: true
   alpn:
   - h3
 - name: 🇭🇰 香港 03 @zmxooo
   type: hysteria2
   server: 202.146.222.93
   port: 443
-  skip-cert-verify: true
   password: qQe1z5kU8kN6SlKnDt9Ru3Qp
   sni: 202.146.222.93
+  skip-cert-verify: true
   alpn:
   - h3
 - name: 🇭🇰 香港 04 @zmxooo
   type: hysteria2
   server: 202.146.222.89
   port: 443
-  skip-cert-verify: true
   password: qQe1z5kU8kN6SlKnDt9Ru3Qp
   sni: 202.146.222.89
+  skip-cert-verify: true
   alpn:
   - h3
 - name: 🇭🇰 香港 05 @zmxooo
   type: hysteria2
   server: 202.146.222.11
   port: 443
-  skip-cert-verify: true
   password: qQe1z5kU8kN6SlKnDt9Ru3Qp
   sni: 202.146.222.11
+  skip-cert-verify: true
   alpn:
   - h3
 - name: 🇭🇰 香港 06 @zmxooo
   type: hysteria2
   server: 202.146.222.29
   port: 443
-  skip-cert-verify: true
   password: qQe1z5kU8kN6SlKnDt9Ru3Qp
   sni: 202.146.222.29
+  skip-cert-verify: true
   alpn:
   - h3
 - name: 🇭🇰 香港 07 @zmxooo
   type: hysteria2
   server: 202.146.222.16
   port: 443
-  skip-cert-verify: true
   password: qQe1z5kU8kN6SlKnDt9Ru3Qp
   sni: 202.146.222.16
+  skip-cert-verify: true
   alpn:
   - h3
 - name: 🇭🇰 香港 08 @zmxooo
   type: hysteria2
   server: 202.146.222.85
   port: 443
-  skip-cert-verify: true
   password: qQe1z5kU8kN6SlKnDt9Ru3Qp
   sni: 202.146.222.85
+  skip-cert-verify: true
   alpn:
   - h3
 - name: 🇭🇰 香港 09 @zmxooo
   type: hysteria2
   server: 202.146.222.45
   port: 443
-  skip-cert-verify: true
   password: qQe1z5kU8kN6SlKnDt9Ru3Qp
   sni: 202.146.222.45
+  skip-cert-verify: true
   alpn:
   - h3
 - name: 🇹🇼 台湾 01 @zmxooo
   type: hysteria2
   server: 160.187.100.109
   port: 443
-  skip-cert-verify: true
   password: qQe1z5kU8kN6SlKnDt9Ru3Qp
   sni: 160.187.100.109
+  skip-cert-verify: true
   alpn:
   - h3
 - name: 🇹🇼 台湾 02 @zmxooo
   type: hysteria2
   server: 43.200.123.45
   port: 443
-  skip-cert-verify: true
   password: qQe1z5kU8kN6SlKnDt9Ru3Qp
   sni: 43.200.123.45
+  skip-cert-verify: true
   alpn:
   - h3
 - name: 🇺🇸 美国 02 @zmxooo
   type: hysteria2
   server: 23.144.12.162
   port: 443
-  skip-cert-verify: true
   password: qQe1z5kU8kN6SlKnDt9Ru3Qp
   sni: 23.144.12.162
+  skip-cert-verify: true
   alpn:
   - h3
 - name: 🇬🇧 英国 03 @zmxooo
@@ -291,57 +291,74 @@ proxies:
   type: ss
   server: 103.186.155.79
   port: 38388
-  skip-cert-verify: true
   password: YWVzLTI1Ni1jZmI6WG44aktkbURNMDBJZU8lIyQjZkpBTXRzRUFFVU9wSC9ZV1l0WXFERm5UMFNW
+  uuid: null
+  skip-cert-verify: true
 - name: 🧿 其他地区 02 @zmxooo
   type: ss
   server: 103.186.155.75
   port: 38388
-  skip-cert-verify: true
   password: YWVzLTI1Ni1jZmI6WG44aktkbURNMDBJZU8lIyQjZkpBTXRzRUFFVU9wSC9ZV1l0WXFERm5UMFNW
+  uuid: null
+  skip-cert-verify: true
 - name: 🧿 其他地区 03 @zmxooo
   type: ss
   server: 103.186.155.109
   port: 38388
-  skip-cert-verify: true
   password: YWVzLTI1Ni1jZmI6WG44aktkbURNMDBJZU8lIyQjZkpBTXRzRUFFVU9wSC9ZV1l0WXFERm5UMFNW
+  uuid: null
+  skip-cert-verify: true
 - name: 🧿 其他地区 04 @zmxooo
   type: ss
   server: 103.186.155.8
   port: 38388
-  skip-cert-verify: true
   password: YWVzLTI1Ni1jZmI6WG44aktkbURNMDBJZU8lIyQjZkpBTXRzRUFFVU9wSC9ZV1l0WXFERm5UMFNW
+  uuid: null
+  skip-cert-verify: true
 - name: 🧿 其他地区 05 @zmxooo
   type: ss
   server: 103.186.155.49
   port: 38388
-  skip-cert-verify: true
   password: YWVzLTI1Ni1jZmI6WG44aktkbURNMDBJZU8lIyQjZkpBTXRzRUFFVU9wSC9ZV1l0WXFERm5UMFNW
+  uuid: null
+  skip-cert-verify: true
 - name: 🇺🇸 美国 07 @zmxooo
   type: ss
   server: 34.229.121.217
   port: 80
-  skip-cert-verify: true
   password: YWVzLTI1Ni1nY206ZGFkYTEyMDM
+  uuid: null
+  skip-cert-verify: true
 - name: 🇺🇸 美国 08 @zmxooo
   type: ss
   server: 3.137.174.85
   port: 443
-  skip-cert-verify: true
   password: YWVzLTI1Ni1jZmI6YW1hem9uc2tyMDU
+  uuid: null
+  skip-cert-verify: true
 - name: 🇺🇸 美国 09 @zmxooo
   type: ss
   server: 3.144.123.157
   port: 443
-  skip-cert-verify: true
   password: YWVzLTI1Ni1jZmI6YW1hem9uc2tyMDU
+  uuid: null
+  skip-cert-verify: true
 - name: 🇰🇷 韩国 01 @zmxooo
   type: hysteria2
   server: vpn-kr-003.fastervpn.world
   port: 443
-  skip-cert-verify: true
   password: qQe1z5kU8kN6SlKnDt9Ru3Qp
   sni: vpn-kr-003.fastervpn.world
+  skip-cert-verify: true
+  alpn:
+  - h3
+- name: 🇩🇪 德国 01 @zmxooo
+  type: hysteria2
+  server: 5.83.129.90
+  port: 54177
+  password: null
+  sni: 5.83.129.90
+  skip-cert-verify: true
   alpn:
   - h3
 - name: 🇹🇼 台湾 03 @zmxooo
@@ -378,39 +395,45 @@ proxies:
   type: trojan
   server: 172.66.44.230
   port: 8443
-  skip-cert-verify: true
   password: 8r%3C%5B9%27l6hAO%238ZQi
+  uuid: null
+  skip-cert-verify: true
 - name: 🇰🇷 韩国 02 @zmxooo
   type: trojan
   server: 220.118.248.123
   port: 18001
-  skip-cert-verify: true
   password: 8r%3C%5B9%27l6hAO%238ZQi
+  uuid: null
+  skip-cert-verify: true
 - name: 🇰🇷 韩国 03 @zmxooo
   type: trojan
   server: 183.107.78.213
   port: 20880
-  skip-cert-verify: true
   password: 8r%3C%5B9%27l6hAO%238ZQi
+  uuid: null
+  skip-cert-verify: true
 - name: 🇰🇷 韩国 04 @zmxooo
   type: trojan
   server: 59.16.228.103
   port: 18469
-  skip-cert-verify: true
   password: 8r%3C%5B9%27l6hAO%238ZQi
+  uuid: null
+  skip-cert-verify: true
 - name: 🇰🇷 韩国 05 @zmxooo
   type: trojan
   server: 59.0.95.106
   port: 32773
-  skip-cert-verify: true
   password: 8r%3C%5B9%27l6hAO%238ZQi
+  uuid: null
+  skip-cert-verify: true
 - name: 🇰🇷 韩国 06 @zmxooo
   type: trojan
   server: 59.12.232.18
   port: 12345
-  skip-cert-verify: true
   password: 8r%3C%5B9%27l6hAO%238ZQi
-- name: 🇩🇪 德国 01 @zmxooo
+  uuid: null
+  skip-cert-verify: true
+- name: 🇩🇪 德国 02 @zmxooo
   type: vmess
   server: 82.198.246.9
   port: 180
@@ -420,7 +443,7 @@ proxies:
   tls: false
   network: tcp
   ws-opts: null
-- name: 🇩🇪 德国 02 @zmxooo
+- name: 🇩🇪 德国 03 @zmxooo
   type: vmess
   server: 82.198.246.37
   port: 180
@@ -430,7 +453,7 @@ proxies:
   tls: false
   network: tcp
   ws-opts: null
-- name: 🇩🇪 德国 03 @zmxooo
+- name: 🇩🇪 德国 04 @zmxooo
   type: vmess
   server: 82.198.246.233
   port: 180
@@ -440,7 +463,7 @@ proxies:
   tls: false
   network: tcp
   ws-opts: null
-- name: 🇩🇪 德国 04 @zmxooo
+- name: 🇩🇪 德国 05 @zmxooo
   type: vmess
   server: 82.198.246.233
   port: 180
@@ -494,20 +517,23 @@ proxies:
   type: ss
   server: 82.38.31.155
   port: 8080
-  skip-cert-verify: true
   password: Y2hhY2hhMjAtaWV0Zi1wb2x5MTMwNTpvWklvQTY5UTh5aGNRVjhrYTNQYTNB
+  uuid: null
+  skip-cert-verify: true
 - name: 🇬🇧 英国 15 @zmxooo
   type: ss
   server: 82.38.31.35
   port: 8080
-  skip-cert-verify: true
   password: Y2hhY2hhMjAtaWV0Zi1wb2x5MTMwNTpvWklvQTY5UTh5aGNRVjhrYTNQYTNB
+  uuid: null
+  skip-cert-verify: true
 - name: 🧿 其他地区 10 @zmxooo
   type: trojan
   server: lt-sin.ltdns.top
   port: 37043
-  skip-cert-verify: true
   password: abb011d5-2749-4fba-9a66-0eb7b1b14d1e
+  uuid: null
+  skip-cert-verify: true
 proxy-groups:
 - name: 🚀 自动选择
   type: url-test
@@ -551,6 +577,7 @@ proxy-groups:
   - 🇺🇸 美国 08 @zmxooo
   - 🇺🇸 美国 09 @zmxooo
   - 🇰🇷 韩国 01 @zmxooo
+  - 🇩🇪 德国 01 @zmxooo
   - 🇹🇼 台湾 03 @zmxooo
   - 🇹🇼 台湾 04 @zmxooo
   - 🇯🇵 日本 01 @zmxooo
@@ -560,10 +587,10 @@ proxy-groups:
   - 🇰🇷 韩国 04 @zmxooo
   - 🇰🇷 韩国 05 @zmxooo
   - 🇰🇷 韩国 06 @zmxooo
-  - 🇩🇪 德国 01 @zmxooo
   - 🇩🇪 德国 02 @zmxooo
   - 🇩🇪 德国 03 @zmxooo
   - 🇩🇪 德国 04 @zmxooo
+  - 🇩🇪 德国 05 @zmxooo
   - 🧿 其他地区 06 @zmxooo
   - 🧿 其他地区 07 @zmxooo
   - 🧿 其他地区 08 @zmxooo
@@ -615,6 +642,7 @@ proxy-groups:
   - 🇺🇸 美国 08 @zmxooo
   - 🇺🇸 美国 09 @zmxooo
   - 🇰🇷 韩国 01 @zmxooo
+  - 🇩🇪 德国 01 @zmxooo
   - 🇹🇼 台湾 03 @zmxooo
   - 🇹🇼 台湾 04 @zmxooo
   - 🇯🇵 日本 01 @zmxooo
@@ -624,10 +652,10 @@ proxy-groups:
   - 🇰🇷 韩国 04 @zmxooo
   - 🇰🇷 韩国 05 @zmxooo
   - 🇰🇷 韩国 06 @zmxooo
-  - 🇩🇪 德国 01 @zmxooo
   - 🇩🇪 德国 02 @zmxooo
   - 🇩🇪 德国 03 @zmxooo
   - 🇩🇪 德国 04 @zmxooo
+  - 🇩🇪 德国 05 @zmxooo
   - 🧿 其他地区 06 @zmxooo
   - 🧿 其他地区 07 @zmxooo
   - 🧿 其他地区 08 @zmxooo
