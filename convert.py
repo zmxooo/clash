@@ -8,7 +8,10 @@ import time
 import yaml
 from collections import defaultdict
 
+# 频道水印
 CHANNEL_MARK = "@zmxooo"
+
+# ==================== 配置 ====================
 
 IP_CACHE = {}
 
@@ -33,25 +36,60 @@ EMOJI_MAP = {
 }
 
 
-# ==================== BASE64 ====================
+# ==================== Base64 ====================
 
-def parse_base64(data: str):
+def parse_vmess_b64(b64_part):
+
+    if not isinstance(b64_part, str):
+        b64_part = str(b64_part)
+
+    b64_part = re.sub(
+        r'[^a-zA-Z0-9+/=_-]',
+        '',
+        b64_part
+    )
+
+    b64_part = (
+        b64_part
+        .replace('-', '+')
+        .replace('_', '/')
+    )
+
+    padding = len(b64_part) % 4
+
+    if padding:
+        b64_part += "=" * (4 - padding)
+
     try:
-        data = re.sub(r'[^A-Za-z0-9+/=_-]', '', str(data))
-        data = data.replace('-', '+').replace('_', '/')
-
-        padding = len(data) % 4
-
-        if padding:
-            data += '=' * (4 - padding)
-
-        return base64.b64decode(data)
+        return base64.b64decode(b64_part)
 
     except:
-        return b''
+        return b""
 
 
-# ==================== INT ====================
+# ==================== 安全转换 ====================
+
+def safe_split(
+        text: str,
+        sep: str,
+        default_val: str = "auto"
+):
+
+    if not text:
+        return [default_val, ""]
+
+    if sep in text:
+
+        parts = text.split(sep, 1)
+
+        return (
+            parts
+            if len(parts) == 2
+            else [parts[0], ""]
+        )
+
+    return [str(text), ""]
+
 
 def safe_int(val, default=443):
 
@@ -60,29 +98,20 @@ def safe_int(val, default=443):
         if isinstance(val, int):
             return val
 
-        val = re.sub(r'\D', '', str(val))
+        clean_val = re.sub(
+            r'\D',
+            '',
+            str(val)
+        )
 
-        return int(val) if val else default
+        return (
+            int(clean_val)
+            if clean_val
+            else default
+        )
 
     except:
         return default
-
-
-# ==================== 清理 SNI ====================
-
-def clean_sni(sni: str):
-
-    if not sni:
-        return ""
-
-    sni = urllib.parse.unquote(str(sni)).strip()
-
-    if "://" in sni:
-        sni = sni.split("://", 1)[1]
-
-    sni = sni.split('/')[0]
-
-    return sni
 
 
 # ==================== 清理 URI ====================
@@ -96,22 +125,25 @@ def clean_base_uri(link: str):
             parsed.scheme,
             parsed.netloc,
             parsed.path,
-            '',
+            "",
             parsed.query,
-            ''
+            ""
         )
     )
 
 
-# ==================== 国家识别 ====================
+# ==================== 国家标签 ====================
 
-def get_country_label(server: str, remarks: str = ""):
+def get_final_label(
+        server: str,
+        remarks: str = ""
+):
 
     text = urllib.parse.unquote(
         str(remarks)
     ).lower()
 
-    rules = [
+    meta = [
         ("香港", r"hk|hongkong|香港"),
         ("台湾", r"tw|taiwan|台灣|台湾"),
         ("美国", r"us|unitedstates|美国|美國"),
@@ -123,11 +155,14 @@ def get_country_label(server: str, remarks: str = ""):
         ("立陶宛", r"lt|lithuania|立陶宛"),
     ]
 
-    for country, pattern in rules:
+    for name, pattern in meta:
 
         if re.search(pattern, text):
 
-            return f"{EMOJI_MAP.get(country, '🌍')} {country}"
+            return (
+                f"{EMOJI_MAP.get(name, '🌍')} "
+                f"{name}"
+            )
 
     if server and re.match(
             r'^\d{1,3}(\.\d{1,3}){3}$',
@@ -150,10 +185,7 @@ def get_country_label(server: str, remarks: str = ""):
 
             if data.get("status") == "success":
 
-                country = data.get(
-                    "country",
-                    "其他地区"
-                )
+                country = data.get("country")
 
                 label = (
                     f"{EMOJI_MAP.get(country, '🌍')} "
@@ -170,132 +202,156 @@ def get_country_label(server: str, remarks: str = ""):
     return "🧿 其他地区"
 
 
-# ==================== VMESS ====================
-
-def parse_vmess(link: str):
-
-    try:
-
-        raw = link[8:].split('#')[0]
-
-        decoded = parse_base64(raw)
-
-        if not decoded:
-            return None
-
-        data = json.loads(
-            decoded.decode(
-                'utf-8',
-                'ignore'
-            )
-        )
-
-        return {
-            "type": "vmess",
-            "data": data,
-            "server": data.get("add"),
-            "remarks": data.get("ps", "")
-        }
-
-    except:
-        return None
-
-
-# ==================== HYSTERIA ====================
-
-def parse_hysteria(link: str):
-
-    try:
-
-        parsed = urllib.parse.urlparse(link)
-
-        query = urllib.parse.parse_qs(
-            parsed.query
-        )
-
-        proto = (
-            "hysteria2"
-            if parsed.scheme in [
-                "hy2",
-                "hysteria2"
-            ]
-            else "hysteria"
-        )
-
-        sni = clean_sni(
-            query.get(
-                "sni",
-                [parsed.hostname]
-            )[0]
-        )
-
-        return {
-            "type": proto,
-            "server": parsed.hostname,
-            "port": parsed.port or 443,
-            "password": urllib.parse.unquote(
-                parsed.username or ""
-            ),
-            "query": query,
-            "sni": sni,
-            "raw_link": link,
-            "remarks": parsed.fragment
-        }
-
-    except:
-        return None
-
-
-# ==================== 标准协议 ====================
-
-def parse_standard(link: str):
-
-    try:
-
-        parsed = urllib.parse.urlparse(link)
-
-        return {
-            "type": parsed.scheme,
-            "server": parsed.hostname,
-            "url": parsed,
-            "query": urllib.parse.parse_qs(
-                parsed.query
-            ),
-            "raw_link": link,
-            "remarks": parsed.fragment
-        }
-
-    except:
-        return None
-
-
-# ==================== 协议识别 ====================
+# ==================== 协议解析 ====================
 
 def parse_link(link: str):
 
-    link = link.strip()
-
-    if not link:
-        return None
-
     try:
 
-        if link.startswith("vmess://"):
-            return parse_vmess(link)
+        link = link.strip()
+
+        if (
+                not link
+                or link.startswith((
+                    'import',
+                    'def',
+                    '#',
+                    'git'
+                ))
+        ):
+            return None
+
+        clean_link_str = link.split('#')[0]
+
+        # ==================== Hysteria ====================
+
+        if any(link.startswith(p) for p in [
+            'hysteria://',
+            'hysteria2://',
+            'hy2://'
+        ]):
+
+            u = urllib.parse.urlparse(link)
+
+            p_type = (
+                "hysteria2"
+                if "2" in link or "hy2" in link
+                else "hysteria"
+            )
+
+            q = urllib.parse.parse_qs(
+                u.query
+            )
+
+            raw_sni = q.get(
+                "sni",
+                [u.hostname]
+            )[0]
+
+            raw_sni = urllib.parse.unquote(
+                raw_sni
+            )
+
+            if "://" in raw_sni:
+
+                raw_sni = (
+                    raw_sni
+                    .split("://")[-1]
+                    .split("/")[0]
+                )
+
+            return {
+                "label": get_final_label(
+                    u.hostname,
+                    u.fragment
+                ),
+                "type": p_type,
+                "server": (
+                    u.hostname
+                    if u.hostname
+                    else "127.0.0.1"
+                ),
+                "port": (
+                    int(u.port)
+                    if u.port
+                    else 443
+                ),
+                "password": (
+                    urllib.parse.unquote(
+                        u.username
+                    )
+                    if u.username
+                    else ""
+                ),
+                "auth": (
+                    urllib.parse.unquote(
+                        u.username
+                    )
+                    if u.username
+                    else ""
+                ),
+                "sni": raw_sni,
+                "skip-cert-verify": True,
+                "raw_link": link
+            }
+
+        # ==================== VMESS ====================
+
+        elif link.startswith('vmess://'):
+
+            b64_part = (
+                link[8:]
+                .split('#')[0]
+            )
+
+            raw_data = parse_vmess_b64(
+                b64_part
+            )
+
+            if not raw_data:
+                return None
+
+            data = json.loads(
+                raw_data.decode(
+                    'utf-8',
+                    'ignore'
+                )
+            )
+
+            return {
+                "type": "vmess",
+                "raw_data": data,
+                "server": data.get("add"),
+                "original_remarks": data.get(
+                    "ps",
+                    ""
+                )
+            }
+
+        # ==================== 其他协议 ====================
 
         elif link.startswith((
-                "hy2://",
-                "hysteria://",
-                "hysteria2://"
+                'ss://',
+                'trojan://',
+                'vless://'
         )):
-            return parse_hysteria(link)
 
-        elif link.startswith((
-                "ss://",
-                "trojan://",
-                "vless://"
-        )):
-            return parse_standard(link)
+            u = urllib.parse.urlparse(
+                clean_link_str
+            )
+
+            orig_remarks = ""
+
+            if '#' in link:
+                orig_remarks = link.split('#')[1]
+
+            return {
+                "type": u.scheme,
+                "link_str": clean_link_str,
+                "url_obj": u,
+                "server": u.hostname,
+                "original_remarks": orig_remarks
+            }
 
     except:
         return None
@@ -303,284 +359,36 @@ def parse_link(link: str):
     return None
 
 
-# ==================== VMESS -> CLASH ====================
-
-def build_vmess_clash(node_name, data):
-
-    network = data.get("net", "tcp")
-
-    proxy = {
-        "name": node_name,
-        "type": "vmess",
-        "server": data.get("add", "127.0.0.1"),
-        "port": safe_int(
-            data.get("port"),
-            443
-        ),
-        "uuid": data.get("id", ""),
-        "alterId": safe_int(
-            data.get("aid"),
-            0
-        ),
-        "cipher": "auto",
-        "udp": True,
-        "tls": str(
-            data.get("tls", "")
-        ).lower() in [
-            "tls",
-            "1",
-            "true"
-        ],
-        "skip-cert-verify": True,
-        "network": network
-    }
-
-    host = data.get("host", "")
-    path = data.get("path", "/")
-
-    if host:
-        proxy["servername"] = host
-
-    if network == "ws":
-
-        proxy["ws-opts"] = {
-            "path": path,
-            "headers": {
-                "Host": host
-            }
-        }
-
-    elif network == "grpc":
-
-        proxy["grpc-opts"] = {
-            "grpc-service-name": path
-        }
-
-    elif network == "h2":
-
-        proxy["h2-opts"] = {
-            "host": [host] if host else [],
-            "path": path
-        }
-
-    return proxy
-
-
-# ==================== VLESS -> CLASH ====================
-
-def build_vless_clash(node_name, parsed):
-
-    u = parsed["url"]
-
-    q = parsed["query"]
-
-    security = q.get(
-        "security",
-        [""]
-    )[0]
-
-    network = q.get(
-        "type",
-        ["tcp"]
-    )[0]
-
-    proxy = {
-        "name": node_name,
-        "type": "vless",
-        "server": u.hostname or "127.0.0.1",
-        "port": safe_int(u.port, 443),
-        "uuid": u.username or "",
-        "udp": True,
-        "tls": security in [
-            "tls",
-            "reality"
-        ],
-        "network": network,
-        "skip-cert-verify": True
-    }
-
-    if q.get("sni"):
-
-        proxy["servername"] = q[
-            "sni"
-        ][0]
-
-    if network == "ws":
-
-        proxy["ws-opts"] = {
-            "path": q.get(
-                "path",
-                ["/"]
-            )[0],
-            "headers": {
-                "Host": q.get(
-                    "host",
-                    [""]
-                )[0]
-            }
-        }
-
-    if security == "reality":
-
-        proxy["reality-opts"] = {
-            "public-key": q.get(
-                "pbk",
-                [""]
-            )[0],
-            "short-id": q.get(
-                "sid",
-                [""]
-            )[0]
-        }
-
-        proxy["client-fingerprint"] = q.get(
-            "fp",
-            ["chrome"]
-        )[0]
-
-    return proxy
-
-
-# ==================== TROJAN -> CLASH ====================
-
-def build_trojan_clash(node_name, parsed):
-
-    u = parsed["url"]
-
-    q = parsed["query"]
-
-    proxy = {
-        "name": node_name,
-        "type": "trojan",
-        "server": u.hostname or "127.0.0.1",
-        "port": safe_int(u.port, 443),
-        "password": u.username or "",
-        "udp": True,
-        "skip-cert-verify": True,
-        "sni": q.get(
-            "sni",
-            [u.hostname]
-        )[0]
-    }
-
-    return proxy
-
-
-# ==================== SS -> CLASH ====================
-
-def build_ss_clash(node_name, parsed):
-
-    u = parsed["url"]
-
-    method = "aes-256-gcm"
-
-    password = ""
-
-    server = u.hostname
-
-    port = safe_int(u.port, 443)
-
-    try:
-
-        if '@' in u.netloc:
-
-            userinfo = u.netloc.split('@')[0]
-
-            if ':' in userinfo:
-
-                method, password = userinfo.split(
-                    ':',
-                    1
-                )
-
-            else:
-
-                decoded = parse_base64(
-                    userinfo
-                ).decode(
-                    'utf-8',
-                    'ignore'
-                )
-
-                method, password = decoded.split(
-                    ':',
-                    1
-                )
-
-        else:
-
-            decoded = parse_base64(
-                u.netloc
-            ).decode(
-                'utf-8',
-                'ignore'
-            )
-
-            if '@' in decoded:
-
-                userinfo, hostinfo = decoded.split(
-                    '@',
-                    1
-                )
-
-                method, password = userinfo.split(
-                    ':',
-                    1
-                )
-
-                if ':' in hostinfo:
-
-                    server, p = hostinfo.rsplit(
-                        ':',
-                        1
-                    )
-
-                    port = safe_int(p, 443)
-
-    except:
-        pass
-
-    return {
-        "name": node_name,
-        "type": "ss",
-        "server": server or "127.0.0.1",
-        "port": port,
-        "cipher": method,
-        "password": password,
-        "udp": True
-    }
-
-
 # ==================== 主程序 ====================
 
 def main():
 
-    if not os.path.exists("nodes.txt"):
+    if not os.path.exists('nodes.txt'):
 
-        print("❌ 未找到 nodes.txt")
+        print("❌ 未找到 nodes.txt 文件")
 
         return
 
     with open(
-            "nodes.txt",
-            "r",
-            encoding="utf-8",
-            errors="ignore"
+            'nodes.txt',
+            'r',
+            encoding='utf-8',
+            errors='ignore'
     ) as f:
 
-        raw_lines = [
-            x.strip()
-            for x in f
-            if x.strip()
+        lines = [
+            line.strip()
+            for line in f
+            if line.strip()
         ]
 
-    # 去重
+    # ==================== 去重 ====================
 
     seen = set()
 
     unique_links = []
 
-    for line in raw_lines:
+    for line in lines:
 
         core = clean_base_uri(line)
 
@@ -590,276 +398,531 @@ def main():
 
             unique_links.append(line)
 
-    print(
-        f"🔄 去重后节点数量: "
-        f"{len(unique_links)}"
-    )
-
     region_map = defaultdict(list)
-
-    rocket_links = []
 
     clash_proxies = []
 
-    # ==================== 开始处理 ====================
+    rocket_links = []
+
+    print(
+        f"🔄 正在处理去重后的 "
+        f"{len(unique_links)} 个节点..."
+    )
+
+    # ==================== 节点处理 ====================
 
     for link in unique_links:
 
-        parsed = parse_link(link)
+        p = parse_link(link)
 
-        if not parsed:
+        if not p or not p.get("server"):
             continue
 
-        label = get_country_label(
-            parsed.get("server"),
-            parsed.get("remarks", "")
-        )
+        # 地区标签
+
+        if "label" in p:
+
+            label = p["label"]
+
+        else:
+
+            label = get_final_label(
+                p.get("server"),
+                p.get(
+                    "original_remarks",
+                    ""
+                )
+            )
 
         idx = len(region_map[label]) + 1
 
-        node_name = (
+        new_name = (
             f"{label} "
             f"{idx:02d} "
             f"{CHANNEL_MARK}"
         )
 
-        region_map[label].append(node_name)
+        region_map[label].append(new_name)
 
-        try:
+        # ==================== VMESS ====================
 
-            # ==================== VMESS ====================
+        if p["type"] == "vmess":
 
-            if parsed["type"] == "vmess":
+            try:
 
-                data = parsed["data"].copy()
+                data = p["raw_data"].copy()
 
-                data["ps"] = node_name
+                data['ps'] = new_name
 
-                vmess_json = json.dumps(
+                new_json = json.dumps(
                     data,
-                    ensure_ascii=False,
                     separators=(',', ':')
-                )
+                ).encode('utf-8')
 
-                vmess_b64 = base64.b64encode(
-                    vmess_json.encode('utf-8')
-                ).decode()
+                new_b64 = base64.b64encode(
+                    new_json
+                ).decode('utf-8')
 
                 rocket_links.append(
-                    f"vmess://{vmess_b64}"
+                    f"vmess://{new_b64}"
                 )
 
-                clash_proxies.append(
-                    build_vmess_clash(
-                        node_name,
-                        data
-                    )
+                network = data.get(
+                    "net",
+                    "tcp"
                 )
 
-            # ==================== HYSTERIA ====================
+                vmess_node = {
+                    "name": new_name,
+                    "type": "vmess",
+                    "server": data.get(
+                        "add",
+                        "127.0.0.1"
+                    ),
+                    "port": safe_int(
+                        data.get("port"),
+                        443
+                    ),
+                    "uuid": data.get("id"),
+                    "alterId": safe_int(
+                        data.get("aid"),
+                        0
+                    ),
+                    "cipher": "auto",
+                    "tls": str(
+                        data.get(
+                            "tls",
+                            ""
+                        )
+                    ).lower() in [
+                        "tls",
+                        "1",
+                        "true"
+                    ],
+                    "udp": True,
+                    "skip-cert-verify": True,
+                    "network": network
+                }
 
-            elif parsed["type"] in [
-                "hysteria",
-                "hysteria2"
-            ]:
+                host = data.get("host", "")
 
-                query = parsed["query"]
+                path = data.get("path", "/")
 
-                query["sni"] = [
-                    parsed["sni"]
-                ]
+                if host:
+                    vmess_node["servername"] = host
 
-                query["security"] = [
-                    "tls"
-                ]
+                if network == "ws":
 
-                query["insecure"] = [
-                    "true"
-                ]
+                    vmess_node["ws-opts"] = {
+                        "path": path,
+                        "headers": {
+                            "Host": host
+                        }
+                    }
 
-                auth = urllib.parse.unquote(
-                    parsed.get(
+                elif network == "grpc":
+
+                    vmess_node["grpc-opts"] = {
+                        "grpc-service-name": path
+                    }
+
+                elif network == "h2":
+
+                    vmess_node["h2-opts"] = {
+                        "host": (
+                            [host]
+                            if host
+                            else []
+                        ),
+                        "path": path
+                    }
+
+                clash_proxies.append(vmess_node)
+
+            except:
+                continue
+
+        # ==================== 修复版 Hysteria ====================
+
+        elif p["type"] in [
+            "hysteria",
+            "hysteria2"
+        ]:
+
+            # 不重建 URI
+            # 保留机场原始参数
+
+            parsed_url = urllib.parse.urlparse(
+                link
+            )
+
+            base_uri = urllib.parse.urlunparse(
+                (
+                    parsed_url.scheme,
+                    parsed_url.netloc,
+                    parsed_url.path,
+                    "",
+                    parsed_url.query,
+                    ""
+                )
+            )
+
+            rocket_links.append(
+                f"{base_uri}"
+                f"#{urllib.parse.quote(new_name)}"
+            )
+
+            clash_node = {
+                "name": new_name,
+                "type": p["type"],
+                "server": p["server"],
+                "port": p["port"],
+                "sni": p["sni"],
+                "skip-cert-verify": True,
+                "alpn": ["h3"]
+            }
+
+            # Hysteria1
+
+            if p["type"] == "hysteria":
+
+                clash_node["auth-str"] = (
+                    p["auth"]
+                    if p.get("auth")
+                    else p.get(
                         "password",
                         ""
                     )
                 )
 
-                if not auth:
+            # Hysteria2
 
-                    auth = query.get(
+            else:
+
+                clash_node["password"] = (
+                    p["password"]
+                    if p.get("password")
+                    else p.get(
                         "auth",
-                        [""]
-                    )[0]
-
-                new_query = urllib.parse.urlencode(
-                    query,
-                    doseq=True
-                )
-
-                prefix = (
-                    "hysteria2"
-                    if parsed["type"] == "hysteria2"
-                    else "hysteria"
-                )
-
-                rebuilt = (
-                    f"{prefix}://"
-                    f"{auth}@"
-                    f"{parsed['server']}:"
-                    f"{parsed['port']}?"
-                    f"{new_query}"
-                    f"#{urllib.parse.quote(node_name)}"
-                )
-
-                rocket_links.append(rebuilt)
-
-                clash_node = {
-                    "name": node_name,
-                    "type": parsed["type"],
-                    "server": parsed["server"],
-                    "port": parsed["port"],
-                    "sni": parsed["sni"],
-                    "skip-cert-verify": True,
-                    "alpn": ["h3"]
-                }
-
-                if parsed["type"] == "hysteria":
-
-                    clash_node["auth-str"] = auth
-
-                else:
-
-                    clash_node["password"] = auth
-
-                if query.get("obfs"):
-
-                    clash_node["obfs"] = query[
-                        "obfs"
-                    ][0]
-
-                if query.get("obfs-password"):
-
-                    clash_node["obfs-password"] = query[
-                        "obfs-password"
-                    ][0]
-
-                if query.get("upmbps"):
-
-                    clash_node["up"] = safe_int(
-                        query["upmbps"][0],
-                        100
-                    )
-
-                if query.get("downmbps"):
-
-                    clash_node["down"] = safe_int(
-                        query["downmbps"][0],
-                        100
-                    )
-
-                clash_proxies.append(clash_node)
-
-            # ==================== VLESS ====================
-
-            elif parsed["type"] == "vless":
-
-                base_uri = clean_base_uri(link)
-
-                rocket_links.append(
-                    f"{base_uri}"
-                    f"#{urllib.parse.quote(node_name)}"
-                )
-
-                clash_proxies.append(
-                    build_vless_clash(
-                        node_name,
-                        parsed
+                        ""
                     )
                 )
 
-            # ==================== TROJAN ====================
+            clash_proxies.append(clash_node)
 
-            elif parsed["type"] == "trojan":
+        # ==================== 其他协议 ====================
 
-                base_uri = clean_base_uri(link)
+        else:
 
-                rocket_links.append(
-                    f"{base_uri}"
-                    f"#{urllib.parse.quote(node_name)}"
-                )
+            u = p["url_obj"]
 
-                clash_proxies.append(
-                    build_trojan_clash(
-                        node_name,
-                        parsed
-                    )
-                )
-
-            # ==================== SS ====================
-
-            elif parsed["type"] == "ss":
-
-                base_uri = clean_base_uri(link)
-
-                rocket_links.append(
-                    f"{base_uri}"
-                    f"#{urllib.parse.quote(node_name)}"
-                )
-
-                clash_proxies.append(
-                    build_ss_clash(
-                        node_name,
-                        parsed
-                    )
-                )
-
-        except Exception as e:
-
-            print(
-                f"⚠️ 节点解析失败: "
-                f"{e}"
+            qs = urllib.parse.parse_qs(
+                u.query
             )
 
-            continue
+            params = {}
+
+            for k, v in qs.items():
+
+                if (
+                        v
+                        and isinstance(v, list)
+                ):
+                    params[k] = str(v[0])
+
+                elif v:
+                    params[k] = str(v)
+
+            base_uri = clean_base_uri(link)
+
+            rocket_links.append(
+                f"{base_uri}"
+                f"#{urllib.parse.quote(new_name)}"
+            )
+
+            proxy_cfg = {
+                "name": new_name,
+                "type": p["type"],
+                "server": (
+                    u.hostname
+                    if u.hostname
+                    else "127.0.0.1"
+                ),
+                "port": safe_int(
+                    u.port,
+                    443
+                )
+            }
+
+            try:
+
+                # ==================== SS ====================
+
+                if p["type"] == "ss":
+
+                    if '@' in u.netloc:
+
+                        userinfo, _ = safe_split(
+                            u.netloc,
+                            '@'
+                        )
+
+                        if ':' in userinfo:
+
+                            method, password = (
+                                safe_split(
+                                    userinfo,
+                                    ':',
+                                    'auto'
+                                )
+                            )
+
+                        else:
+
+                            decoded_ui = (
+                                parse_vmess_b64(
+                                    userinfo
+                                )
+                                .decode(
+                                    'utf-8',
+                                    'ignore'
+                                )
+                            )
+
+                            method, password = (
+                                safe_split(
+                                    decoded_ui,
+                                    ':',
+                                    'auto'
+                                )
+                            )
+
+                    else:
+
+                        netloc_clean = (
+                            u.netloc
+                            .split('#')[0]
+                        )
+
+                        decoded_ui = (
+                            parse_vmess_b64(
+                                netloc_clean
+                            )
+                            .decode(
+                                'utf-8',
+                                'ignore'
+                            )
+                        )
+
+                        if '@' in decoded_ui:
+
+                            userinfo, hostinfo = (
+                                safe_split(
+                                    decoded_ui,
+                                    '@'
+                                )
+                            )
+
+                            method, password = (
+                                safe_split(
+                                    userinfo,
+                                    ':',
+                                    'auto'
+                                )
+                            )
+
+                            if ':' in hostinfo:
+
+                                s_host, s_port = (
+                                    safe_split(
+                                        hostinfo,
+                                        ':'
+                                    )
+                                )
+
+                                proxy_cfg[
+                                    "server"
+                                ] = s_host
+
+                                proxy_cfg[
+                                    "port"
+                                ] = safe_int(
+                                    s_port,
+                                    443
+                                )
+
+                            else:
+
+                                proxy_cfg[
+                                    "server"
+                                ] = hostinfo
+
+                        else:
+                            continue
+
+                    proxy_cfg.update({
+                        "cipher": method,
+                        "password": password,
+                        "udp": True
+                    })
+
+                    clash_proxies.append(
+                        proxy_cfg
+                    )
+
+                # ==================== TROJAN ====================
+
+                elif p["type"] == "trojan":
+
+                    proxy_cfg.update({
+                        "password": (
+                            u.username
+                            if u.username
+                            else ""
+                        ),
+                        "udp": True,
+                        "sni": params.get(
+                            "sni",
+                            u.hostname
+                        ),
+                        "skip-cert-verify": True
+                    })
+
+                    clash_proxies.append(
+                        proxy_cfg
+                    )
+
+                # ==================== VLESS ====================
+
+                elif p["type"] == "vless":
+
+                    proxy_cfg.update({
+                        "uuid": (
+                            u.username
+                            if u.username
+                            else ""
+                        ),
+                        "cipher": "auto",
+                        "udp": True,
+                        "tls": (
+                            params.get(
+                                "security"
+                            )
+                            in [
+                                "tls",
+                                "reality"
+                            ]
+                        ),
+                        "skip-cert-verify": True,
+                        "network": params.get(
+                            "type",
+                            "tcp"
+                        )
+                    })
+
+                    if params.get("sni"):
+
+                        proxy_cfg[
+                            "servername"
+                        ] = params.get("sni")
+
+                    if (
+                            params.get("type")
+                            == "ws"
+                    ):
+
+                        proxy_cfg[
+                            "ws-opts"
+                        ] = {
+                            "path": params.get(
+                                "path",
+                                "/"
+                            ),
+                            "headers": {
+                                "Host": params.get(
+                                    "host",
+                                    ""
+                                )
+                            }
+                        }
+
+                    if (
+                            params.get("security")
+                            == "reality"
+                    ):
+
+                        proxy_cfg[
+                            "reality-opts"
+                        ] = {
+                            "public-key": params.get(
+                                "pbk",
+                                ""
+                            ),
+                            "short-id": params.get(
+                                "sid",
+                                ""
+                            )
+                        }
+
+                        proxy_cfg[
+                            "client-fingerprint"
+                        ] = params.get(
+                            "fp",
+                            "chrome"
+                        )
+
+                    clash_proxies.append(
+                        proxy_cfg
+                    )
+
+            except:
+                continue
 
     # ==================== 输出 ====================
 
     try:
 
-        rocket_raw = '\n'.join(
+        raw_subscription_text = '\n'.join(
             rocket_links
         )
 
-        rocket_b64 = base64.b64encode(
-            rocket_raw.encode('utf-8')
-        ).decode('utf-8')
+        b64_subscription_data = (
+            base64.b64encode(
+                raw_subscription_text.encode(
+                    'utf-8'
+                )
+            ).decode('utf-8')
+        )
 
         with open(
-                "rocket_output.txt",
-                "w",
-                encoding="utf-8"
+                'rocket_output.txt',
+                'w',
+                encoding='utf-8'
         ) as f:
 
-            f.write(rocket_b64)
-
-        clash_config = {
-            "proxies": clash_proxies
-        }
+            f.write(
+                b64_subscription_data
+            )
 
         with open(
-                "clash_output.yaml",
-                "w",
-                encoding="utf-8"
+                'clash_output.yaml',
+                'w',
+                encoding='utf-8'
         ) as f:
 
             yaml.dump(
-                clash_config,
+                {
+                    "proxies": clash_proxies
+                },
                 f,
                 allow_unicode=True,
                 sort_keys=False
             )
 
-        print("\n✅ 修复完成")
+        print(
+            "✅ 修复完成！"
+        )
+
         print(
             f"✅ Clash 节点数量: "
             f"{len(clash_proxies)}"
@@ -870,13 +933,23 @@ def main():
             f"{len(rocket_links)}"
         )
 
-        print("✅ 已输出 clash_output.yaml")
+        print(
+            "✅ 已输出 clash_output.yaml"
+        )
 
-        print("✅ 已输出 rocket_output.txt")
+        print(
+            "✅ 已输出 rocket_output.txt"
+        )
+
+        print(
+            "✅ HY2 Base64 已兼容小火箭"
+        )
 
     except Exception as e:
 
-        print(f"❌ 输出失败: {e}")
+        print(
+            f"❌ 导出文件失败: {e}"
+        )
 
 
 # ==================== 入口 ====================
