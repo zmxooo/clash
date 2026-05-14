@@ -109,11 +109,11 @@ def parse_link(link: str):
             orig_remarks = link.split('#', 1)[1] if '#' in link else ""
 
             return {
-                "type": "hysteria2",
-                "link_str": original_link.split('#')[0],
-                "url_obj": u,
-                "server": u.hostname,
-                "original_remarks": orig_remarks
+        # --- Hysteria 1 & 2 ---
+        elif any(link.startswith(p) for p in ['hysteria://', 'hysteria2://', 'hy2://']):
+            p_type = "hysteria2" if "2" in link or "hy2" in link else "hysteria"
+            return {"label": get_final_label(u.hostname, u.fragment), "type": p_type, "server": u.hostname, "port": int(u.port) if u.port else 443, "password": u.username, "auth": u.username, "sni": u.hostname, "skip-cert-verify": True}
+rig_remarks
             }
     except:
         return None
