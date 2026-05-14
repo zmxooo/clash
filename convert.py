@@ -95,4 +95,11 @@ def main():
     ags = [{"name": "🚀 节点选择", "type": "select", "proxies": ["⚡ 自动选择", "DIRECT"] + found_regions}]
     ags.append({"name": "⚡ 自动选择", "type": "url-test", "url": "http://gstatic.com", "interval": 300, "proxies": [p['name'] for p in pxs]})
     for r in found_regions:
-        ags.append({"name": r, "type": "url-test", "url": "http:/
+        ags.append({"name": r, "type": "url-test", "url": "http://gstatic.com", "interval": 300, "proxies": [p['name'] for p in pxs if p['name'].startswith(r)]})
+
+    conf = {"proxies": pxs, "proxy-groups": ags, "rules": ["MATCH,🚀 节点选择"]}
+    with open('config.yaml', 'w', encoding='utf-8') as f:
+        yaml.dump(conf, f, allow_unicode=True, sort_keys=False)
+
+if __name__ == "__main__":
+    main()
