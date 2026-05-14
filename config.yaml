@@ -498,7 +498,7 @@ proxy-groups:
 - name: 🚀 节点选择
   type: select
   proxies:
-  - 🗲 延迟自动选择
+  - 🗲 自动延迟测试
   - 🇬🇧 英国 01 @zmxooo
   - 🇺🇸 美国 01 @zmxooo
   - 🇬🇧 英国 02 @zmxooo
@@ -558,7 +558,7 @@ proxy-groups:
   - 🇬🇧 英国 14 @zmxooo
   - 🇬🇧 英国 15 @zmxooo
   - 🇱🇹 立陶宛 01 @zmxooo
-- name: 🗲 延迟自动选择
+- name: 🗲 自动延迟测试
   type: url-test
   url: http://gstatic.com
   interval: 300
