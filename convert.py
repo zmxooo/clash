@@ -40,7 +40,7 @@ def safe_split(text: str, sep: str, default_val: str = "auto"):
     if sep in text:
         parts = text.split(sep, 1)
         return parts if len(parts) == 2 else [parts, ""]
-    return [text, ""]
+    return [str(text), ""]
 
 def safe_int(val, default=443):
     try:
@@ -81,13 +81,13 @@ def get_final_label(server: str, remarks: str = "") -> str:
     return "🧿 其他地区"
 
 def parse_link(link: str):
-    """【终极核心修复】引入 [0] 切片，全面杜绝 Python 列表类型导致的底层挂起"""
+    """【工业级核心修复】彻底斩断列表强转符号，精准解包字符串"""
     try:
         link = link.strip()
         if not link or link.startswith(('import', 'def', '#', 'git')):
             return None
 
-        # 【重点修复 1】必须添加 [0] 切片，确保获取到的是纯粹的单体文本 String！
+        # 剥离备注，确保拿到的是单体纯净文本字符串
         clean_link_str = link.split('#')[0]
 
         if link.startswith('vmess://'):
@@ -108,20 +108,18 @@ def parse_link(link: str):
                 
             u = urllib.parse.urlparse(clean_link_str)
             
-            # 【重点修复 2】精准切出原始别名备注串，安全防御空格
             orig_remarks = ""
             if '#' in link:
                 orig_remarks = link.split('#')[1]
 
             return {
                 "type": "hysteria2" if u.scheme in ["hy2", "hysteria2"] else u.scheme,
-                "link_str": str(clean_link_str),
+                "link_str": clean_link_str,
                 "url_obj": u,
                 "server": u.hostname,
                 "original_remarks": orig_remarks
             }
     except Exception as e:
-        print(f"❌ 链路解析故障: {e}")
         return None
     return None
 
@@ -137,7 +135,6 @@ def main():
     seen = set()
     unique_links = []
     for line in lines:
-        # 【重点修复 3】去重加入 [0] 切片强制约束字符串类型，解除 unhashable 阻断
         core = line.split('#')[0]
         if core not in seen:
             seen.add(core)
@@ -147,7 +144,7 @@ def main():
     clash_proxies = []
     rocket_links = []
 
-    print("🔄 正在运行修正类型死锁后的工业级数据转换内核...")
+    print(f"🔄 正在处理去重后的 {len(unique_links)} 个节点...")
 
     for link in unique_links:
         p = parse_link(link)
@@ -186,11 +183,11 @@ def main():
             u = p["url_obj"]
             qs = urllib.parse.parse_qs(u.query)
             
-            # 【重点修复 4】从 query 结果集中安全剥离多维数组，压制成纯 String 交付 YAML
+            # 【铁证修复】精准抓取 List 里的第一个真实元素元素，彻底消灭带括弧的假字符串
             params = {}
             for k, v in qs.items():
                 if v and isinstance(v, list):
-                    params[k] = str(v[0])
+                    params[k] = str(v[0])  # 精准解包，拒绝 str(list) 符号污染
                 elif v:
                     params[k] = str(v)
 
@@ -249,7 +246,7 @@ def main():
                         proxy_cfg["grpc-opts"] = {"grpc-service-name": params.get("serviceName", "")}
 
                 elif p["type"] == "hysteria2":
-                    # 【对齐工业级特性】安全剔除转义，对齐 password 与明文 SNI 写入 YAML
+                    # 【铁证修复】注入明文密码并用 unquote 对 URL 编码后的 SNI（如 https%3A%2F%2F...）进行深度百分号解码
                     proxy_cfg.update({
                         "password": u.username if u.username else "",
                         "sni": urllib.parse.unquote(params.get("sni", proxy_cfg["server"])),
@@ -259,7 +256,7 @@ def main():
                     if params.get("down"): proxy_cfg["down"] = params.get("down")
                 
                 clash_proxies.append(proxy_cfg)
-            except Exception as e:
+            except:
                 continue
 
         region_map[label].append(new_name)
@@ -271,7 +268,7 @@ def main():
 
         with open('sub.txt', 'w', encoding='utf-8') as f:
             f.write(sub_b64)
-        print(f"✅ 订阅文件已完美导出: sub.txt ({len(rocket_links)} 个节点)")
+        print(f"✅ 通用订阅文件已生成: sub.txt ({len(rocket_links)} 个节点)")
 
         all_node_names = [p["name"] for p in clash_proxies] if clash_proxies else ["DIRECT"]
 
@@ -295,7 +292,7 @@ def main():
             "DOMAIN-KEYWORD,google,🌐 谷歌服务",
             "DOMAIN-SUFFIX,googleapis.com,🌐 谷歌服务",
             "DOMAIN-SUFFIX,youtube.com,🎬 海外媒体",
-            "DOMAIN-SUFFIX,netflix.com,🎬 海外媒体",
+            "DOMAIN-SUFFIX,netflix.com,🎬 海外媒體",
             "DOMAIN-SUFFIX,telegram.org,📲 电报消息",
             "IP-CIDR,91.108.4.0/22,📲 电报消息",
             "IP-CIDR,149.154.160.0/20,📲 电报消息",
@@ -318,9 +315,9 @@ def main():
 
         with open('clash.yaml', 'w', encoding='utf-8') as f:
             yaml.dump(clash_config, f, allow_unicode=True, sort_keys=False)
-        print("✅ Premium 分流级 Clash 配置文件已完美生成: clash.yaml")
+        print("✅ 包含完美策略分流组的 Clash 配置文件已成功覆写: clash.yaml")
 
-    print("\n📊 最终地区运行成功统计:")
+    print("\n📊 运行地区最终统计结果:")
     for region, nodes in sorted(region_map.items(), key=lambda x: len(x), reverse=True):
         print(f"   {region} → {len(nodes)} 个")
 
