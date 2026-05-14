@@ -10,7 +10,7 @@ from collections import defaultdict
 
 # --- 配置区 ---
 CHANNEL_MARK = "@zmxooo"
-TEST_URL = "http://gstatic.com"
+TEST_URL = "http://www.gstatic.com/generate_204"
 IP_CACHE = {}
 
 # 常用图标映射
@@ -21,9 +21,6 @@ EMOJI_MAP = {
 }
 
 def get_final_label(server, remarks):
-    """
-    国家识别逻辑：优先正则匹配备注，其次查询 IP 库
-    """
     text = urllib.parse.unquote(str(remarks)).lower().strip()
     meta = [
         ("香港", r"hk|香港|hongkong"), ("台湾", r"tw|台湾|台灣|taiwan"), 
@@ -40,9 +37,8 @@ def get_final_label(server, remarks):
     if server in IP_CACHE: return IP_CACHE[server]
 
     try:
-        # 限制请求频率，防止被 API 封锁
         time.sleep(0.1) 
-        response = requests.get(f"http://ip-api.com{server}?lang=zh-CN", timeout=5).json()
+        response = requests.get(f"http://ip-api.com/json/{server}?lang=zh-CN", timeout=5).json()
         if response.get("status") == "success":
             country = response.get("country")
             label = f"{EMOJI_MAP.get(country, '🌍')} {country}"
@@ -53,16 +49,13 @@ def get_final_label(server, remarks):
     return "🧿 其它地区"
 
 def fix_base64(s):
-    """
-    修正 Base64 格式：去除空白符并自动补齐等号
-    """
     if not s: return ""
-    s = "".join(s.split()) # 移除换行、空格
+    s = "".join(s.split())
     return s + '=' * (-len(s) % 4)
 
 def rebuild_node(link, new_name):
     """
-    重构节点：剥离一切原始信息，强制使用标准格式 and 新命名
+    重构节点：增加对不同协议转换至 Clash 字典的支持
     """
     try:
         # --- VMess 协议重构 ---
@@ -71,28 +64,19 @@ def rebuild_node(link, new_name):
             decoded_bytes = base64.b64decode(fix_base64(b64_part))
             d = json.loads(decoded_bytes.decode('utf-8', 'ignore'))
             
-            # 1. 识别国家（用于返回 label）
             label = get_final_label(d.get("add"), d.get("ps", ""))
             
-            # 2. 构建纯净版 VMess 字典，强制 v=2 和 ps=new_name
+            # 标准 VMess JSON 用于通用链接
             std_vmess = {
-                "v": "2",
-                "ps": new_name,
-                "add": str(d.get("add", "")).strip(),
-                "port": str(d.get("port", "443")),
-                "id": str(d.get("id", "")).strip(),
-                "aid": str(d.get("aid", "0")),
-                "scy": d.get("scy", "auto"),
-                "net": d.get("net", "tcp"),
-                "type": d.get("type", "none"),
-                "host": d.get("host", ""),
-                "path": d.get("path", ""),
-                "tls": d.get("tls", ""),
-                "sni": d.get("sni", ""),
-                "alpn": d.get("alpn", "")
+                "v": "2", "ps": new_name, "add": str(d.get("add", "")).strip(),
+                "port": str(d.get("port", "443")), "id": str(d.get("id", "")).strip(),
+                "aid": str(d.get("aid", "0")), "scy": d.get("scy", "auto"),
+                "net": d.get("net", "tcp"), "type": d.get("type", "none"),
+                "host": d.get("host", ""), "path": d.get("path", ""),
+                "tls": d.get("tls", ""), "sni": d.get("sni", ""), "alpn": d.get("alpn", "")
             }
             
-            # 3. 生成 Clash 节点对象
+            # Clash 节点对象
             proxy = {
                 "name": new_name,
                 "type": "vmess",
@@ -105,33 +89,53 @@ def rebuild_node(link, new_name):
                 "skip-cert-verify": True,
                 "network": std_vmess["net"]
             }
-            # 处理传输层配置
             if proxy["network"] == "ws":
                 proxy["ws-opts"] = {"path": std_vmess["path"], "headers": {"Host": std_vmess["host"]}}
-            elif proxy["network"] == "grpc":
-                proxy["grpc-opts"] = {"grpc-service-name": std_vmess["path"]}
-
-            # 4. 生成通用链接 (Base64)
+            
             new_json_str = json.dumps(std_vmess, separators=(',', ':'), ensure_ascii=False)
             new_b64 = base64.b64encode(new_json_str.encode('utf-8')).decode('utf-8')
             return label, proxy, f"vmess://{new_b64}"
 
-        # --- 其他协议 (Hysteria2 / SS / Trojan / VLESS) 重构 ---
-        elif "://" in link:
-            # 1. 彻底切断原始备注 (# 之后的内容)
-            base_url = link.split('#')[0].strip()
+        # --- Shadowsocks (ss) 协议重构 ---
+        elif link.startswith('ss://'):
+            # 处理 ss://method:password@host:port#name 格式
+            base_part = link[5:].split('#')[0]
             old_remarks = urllib.parse.unquote(link.split('#')[1]) if '#' in link else ""
             
-            # 2. 识别国家
+            if "@" in base_part:
+                user_info, server_info = base_part.split("@")
+                # 解码用户信息 (method:password)
+                decoded_user = base64.b64decode(fix_base64(user_info)).decode('utf-8')
+                method, password = decoded_user.split(":")
+                server, port = server_info.split(":")
+            else:
+                # 处理部分 base64 整个链接的情况
+                decoded_all = base64.b64decode(fix_base64(base_part)).decode('utf-8')
+                # 递归处理解码后的 ss 链接
+                return rebuild_node(f"ss://{decoded_all}#{old_remarks}", new_name)
+
+            label = get_final_label(server, old_remarks)
+            proxy = {
+                "name": new_name,
+                "type": "ss",
+                "server": server,
+                "port": int(port),
+                "cipher": method,
+                "password": password
+            }
+            safe_name = urllib.parse.quote(new_name)
+            return label, proxy, f"ss://{user_info}@{server}:{port}#{safe_name}"
+
+        # --- 其他协议 (暂作为通用链接处理，Clash 需根据需求进一步细化解析) ---
+        elif "://" in link:
             u = urllib.parse.urlparse(link)
+            base_url = link.split('#')[0].strip()
+            old_remarks = urllib.parse.unquote(link.split('#')[1]) if '#' in link else ""
             label = get_final_label(u.hostname, old_remarks)
             
-            # 3. 构建 Clash 对象 (简易版，直接存 link)
-            proxy = {"name": new_name, "type": "other", "link": link}
-            
-            # 4. 生成通用链接：地址 + URL 编码后的新名字
+            # 由于 VLESS/Hysteria2 字段复杂，此处仅保持链接重构，Clash 配置跳过
             safe_name = urllib.parse.quote(new_name)
-            return label, proxy, f"{base_url}#{safe_name}"
+            return label, None, f"{base_url}#{safe_name}"
 
     except Exception:
         return None, None, None
@@ -141,59 +145,67 @@ def main():
         print("❌ 未找到 nodes.txt")
         return
 
-    # 读取并初步清洗链接
     with open('nodes.txt', 'r', encoding='utf-8') as f:
-        # 只保留包含协议头的行，并去重
-        links = list(set([line.strip() for line in f if "://" in line]))
+        raw_links = list(set([line.strip() for line in f if "://" in line]))
 
     clash_proxies = []
-    proxy_names = []
-    country_counters = defaultdict(int)
+    processed_links = []
+    country_stats = defaultdict(int)
 
-    for link in links:
-        # 预解析获取真实的节点国家标签
-        temp_label, _, _ = rebuild_node(link, "temp")
-        if not temp_label:
-            continue
-            
-        # 提取国家名称进行计数器累加
-        country_name = temp_label.split()[-1] if " " in temp_label else temp_label
-        country_counters[country_name] += 1
+    print(f"开始处理 {len(raw_links)} 个节点...")
+
+    for link in raw_links:
+        # 预解析获取国家
+        temp_label, _, _ = rebuild_node(link, "TEMP")
+        if not temp_label: continue
         
-        # 严格使用你预设的命名拼接规则
-        new_name = f"{temp_label} {country_counters[country_name]:02d} {CHANNEL_MARK}"
+        country_stats[temp_label] += 1
+        final_name = f"{temp_label} {country_stats[temp_label]:02d} {CHANNEL_MARK}"
         
-        # 正式重构并提取 Clash 节点对象
-        _, proxy, _ = rebuild_node(link, new_name)
-        if proxy:
-            clash_proxies.append(proxy)
-            proxy_names.append(new_name)
+        # 正式重构
+        label, proxy, final_link = rebuild_node(link, final_name)
+        if final_link:
+            processed_links.append(final_link)
+            if proxy: # 只有成功转换为 Clash 字典的才加入
+                clash_proxies.append(proxy)
 
-    yaml_path = 'config.yaml'
-    config_data = {}
-    
-    # 如果 config.yaml 存在则读取，不存在则初始化结构
-    if os.path.exists(yaml_path):
-        with open(yaml_path, 'r', encoding='utf-8') as f:
-            try:
-                config_data = yaml.safe_load(f) or {}
-            except:
-                pass
+    # --- 1. 生成通用订阅列表 ---
+    with open('nodes_fixed.txt', 'w', encoding='utf-8') as f:
+        f.write("\n".join(processed_links))
 
-    # 将生成的代理数据注入配置字典
-    config_data["proxies"] = clash_proxies
-    if "proxy-groups" not in config_data:
-        config_data["proxy-groups"] = [{"name": "🚀 节点选择", "type": "select", "proxies": []}]
-    
-    for group in config_data["proxy-groups"]:
-        if group.get("name") == "🚀 节点选择":
-            group["proxies"] = proxy_names
+    # --- 2. 生成完整的 Clash 配置文件 ---
+    clash_config = {
+        "port": 7890,
+        "socks-port": 7891,
+        "allow-lan": True,
+        "mode": "rule",
+        "log-level": "info",
+        "proxies": clash_proxies,
+        "proxy-groups": [
+            {
+                "name": "🔰 节点选择",
+                "type": "select",
+                "proxies": ["🚀 自动选择", "DIRECT"] + [p["name"] for p in clash_proxies]
+            },
+            {
+                "name": "🚀 自动选择",
+                "type": "url-test",
+                "proxies": [p["name"] for p in clash_proxies],
+                "url": TEST_URL,
+                "interval": 300
+            }
+        ],
+        "rules": [
+            "DOMAIN-SUFFIX,google.com,🔰 节点选择",
+            "GEOIP,CN,DIRECT",
+            "MATCH,🔰 节点选择"
+        ]
+    }
 
-    # 物理覆盖写入 config.yaml 文件
-    with open(yaml_path, 'w', encoding='utf-8') as f:
-        yaml.dump(config_data, f, allow_unicode=True, sort_keys=False)
-    
-    print(f"✅ 成功将 {len(clash_proxies)} 个节点自动写入到 config.yaml")
+    with open('clash_config.yaml', 'w', encoding='utf-8') as f:
+        yaml.dump(clash_config, f, allow_unicode=True, sort_keys=False)
+
+    print(f"✅ 处理完成！通用列表已存入 nodes_fixed.txt，Clash 配置已存入 clash_config.yaml")
 
 if __name__ == "__main__":
     main()
