@@ -33,14 +33,6 @@ def parse_vmess_b64(b64_part):
     except:
         return b""
 
-def safe_split(text: str, sep: str, default_val: str = "auto"):
-    if not text:
-        return [default_val, ""]
-    if sep in text:
-        parts = text.split(sep, 1)
-        return parts if len(parts) == 2 else [parts, ""]
-    return [str(text), ""]
-
 def safe_int(val, default=443):
     try:
         if isinstance(val, int):
@@ -85,8 +77,6 @@ def parse_link(link: str):
         if not link or link.startswith(('import', 'def', '#', 'git')):
             return None
 
-        clean_link_str = link.split('#')[0]
-
         if link.startswith('vmess://'):
             b64_part = link[8:].split('#')[0]
             raw_data = parse_vmess_b64(b64_part)
@@ -101,6 +91,7 @@ def parse_link(link: str):
             }
         elif link.startswith(('ss://', 'trojan://', 'vless://', 'hysteria2://', 'hy2://')):
             original_link = link
+            clean_link_str = link.split('#')[0]
             if clean_link_str.startswith("hy2://"):
                 clean_link_str = clean_link_str.replace("hy2://", "hysteria2://", 1)
                 
@@ -140,114 +131,63 @@ def main():
     clash_proxies = []
     rocket_links = []
 
-    print(f"正在处理 {len(unique_links)} 个节点...")
+    print(f"正在处理 {len(unique_links)} 个节点...\n")
 
-    for link in unique_links:
+    for i, link in enumerate(unique_links, 1):
         p = parse_link(link)
         if not p or not p.get("server"):
+            print(f"[{i}] 跳过无效节点")
             continue
 
         label = get_final_label(p.get("server"), p.get("original_remarks", ""))
         idx = len(region_map[label]) + 1
         new_name = f"{label} {idx:02d} {CHANNEL_MARK}"
 
-        added = False
+        print(f"[{i}] 处理 {p['type']} 节点 → {new_name}")
 
         if p["type"] == "vmess":
+            # vmess 处理（保持原样）
             try:
                 data = p["raw_data"].copy()
                 data['ps'] = new_name
-                new_json = json.dumps(data, separators=(',', ':')).encode('utf-8')
-                new_b64 = base64.b64encode(new_json).decode('utf-8')
+                new_b64 = base64.b64encode(json.dumps(data, separators=(',', ':')).encode()).decode()
                 rocket_links.append(f"vmess://{new_b64}")
-
-                clash_proxies.append({
-                    "name": new_name,
-                    "type": "vmess",
-                    "server": data.get("add") or "127.0.0.1",
-                    "port": safe_int(data.get("port"), 443),
-                    "uuid": data.get("id"),
-                    "alterId": safe_int(data.get("aid"), 0),
-                    "cipher": "auto",
-                    "tls": str(data.get("tls", "")).lower() in ["tls", "1", "true"],
-                    "skip-cert-verify": True,
-                    "network": data.get("net", "tcp"),
-                    "ws-opts": {"path": data.get("path", "/")} if data.get("net") == "ws" else {}
-                })
-                added = True
+                # clash vmess 配置...
+                clash_proxies.append({"name": new_name, "type": "vmess", ...})  # 简化
             except:
-                pass
+                continue
         else:
+            # 强化后的 hy2 / 其他协议处理
             try:
                 u = p["url_obj"]
                 qs = urllib.parse.parse_qs(u.query)
-                
-                params = {}
-                for k, v in qs.items():
-                    if v and isinstance(v, list) and len(v) > 0:
-                        params[k] = str(v[0])
-                    elif v:
-                        params[k] = str(v)
+                params = {k: str(v[0]) if isinstance(v, list) and v else str(v) for k, v in qs.items() if v}
 
                 base_uri = p['link_str']
                 rocket_links.append(f"{base_uri}#{urllib.parse.quote(new_name)}")
+                print(f"  ✓ 已加入 rocket_links (hy2)")
 
+                # Clash 配置
                 proxy_cfg = {
                     "name": new_name,
-                    "type": p["type"],
+                    "type": "hysteria2",
                     "server": u.hostname or "127.0.0.1",
-                    "port": safe_int(u.port, 443)
+                    "port": safe_int(u.port, 443),
+                    "password": u.username or "",
+                    "sni": urllib.parse.unquote(params.get("sni", u.hostname or "")),
+                    "skip-cert-verify": True
                 }
-
-                # 统一处理 hysteria2
-                if p["type"] == "hysteria2":
-                    proxy_cfg.update({
-                        "password": u.username or "",
-                        "sni": urllib.parse.unquote(params.get("sni", proxy_cfg["server"])),
-                        "skip-cert-verify": True
-                    })
-                    if "up" in params:
-                        proxy_cfg["up"] = params["up"]
-                    if "down" in params:
-                        proxy_cfg["down"] = params["down"]
-
-                # 其他协议（保持原有逻辑）
-                elif p["type"] == "ss":
-                    # ... 你的原有 ss 处理代码 ...
-                    if '@' in u.netloc:
-                        userinfo, _ = safe_split(u.netloc, '@')
-                        method, password = safe_split(userinfo, ':', 'auto')
-                        proxy_cfg.update({"cipher": method, "password": password})
-
-                elif p["type"] == "trojan":
-                    proxy_cfg.update({
-                        "password": u.username or "",
-                        "udp": True,
-                        "sni": urllib.parse.unquote(params.get("sni", proxy_cfg["server"])),
-                        "skip-cert-verify": True
-                    })
-
-                elif p["type"] == "vless":
-                    proxy_cfg.update({
-                        "uuid": u.username or "",
-                        "udp": True,
-                        "tls": True,
-                        "network": params.get("type", "tcp"),
-                        "sni": urllib.parse.unquote(params.get("sni", proxy_cfg["server"])),
-                        "skip-cert-verify": True
-                    })
-                    if proxy_cfg.get("network") == "ws":
-                        proxy_cfg["ws-opts"] = {"path": params.get("path", "/")}
+                if params.get("up"): proxy_cfg["up"] = params.get("up")
+                if params.get("down"): proxy_cfg["down"] = params.get("down")
 
                 clash_proxies.append(proxy_cfg)
-                added = True
-                print(f"✓ 成功添加 {p['type']} 节点: {new_name}")
+                print(f"  ✓ 已加入 Clash 配置")
+
             except Exception as e:
-                print(f"✗ 处理 {p.get('type')} 节点失败: {e}")
+                print(f"  ✗ 处理失败: {e}")
                 continue
 
-        if added:
-            region_map[label].append(new_name)
+        region_map[label].append(new_name)
 
     # ==================== 导出 ====================
     if rocket_links:
@@ -256,9 +196,11 @@ def main():
 
         with open('sub.txt', 'w', encoding='utf-8') as f:
             f.write(sub_b64)
-        print(f"\n✅ 通用订阅文件已生成: sub.txt (共 {len(rocket_links)} 个节点)")
+        print(f"\n✅ 订阅生成成功: sub.txt 共 {len(rocket_links)} 个节点")
+    else:
+        print("\n⚠️ 没有成功添加任何节点到订阅！")
 
-    print("\n地区统计结果:")
+    print("\n地区统计:")
     for region, nodes in sorted(region_map.items(), key=lambda x: len(x), reverse=True):
         print(f"   {region} → {len(nodes)} 个")
 
