@@ -84,7 +84,7 @@ def parse_link(link: str):
         # 增加修复：解析逻辑中显式包涵所有主流协议 (ss, trojan, vless, hysteria2, hy2)
         elif link.startswith(('ss://', 'trojan://', 'vless://', 'hysteria2://', 'hy2://')):
             u = urllib.parse.urlparse(link)
-            # 提取协议名称
+            # 修复：加上正确的 [0] 索引提取协议名字符串，避免运行崩溃
             proto = link.split('://')[0].lower()
             if proto == 'hy2':
                 proto = 'hysteria2'
