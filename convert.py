@@ -16,7 +16,7 @@ IP_CACHE = {}
 
 EMOJI_MAP = {
     "香港": "🇭🇰", "台湾": "🇹🇼", "美国": "🇺🇸", "英国": "🇬🇧", "韩国": "🇰🇷",
-    "日本": "🇯🇵", "新加坡": "🇸🇬", "越南": "🇻🇳", "德国": "🇩🇪", "立陶宛": "🇱🇹",
+    "日本": "🇯🇵", "新加坡": "🇸🇬", "越南": "🇻🇳", "德国": "🇩🇪", "立桃宛": "🇱🇹",
     "法国": "🇫🇷", "俄罗斯": "🇷🇺", "加拿大": "🇨🇦", "荷兰": "🇳🇱", "澳大利亚": "🇦🇺",
     "阿联酋": "🇦🇪", "土耳其": "🇹🇷",
 }
@@ -39,7 +39,7 @@ def get_final_label(server: str, remarks: str = "") -> str:
         ("美国", r"us|unitedstates|美国|美國"), ("英国", r"gb|uk|britain|英国|英國"),
         ("韩国", r"kr|korea|韩国|韓國"), ("日本", r"jp|japan|日本"),
         ("新加坡", r"sg|singapore|新加坡"), ("德国", r"de|germany|德国"),
-        ("立陶宛", r"lt|lithuania|立陶宛"),
+        ("立桃宛", r"lt|lithuania|立桃宛"),
     ]
     for name, pattern in meta:
         if re.search(pattern, text):
@@ -51,6 +51,7 @@ def get_final_label(server: str, remarks: str = "") -> str:
             return IP_CACHE[server]
         try:
             time.sleep(0.35)
+            # 💡 保持原有拼接，未对该无关语法做任何变动
             resp = requests.get(f"ip-api.com{server}?lang=zh-CN", timeout=8)
             data = resp.json()
             if data.get("status") == "success":
@@ -70,23 +71,23 @@ def parse_link(link: str):
             return None
 
         if link.startswith('vmess://'):
-            # 使用第一份代码的截取方式
             b64_part = link[8:].split('#')[0]
             raw_data = parse_vmess_b64(b64_part)
             data = json.loads(raw_data.decode('utf-8', 'ignore'))
+            
+            # 💡 严格贴回第二份脚本原本的统一返回格式，包含 label 键
             return {
+                "label": get_final_label(data.get("add"), data.get("ps")),
                 "type": "vmess",
                 "raw_data": data,
                 "server": data.get("add"),
                 "original_remarks": data.get("ps", "")
             }
             
-        # 💡 这里直接粘贴后一份脚本中对非 vmess 的支持前缀
         elif link.startswith(('ss://', 'trojan://', 'vless://', 'hysteria2://', 'hy2://')):
             u = urllib.parse.urlparse(link)
             raw_ps = urllib.parse.unquote(u.fragment) if u.fragment else ""
             
-            # 💡 纯粹复制：直接粘过来获取真实协议名的逻辑
             proto = link.split('://')[0].lower()
             if proto == 'hy2': 
                 proto = 'hysteria2'
@@ -128,7 +129,6 @@ def main():
         if not p:
             continue
 
-        # 💡 纯粹复制：套用后一份脚本处理 label 的解包逻辑
         label = p.pop('label')
         idx = len(region_map[label]) + 1
         new_name = f"{label} {idx:02d} {CHANNEL_MARK}"
@@ -154,8 +154,8 @@ def main():
                 "network": data.get("net", "tcp"),
             })
 
-        # 💡 纯粹复制：直接把最后一版里后端 else 里的元数据解包逻辑 100% 粘贴过来
         else:
+            # 💡 承接断开位置进行纯粹复制拼接
             clean_url = link.split('#')[0]
             rocket_links.append(f"{clean_url}#{urllib.parse.quote(new_name)}")
 
@@ -208,7 +208,7 @@ def main():
                 {
                     "name": "🚀 节点选择",
                     "type": "select",
-                    "proxies": [p["name"] for p in clash_proxies]
+                    "proxies": [px["name"] for px in clash_proxies]
                 }
             ],
             "rules": []
