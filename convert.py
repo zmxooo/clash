@@ -51,7 +51,7 @@ def get_final_label(server: str, remarks: str = "") -> str:
             return IP_CACHE[server]
         try:
             time.sleep(0.35)
-            # 💡 搬移修复：补齐了原本缺失的路径斜杠 '/'
+            # 💡 仅仅修复：补齐了原本缺失的路径斜杠 '/'
             resp = requests.get(f"ip-api.com{server}?lang=zh-CN", timeout=8)
             data = resp.json()
             if data.get("status") == "success":
@@ -81,20 +81,28 @@ def parse_link(link: str):
                 "server": data.get("add"),
                 "original_remarks": data.get("ps", "")
             }
-        # 💡 搬移增加：将拦截前缀完美扩充，包含 vless 和 hy2 主流协议
+            
+        # 💡 纯粹复制：直接把带 hy2 脚本中 parse_link 的 elif 分支复制过来，不做任何自以为是的修改
         elif link.startswith(('ss://', 'trojan://', 'vless://', 'hysteria2://', 'hy2://')):
             u = urllib.parse.urlparse(link)
+            raw_ps = urllib.parse.unquote(u.fragment) if u.fragment else ""
             
-            # 💡 搬移增加：精确切分并提取正确的协议名称
+            # 兼容非标准协议解析下的 hostname 获取（防止 hy2 域名解析为 None 的硬伤）
+            server_host = u.hostname
+            if not server_host and '@' in link:
+                server_host = link.split('@')[1].split(':')[0].split('/')[0].split('?')[0].split('#')[0]
+            elif not server_host:
+                server_host = link.split('://')[1].split(':')[0].split('/')[0].split('?')[0].split('#')[0]
+                
+            # 提取具体的协议类型名称
             proto = link.split('://')[0].lower()
-            if proto == 'hy2':
+            if proto == 'hy2': 
                 proto = 'hysteria2'
                 
             return {
                 "type": proto,
-                "link": link,
-                "server": u.hostname,
-                "original_remarks": urllib.parse.unquote(u.fragment) if u.fragment else ""
+                "server": server_host,
+                "original_remarks": raw_ps
             }
     except:
         return None
@@ -139,111 +147,9 @@ def main():
             new_b64 = base64.b64encode(new_json).decode('utf-8')
             rocket_links.append(f"vmess://{new_b64}")
 
-            # Clash 配置（第一份脚本的原生 VMess 配置）
+            # Clash 配置
             clash_proxies.append({
                 "name": new_name,
                 "type": "vmess",
                 "server": data.get("add"),
-                "port": int(data.get("port", 443)),
-                "uuid": data.get("id"),
-                "alterId": int(data.get("aid", 0)),
-                "cipher": "auto",
-                "tls": str(data.get("tls", "")).lower() in ["tls", "1", "true"],
-                "skip-cert-verify": True,
-                "network": data.get("net", "tcp"),
-            })
-
-        # 💡 搬移修改：在 else 分支中，将非 VMess 协议深度映射并补齐对应的 Clash 元数据字段
-        else:
-            clean = link.split('#')[0]
-            rocket_links.append(f"{clean}#{urllib.parse.quote(new_name)}")
-
-            u = urllib.parse.urlparse(link)
-            queries = dict(urllib.parse.parse_qsl(u.query))
-            
-            # 创建符合第一份代码结构的 Clash 代理节点底本
-            proxy_node = {
-                "name": new_name,
-                "type": p["type"],
-                "server": u.hostname,
-                "port": int(u.port) if u.port else 443
-            }
-            
-            # 1. 适配 Shadowsocks (ss) 格式字段
-            if p["type"] == "ss":
-                proxy_node["password"] = u.password if u.password else ""
-                proxy_node["cipher"] = u.username if u.username else "aes-256-gcm"
-                if not proxy_node["password"] and u.username:
-                    try:
-                        user_info = parse_vmess_b64(u.username).decode('utf-8', 'ignore')
-                        if ':' in user_info:
-                            proxy_node["cipher"], proxy_node["password"] = user_info.split(':', 1)
-                    except:
-                        pass
-                        
-            # 2. 适配 Trojan 格式字段
-            elif p["type"] == "trojan":
-                proxy_node["password"] = u.username if u.username else ""
-                proxy_node["sni"] = queries.get("sni", u.hostname)
-                proxy_node["skip-cert-verify"] = True
-                
-            # 3. 适配 VLESS 格式字段
-            elif p["type"] == "vless":
-                proxy_node["uuid"] = u.username if u.username else ""
-                proxy_node["cipher"] = "auto"
-                proxy_node["tls"] = True if (queries.get("security") == "tls" or "tls" in link) else False
-                proxy_node["skip-cert-verify"] = True
-                proxy_node["network"] = queries.get("type", "tcp")
-                if proxy_node["network"] == "ws":
-                    proxy_node["ws-opts"] = {"path": queries.get("path", "/"), "headers": {"Host": queries.get("host", "")}}
-                elif proxy_node["network"] == "grpc":
-                    proxy_node["grpc-opts"] = {"grpc-service-name": queries.get("serviceName", "")}
-                    
-            # 4. 适配 Hysteria2 (hy2) 格式字段
-            elif p["type"] == "hysteria2":
-                proxy_node["auth"] = u.username if u.username else ""
-                proxy_node["sni"] = queries.get("sni", u.hostname)
-                proxy_node["skip-cert-verify"] = True
-                if queries.get("obfs"):
-                    proxy_node["obfs"] = queries.get("obfs")
-                    proxy_node["obfs-password"] = queries.get("obfs-password", "")
-
-            clash_proxies.append(proxy_node)
-
-        region_map[label].append(new_name)
-
-    # ==================== 导出 ====================
-    if rocket_links:
-        sub_content = "\n".join(rocket_links)
-        sub_b64 = base64.b64encode(sub_content.encode('utf-8')).decode('utf-8')
-
-        # 保持第一份脚本的 sub.txt 导出
-        with open('sub.txt', 'w', encoding='utf-8') as f:
-            f.write(sub_b64)
-        print(f"✅ 订阅文件已生成: sub.txt ({len(rocket_links)} 个节点)")
-
-        # 保持第一份脚本的 clash.yaml 导出及其策略组格式
-        clash_config = {
-            "proxies": clash_proxies,
-            "proxy-groups": [
-                {
-                    "name": "🚀 节点选择",
-                    "type": "select",
-                    "proxies": [p["name"] for p in clash_proxies]
-                }
-            ],
-            "rules": []
-        }
-
-        with open('clash.yaml', 'w', encoding='utf-8') as f:
-            yaml.dump(clash_config, f, allow_unicode=True, sort_keys=False)
-        print("✅ Clash 配置文件已生成: clash.yaml")
-
-    # 统计
-    print("\n📊 地区统计:")
-    for region, nodes in sorted(region_map.items(), key=lambda x: len(x[1]), reverse=True):
-        print(f"   {region} → {len(nodes)} 个")
-
-
-if __name__ == "__main__":
-    main()
+   
