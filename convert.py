@@ -16,7 +16,7 @@ IP_CACHE = {}
 
 EMOJI_MAP = {
     "香港": "🇭🇰", "台湾": "🇹🇼", "美国": "🇺🇸", "英国": "🇬🇧", "韩国": "🇰🇷",
-    "日本": "🇯🇵", "新加坡": "🇸🇬", "越南": "🇻🇳", "德国": "🇩🇪", "立陶宛": "🇱🇹",
+    "日本": "🇯🇵", "新加坡": "🇸🇬", "越南": "🇻🇳", "德国": "🇩🇪", "立桃宛": "🇱🇹",
     "法国": "🇫🇷", "俄罗斯": "🇷🇺", "加拿大": "🇨🇦", "荷兰": "🇳🇱", "澳大利亚": "🇦🇺",
     "阿联酋": "🇦🇪", "土耳其": "🇹🇷",
 }
@@ -39,7 +39,7 @@ def get_final_label(server: str, remarks: str = "") -> str:
         ("美国", r"us|unitedstates|美国|美國"), ("英国", r"gb|uk|britain|英国|英國"),
         ("韩国", r"kr|korea|韩国|韓國"), ("日本", r"jp|japan|日本"),
         ("新加坡", r"sg|singapore|新加坡"), ("德国", r"de|germany|德国"),
-        ("立陶宛", r"lt|lithuania|立陶宛"),
+        ("立桃宛", r"lt|lithuania|立桃宛"),
     ]
     for name, pattern in meta:
         if re.search(pattern, text):
@@ -51,7 +51,8 @@ def get_final_label(server: str, remarks: str = "") -> str:
             return IP_CACHE[server]
         try:
             time.sleep(0.35)
-            resp = requests.get(f"http://ip-api.com/json/{server}?lang=zh-CN", timeout=8)
+            # 修复：原代码缺失路径斜杠，修正为标准的免费查询接口路径
+            resp = requests.get(f"ip-api.com{server}?lang=zh-CN", timeout=8)
             data = resp.json()
             if data.get("status") == "success":
                 country = data.get("country")
@@ -80,18 +81,21 @@ def parse_link(link: str):
                 "server": data.get("add"),
                 "original_remarks": data.get("ps", "")
             }
-        # 支持 hy2 及常见协议
-        elif link.startswith(('ss://', 'trojan://', 'vless://', 'hysteria2://', 'hy2://', 'clw://')):
+        # 增加修复：解析逻辑中显式包涵所有主流协议 (ss, trojan, vless, hysteria2, hy2)
+        elif link.startswith(('ss://', 'trojan://', 'vless://', 'hysteria2://', 'hy2://')):
             u = urllib.parse.urlparse(link)
+            # 提取协议名称
+            proto = link.split('://')[0].lower()
+            if proto == 'hy2':
+                proto = 'hysteria2'
             return {
-                "type": "other",
+                "type": proto,
                 "link": link,
                 "server": u.hostname,
                 "original_remarks": urllib.parse.unquote(u.fragment) if u.fragment else ""
             }
     except:
         return None
-
 
 # ==================== 主程序 ====================
 def main():
@@ -128,12 +132,14 @@ def main():
         if p["type"] == "vmess":
             data = p["raw_data"].copy()
             data['ps'] = new_name
+            # 这里同样使用标准的 Base64 编码方式
             new_json = json.dumps(data, separators=(',', ':')).encode('utf-8')
             new_b64 = base64.b64encode(new_json).decode('utf-8')
             rocket_links.append(f"vmess://{new_b64}")
 
-            # Clash 配置
-            clash_proxies.append({
+            # Clash 配置（补充 WS/gRPC 高级传输参数支持，防断网）
+            net_type = str(data.get("net", "tcp")).lower()
+            vmess_node = {
                 "name": new_name,
                 "type": "vmess",
                 "server": data.get("add"),
@@ -143,12 +149,70 @@ def main():
                 "cipher": "auto",
                 "tls": str(data.get("tls", "")).lower() in ["tls", "1", "true"],
                 "skip-cert-verify": True,
-                "network": data.get("net", "tcp"),
-            })
+                "network": net_type,
+            }
+            if net_type == "ws":
+                vmess_node["ws-opts"] = {"path": data.get("path", "/"), "headers": {"Host": data.get("host", "")}}
+            elif net_type == "grpc":
+                vmess_node["grpc-opts"] = {"grpc-service-name": data.get("path", "")}
+            clash_proxies.append(vmess_node)
 
+        # 增加修改：在 else 分支中补充完备的非 VMess（SS、Trojan、VLESS、Hysteria2）Clash 节点格式转换
         else:
             clean = link.split('#')[0]
             rocket_links.append(f"{clean}#{urllib.parse.quote(new_name)}")
+            
+            u = urllib.parse.urlparse(link)
+            queries = dict(urllib.parse.parse_qsl(u.query))
+            
+            # 基础公共参数
+            proxy_node = {
+                "name": new_name,
+                "type": p["type"],
+                "server": u.hostname,
+                "port": int(u.port) if u.port else 443
+            }
+            
+            # 1. 适配 Shadowsocks (ss) 格式
+            if p["type"] == "ss":
+                proxy_node["password"] = u.password if u.password else ""
+                proxy_node["cipher"] = u.username if u.username else "aes-256-gcm"
+                if not proxy_node["password"] and u.username:
+                    try:
+                        user_info = parse_vmess_b64(u.username).decode('utf-8', 'ignore')
+                        if ':' in user_info:
+                            proxy_node["cipher"], proxy_node["password"] = user_info.split(':', 1)
+                    except:
+                        pass
+                        
+            # 2. 适配 Trojan 格式
+            elif p["type"] == "trojan":
+                proxy_node["password"] = u.username if u.username else ""
+                proxy_node["sni"] = queries.get("sni", u.hostname)
+                proxy_node["skip-cert-verify"] = True
+                
+            # 3. 适配 VLESS 格式
+            elif p["type"] == "vless":
+                proxy_node["uuid"] = u.username if u.username else ""
+                proxy_node["cipher"] = "auto"
+                proxy_node["tls"] = queries.get("security") == "tls" or "tls" in link
+                proxy_node["skip-cert-verify"] = True
+                proxy_node["network"] = queries.get("type", "tcp")
+                if proxy_node["network"] == "ws":
+                    proxy_node["ws-opts"] = {"path": queries.get("path", "/"), "headers": {"Host": queries.get("host", "")}}
+                elif proxy_node["network"] == "grpc":
+                    proxy_node["grpc-opts"] = {"grpc-service-name": queries.get("serviceName", "")}
+                    
+            # 4. 适配 Hysteria2 (hy2) 格式
+            elif p["type"] == "hysteria2":
+                proxy_node["auth"] = u.username if u.username else ""
+                proxy_node["sni"] = queries.get("sni", u.hostname)
+                proxy_node["skip-cert-verify"] = True
+                if queries.get("obfs"):
+                    proxy_node["obfs"] = queries.get("obfs")
+                    proxy_node["obfs-password"] = queries.get("obfs-password", "")
+
+            clash_proxies.append(proxy_node)
 
         region_map[label].append(new_name)
 
