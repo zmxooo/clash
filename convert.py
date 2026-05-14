@@ -1,234 +1,126 @@
-import base64
-import json
-import urllib.parse
-import os
-import re
-import requests
-import time
-import yaml
-from collections import defaultdict
+import base64, json, yaml, urllib.parse, os, re, requests, time
 
-CHANNEL_MARK = "@zmxooo"
-
-# ==================== 配置 ====================
-IP_CACHE = {}
-
-EMOJI_MAP = {
-    "香港": "🇭🇰", "台湾": "🇹🇼", "美国": "🇺🇸", "英国": "🇬🇧", "韩国": "🇰🇷",
-    "日本": "🇯🇵", "新加坡": "🇸🇬", "越南": "🇻🇳", "德国": "🇩🇪", "立陶宛": "🇱🇹",
-    "法国": "🇫🇷", "俄罗斯": "🇷🇺", "加拿大": "🇨🇦", "荷兰": "🇳🇱", "澳大利亚": "🇦🇺",
-    "阿联酋": "🇦🇪", "土耳其": "🇹🇷",
-}
-
-# ==================== 工具函数 ====================
-def parse_vmess_b64(b64_part):
-    if not isinstance(b64_part, str):
-        b64_part = str(b64_part)
-    b64_part = re.sub(r'[^a-zA-Z0-9+/=_-]', '', b64_part)
-    b64_part = b64_part.replace('-', '+').replace('_', '/')
-    padding = len(b64_part) % 4
-    if padding:
-        b64_part += "=" * (4 - padding)
-    try:
-        return base64.b64decode(b64_part)
-    except:
-        return b""
-
-def safe_int(val, default=443):
-    try:
-        if isinstance(val, int):
-            return val
-        clean_val = re.sub(r'\D', '', str(val))
-        return int(clean_val) if clean_val else default
-    except:
-        return default
-
-def get_final_label(server: str, remarks: str = "") -> str:
-    text = urllib.parse.unquote(str(remarks)).lower()
+# 1. 核心识别：IP 归属地查询 + 备注匹配
+def get_final_label(server, remarks):
+    text = urllib.parse.unquote(remarks).lower().strip()
     meta = [
-        ("香港", r"hk|hongkong|香港"), ("台湾", r"tw|taiwan|台灣|台湾"),
-        ("美国", r"us|unitedstates|美国|美國"), ("英国", r"gb|uk|britain|英国|英國"),
-        ("韩国", r"kr|korea|韩国|韓國"), ("日本", r"jp|japan|日本"),
-        ("新加坡", r"sg|singapore|新加坡"), ("德国", r"de|germany|德国"),
-        ("立陶宛", r"lt|lithuania|立桃宛|立陶宛"),
+        ("🇭🇰 香港", r"hk|香港|hongkong|🇭🇰"), ("🇹🇼 台湾", r"tw|台湾|台灣|taiwan|🇹🇼"),
+        ("🇺🇸 美国", r"us|美国|美國|america|usa|🇺🇸"), ("🇰🇷 韩国", r"kr|韩国|韓國|korea|🇰🇷"),
+        ("🇯🇵 日本", r"jp|日本|japan|🇯🇵"), ("🇸🇬 新加坡", r"sg|新加坡|singapore|🇸🇬"),
+        ("🇩🇪 德国", r"de|德国|德國|germany|ger|🇩🇪"), ("🇬🇧 英国", r"gb|uk|英国|英國|united kingdom|🇬🇧"),
+        ("🇻🇳 越南", r"vn|越南|vietnam|🇻🇳"), ("🇱🇹 立陶宛", r"lt|立陶宛|lithuania")
     ]
-    for name, pattern in meta:
-        if re.search(pattern, text):
-            return f"{EMOJI_MAP.get(name, '🌍')} {name}"
-
-    if server and re.match(r'^\d{1,3}(\.\d{1,3}){3}$', server):
-        if server in IP_CACHE:
-            return IP_CACHE[server]
-        try:
-            time.sleep(0.1)
-            resp = requests.get(f"ip-api.com{server}?lang=zh-CN", timeout=3)
-            data = resp.json()
-            if data.get("status") == "success":
-                country = data.get("country")
-                label = f"{EMOJI_MAP.get(country, '🌍')} {country}"
-                IP_CACHE[server] = label
-                return label
-        except:
-            pass
-    return "🧿 其他地区"
-
-# ==================== 主程序 ====================
-def main():
-    if not os.path.exists('nodes.txt'):
-        print("❌ 未找到 nodes.txt 文件")
-        return
-
-    with open('nodes.txt', 'r', encoding='utf-8', errors='ignore') as f:
-        lines = [line.strip() for line in f if line.strip()]
-
-    seen = set()
-    unique_links = []
-    for line in lines:
-        # 去重时只对比 # 号前的核心部分
-        core = line.split('#')[0]
-        if core not in seen:
-            seen.add(core)
-            unique_links.append(line)
-
-    region_map = defaultdict(list)
-    clash_proxies = []
-    rocket_links = []
-
-    print(f"🔄 正在强力处理去重后的 {len(unique_links)} 个节点...")
-
-    for link in unique_links:
-        # 1. 严格切分原始备注
-        if '#' in link:
-            clean_link_str, orig_remarks = link.split('#', 1)
-        else:
-            clean_link_str, orig_remarks = link, ""
-
-        # ================= 1. VMESS 专属分支 =================
-        if clean_link_str.startswith('vmess://'):
-            try:
-                b64_part = clean_link_str[8:]
-                raw_data = parse_vmess_b64(b64_part)
-                if not raw_data:
-                    continue
-                data = json.loads(raw_data.decode('utf-8', 'ignore'))
-                server_ip = data.get("add", "")
-                remarks_for_label = data.get("ps", "") if data.get("ps") else orig_remarks
-                
-                label = get_final_label(server_ip, remarks_for_label)
-                idx = len(region_map[label]) + 1
-                new_name = f"{label} {idx:02d} {CHANNEL_MARK}"
-                region_map[label].append(new_name)
-
-                # 重构小火箭链接
-                data['ps'] = new_name
-                new_json = json.dumps(data, separators=(',', ':')).encode('utf-8')
-                new_b64 = base64.b64encode(new_json).decode('utf-8')
-                rocket_links.append(f"vmess://{new_b64}")
-
-                # 重构 Clash 节点
-                clash_proxies.append({
-                    "name": new_name,
-                    "type": "vmess",
-                    "server": server_ip if server_ip else "127.0.0.1",
-                    "port": safe_int(data.get("port"), 443),
-                    "uuid": data.get("id"),
-                    "alterId": safe_int(data.get("aid"), 0),
-                    "cipher": "auto",
-                    "tls": str(data.get("tls", "")).lower() in ["tls", "1", "true"],
-                    "skip-cert-verify": True,
-                    "network": data.get("net", "tcp"),
-                    "ws-opts": {"path": data.get("path", "/")} if data.get("net") == "ws" else {}
-                })
-            except:
-                continue
-
-        # ================= 2. HYSTERIA2 专属分支 (纯正则拦截) =================
-        elif clean_link_str.startswith(('hysteria2://', 'hy2://')):
-            # 使用精准正则表达式提取 [密码, IP/域名, 端口, 参数区]
-            pattern = r'^(?:hysteria2|hy2)://([^@]+)@([^:]+):(\d+)(?:\?(.*))?$'
-            match = re.match(pattern, clean_link_str)
-            if not match:
-                continue
-                
-            password, server_ip, port_str, query_str = match.groups()
-            query_str = query_str if query_str else ""
-            
-            # 计算国家标签和新名字
-            label = get_final_label(server_ip, orig_remarks)
-            idx = len(region_map[label]) + 1
-            new_name = f"{label} {idx:02d} {CHANNEL_MARK}"
-            region_map[label].append(new_name)
-
-            # 【不作任何修改】直接无损重写小火箭通用订阅语法
-            rocket_links.append(f"{clean_link_str}#{urllib.parse.quote(new_name)}")
-
-            # 解析参数区（用于 Clash 节点）
-            params = {}
-            if query_str:
-                for item in query_str.split('&'):
-                    if '=' in item:
-                        k, v = item.split('=', 1)
-                        params[k] = urllib.parse.unquote(v)
-
-            # 提取 SNI (剔除可能的 https:// 前缀干扰)
-            sni_val = params.get("sni", server_ip)
-            if "://" in sni_val:
-                sni_val = sni_val.split("://")[-1].split("/")[0]
-
-            # 无损重构 Clash Hysteria2 语法
-            clash_proxies.append({
-                "name": new_name,
-                "type": "hysteria2",
-                "server": server_ip,
-                "port": safe_int(port_str, 443),
-                "password": password,
-                "sni": sni_val,
-                "skip-cert-verify": params.get("insecure") != "0",
-                "alpn": [params.get("alpn", "h3")]
-            })
-
-        # ================= 3. SS / TROJAN / VLESS 其他通用分支 =================
-        elif clean_link_str.startswith(('ss://', 'trojan://', 'vless://')):
-            try:
-                # 提取协议类型
-                proto = clean_link_str.split('://')[0]
-                
-                # 简单用正则抓取 IP 域名段作为地理定位依据
-                server_match = re.search(r'@([^:]+):(\d+)', clean_link_str)
-                server_ip = server_match.group(1) if server_match else "127.0.0.1"
-                
-                label = get_final_label(server_ip, orig_remarks)
-                idx = len(region_map[label]) + 1
-                new_name = f"{label} {idx:02d} {CHANNEL_MARK}"
-                region_map[label].append(new_name)
-
-                # 直接无损追加新备注语法
-                rocket_links.append(f"{clean_link_str}#{urllib.parse.quote(new_name)}")
-                
-                # 由于重点是修复 hy2，通用协议保留最基础的节点卡位，防止报错
-                clash_proxies.append({
-                    "name": new_name,
-                    "type": "trojan" if proto == "trojan" else "ss",
-                    "server": server_ip,
-                    "port": safe_int(server_match.group(2)) if server_match else 443,
-                    "password": "password_placeholder",
-                    "skip-cert-verify": True
-                })
-            except:
-                continue
-
-    # ==================== 输出文件保存 ====================
+    for label, pattern in meta:
+        if re.search(pattern, text): return label
+    
+    # 尝试通过 IP 查询位置
     try:
-        with open('rocket_output.txt', 'w', encoding='utf-8') as f:
-            f.write("\n".join(rocket_links))
+        r = requests.get(f"http://ip-api.com{server}?lang=zh-CN", timeout=2).json()
+        if r.get("status") == "success":
+            c = r.get("country")
+            country_map = {"中国": "🇨🇳 中国", "香港": "🇭🇰 香港", "台湾": "🇹🇼 台湾", "美国": "🇺🇸 美国", "日本": "🇯🇵 日本", "韩国": "🇰🇷 韩国", "新加坡": "🇸🇬 新加坡", "德国": "🇩🇪 德国", "英国": "🇬🇧 英国", "越南": "🇻🇳 越南", "立陶宛": "🇱🇹 立陶宛"}
+            return country_map.get(c, f"🌍 {c}")
+    except: pass
+    return "🌍 其他"
+
+# 2. 全量解析器（严谨校验版：5大协议独立入口，互不干扰）
+def parse_link(link):
+    try:
+        # 去掉可能的重复前缀
+        link = link.replace('vmess://vmess://', 'vmess://').strip()
         
-        clash_output = {"proxies": clash_proxies}
-        with open('clash_output.yaml', 'w', encoding='utf-8') as f:
-            yaml.dump(clash_output, f, allow_unicode=True, sort_keys=False)
-            
-        print("✅ 重写成功！已完全拦截并无损生成 Hysteria2 节点。")
+        # --- [协议 1]: VMess ---
+        if link.startswith('vmess://'):
+            # 去掉 # 后缀，只取 Base64 部分
+            b64_part = link[8:].split('#')[0].split('?')[0]
+            b64_part += '=' * (-len(b64_part) % 4)
+            d = json.loads(base64.b64decode(b64_part).decode('utf-8'))
+            return {
+                "label": get_final_label(d.get("add"), d.get("ps")), 
+                "type": "vmess", "server": d.get("add"), "port": int(d.get("port")), 
+                "uuid": d.get("id"), "alterId": 0, "cipher": "auto", 
+                "tls": d.get("tls") in ["tls", True, 1, "1"], "skip-cert-verify": True
+            }
+
+        # --- [协议 2]: Shadowsocks (SS) ---
+        if link.startswith('ss://'):
+            u = urllib.parse.urlparse(link)
+            server_part = u.netloc.split("@")[-1]
+            host = server_part.split(":")[0]
+            port = int(server_part.split(":")[1]) if ":" in server_part else 443
+            method, password = "aes-256-gcm", "password"
+            if "@" in u.netloc:
+                userinfo_b64 = u.netloc.split("@")[0]
+                userinfo_b64 += '=' * (-len(userinfo_b64) % 4)
+                userinfo = base64.b64decode(userinfo_b64).decode('utf-8').split(":")
+                method, password = userinfo[0], userinfo[1]
+            return {"label": get_final_label(host, u.fragment), "type": "ss", "server": host, "port": port, "cipher": method, "password": password, "udp": True}
+
+        # --- [协议 3]: VLESS ---
+        if link.startswith('vless://'):
+            u = urllib.parse.urlparse(link)
+            q = urllib.parse.parse_qs(u.query)
+            sni = q.get("sni", [""]) or q.get("host", [""]) or [u.hostname]
+            return {"label": get_final_label(u.hostname, u.fragment), "type": "vless", "server": u.hostname, "port": int(u.port), "uuid": u.username, "cipher": "auto", "tls": True, "sni": str(sni[0]), "skip-cert-verify": True, "udp": True}
+
+        # --- [协议 4]: Trojan ---
+        if link.startswith('trojan://'):
+            u = urllib.parse.urlparse(link)
+            q = urllib.parse.parse_qs(u.query)
+            sni = q.get("sni", [""]) or q.get("host", [""]) or [u.hostname]
+            return {"label": get_final_label(u.hostname, u.fragment), "type": "trojan", "server": u.hostname, "port": int(u.port), "password": u.username, "tls": True, "sni": str(sni[0]), "skip-cert-verify": True, "udp": True}
+
+        # --- [协议 5]: Hysteria2 ---
+        if any(link.startswith(p) for p in ['hysteria2://', 'hy2://']):
+            u = urllib.parse.urlparse(link)
+            return {"label": get_final_label(u.hostname, u.fragment), "type": "hysteria2", "server": u.hostname, "port": int(u.port) if u.port else 443, "password": u.username, "auth": u.username, "sni": u.hostname, "skip-cert-verify": True}
+
     except Exception as e:
-        print(f"❌ 写入输出文件失败: {e}")
+        print(f"解析出错: {link[:20]}... -> {e}")
+        return None
+
+def main():
+    if not os.path.exists('nodes.txt'): return
+    with open('nodes.txt', 'r', encoding='utf-8') as f:
+        ls = f.read().splitlines()
+    
+    pxs, name_count, valid_links = [], {}, []
+    channel_mark = "@zmxooo"
+    
+    for l in ls:
+        l = l.strip()
+        if not l or any(l.startswith(s) for s in ['import', 'def', 'git']): continue
+        p = parse_link(l)
+        if p:
+            valid_links.append(l)
+            base_label = p.pop('label')
+            name_count[base_label] = name_count.get(base_label, 0) + 1
+            p['name'] = f"{base_label} {channel_mark} {name_count[base_label]:02d}"
+            pxs.append(p)
+            time.sleep(0.05)
+
+    if not pxs: return
+
+    # 动态抓取国家前缀
+    group_labels = sorted(list(set([p['name'].split(' @')[0] for p in pxs if ' @' in p['name']])))
+    
+    ags = [
+        {"name": "🚀 节点选择", "type": "select", "proxies": ["⚡ 自动选择", "DIRECT"] + group_labels},
+        {"name": "⚡ 自动选择", "type": "url-test", "url": "http://gstatic.com", "interval": 300, "proxies": [p['name'] for p in pxs]}
+    ]
+    
+    for r in group_labels:
+        ags.append({
+            "name": r, "type": "url-test", "url": "http://gstatic.com", 
+            "interval": 300, "proxies": [p['name'] for p in pxs if p['name'].startswith(r)]
+        })
+    
+    cf = {"port": 7890, "proxies": pxs, "proxy-groups": ags, "rules": ["MATCH,🚀 节点选择"]}
+    with open('config.yaml', 'w', encoding='utf-8') as f:
+        yaml.dump(cf, f, allow_unicode=True, sort_keys=False)
+    
+    with open('index.html', 'w', encoding='utf-8') as f:
+        f.write(base64.b64encode("\n".join(valid_links).encode('utf-8')).decode('utf-8'))
 
 if __name__ == "__main__":
     main()
