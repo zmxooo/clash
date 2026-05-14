@@ -1,393 +1,803 @@
 proxies:
+- type: vmess
+  server: 82.198.246.233
+  port: 180
+  uuid: d13fc2f5-3e05-4795-81eb-44143a09e552
+  alterId: 0
+  cipher: auto
+  tls: false
+  network: tcp
+  ws-opts: null
+  orig_link: vmess://eyJhZGQiOiI4Mi4xOTguMjQ2LjIzMyIsImFpZCI6IjAiLCJhbHBuIjoiIiwiZnAiOiIiLCJob3N0IjoiIiwiaWQiOiJkMTNmYzJmNS0zZTA1LTQ3OTUtODFlYi00NDE0M2EwOWU1NTIiLCJpbnNlY3VyZSI6IjAiLCJuZXQiOiJ0Y3AiLCJwYXRoIjoiLyIsInBvcnQiOiIxODAiLCJwcyI6IuiLseWciyIsInNjeSI6ImF1dG8iLCJzbmkiOiIiLCJ0bHMiOiIiLCJ0eXBlIjoibm9uZSIsInYiOiIyIn0=
+  name: 🌍 其他地区 01 @zmxooo
+- type: vmess
+  server: 82.198.246.233
+  port: 180
+  uuid: d13fc2f5-3e05-4795-81eb-44143a09e552
+  alterId: 0
+  cipher: auto
+  tls: false
+  network: tcp
+  ws-opts: null
+  orig_link: vmess://eyJhZGQiOiI4Mi4xOTguMjQ2LjIzMyIsImFpZCI6IjAiLCJhbHBuIjoiIiwiZnAiOiIiLCJob3N0IjoiSEwtRlJFRURPTS0xLlVOREVGLk5FVFdPUksiLCJpZCI6ImQxM2ZjMmY1LTNlMDUtNDc5NS04MWViLTQ0MTQzYTA5ZTU1MiIsImluc2VjdXJlIjoiMCIsIm5ldCI6InRjcCIsInBhdGgiOiIvIiwicG9ydCI6IjE4MCIsInBzIjoi8J+HuvCfh7ggVVPnvo7lnIvnr4Dpu54iLCJzY3kiOiJhdXRvIiwic25pIjoiIiwidGxzIjoiIiwidHlwZSI6Im5vbmUiLCJ2IjoiMiJ9
+  name: 🇺🇸 美国 01 @zmxooo
+- type: vmess
+  server: 82.198.246.97
+  port: 180
+  uuid: d13fc2f5-3e05-4795-81eb-44143a09e552
+  alterId: 0
+  cipher: auto
+  tls: false
+  network: tcp
+  ws-opts: null
+  orig_link: vmess://eyJhZGQiOiI4Mi4xOTguMjQ2Ljk3IiwiYWlkIjoiMCIsImFscG4iOiIiLCJmcCI6IiIsImhvc3QiOiJ0Lm1lJTI1MjUyRnJpcGFvamllZGlhbiIsImlkIjoiZDEzZmMyZjUtM2UwNS00Nzk1LTgxZWItNDQxNDNhMDllNTUyIiwiaW5zZWN1cmUiOiIwIiwibmV0IjoidGNwIiwicGF0aCI6Ii8iLCJwb3J0IjoiMTgwIiwicHMiOiLwn4es8J+HpyBHQuiLseWci+evgOm7niIsInNjeSI6ImF1dG8iLCJzbmkiOiIiLCJ0bHMiOiIiLCJ0eXBlIjoibm9uZSIsInYiOiIyIn0=
+  name: 🇬🇧 英国 01 @zmxooo
 - type: hysteria2
   server: 202.146.222.41
   port: 443
   password: qQe1z5kU8kN6SlKnDt9Ru3Qp
-  auth: qQe1z5kU8kN6SlKnDt9Ru3Qp
   sni: 202.146.222.41
   skip-cert-verify: true
-  name: 🇭🇰 香港 @zmxooo 01
+  alpn:
+  - h3
+  orig_link: hysteria2://qQe1z5kU8kN6SlKnDt9Ru3Qp@202.146.222.41:443?insecure=1&sni=https%3A%2F%2Ft.me%2Fzmxooo#香港@zmxooo1
+  name: 🇭🇰 香港 01 @zmxooo
 - type: hysteria2
   server: 202.146.222.13
   port: 443
   password: qQe1z5kU8kN6SlKnDt9Ru3Qp
-  auth: qQe1z5kU8kN6SlKnDt9Ru3Qp
   sni: 202.146.222.13
   skip-cert-verify: true
-  name: 🇭🇰 香港 @zmxooo 02
+  alpn:
+  - h3
+  orig_link: hysteria2://qQe1z5kU8kN6SlKnDt9Ru3Qp@202.146.222.13:443?insecure=1&sni=https%3A%2F%2Ft.me%2Fzmxooo#香港@zmxooo2
+  name: 🇭🇰 香港 02 @zmxooo
 - type: hysteria2
   server: 202.146.222.93
   port: 443
   password: qQe1z5kU8kN6SlKnDt9Ru3Qp
-  auth: qQe1z5kU8kN6SlKnDt9Ru3Qp
   sni: 202.146.222.93
   skip-cert-verify: true
-  name: 🇭🇰 香港 @zmxooo 03
+  alpn:
+  - h3
+  orig_link: hysteria2://qQe1z5kU8kN6SlKnDt9Ru3Qp@202.146.222.93:443?insecure=1&sni=https%3A%2F%2Ft.me%2Fzmxooo#香港
+    @zmxooo3
+  name: 🇭🇰 香港 03 @zmxooo
 - type: hysteria2
   server: 202.146.222.89
   port: 443
   password: qQe1z5kU8kN6SlKnDt9Ru3Qp
-  auth: qQe1z5kU8kN6SlKnDt9Ru3Qp
   sni: 202.146.222.89
   skip-cert-verify: true
-  name: 🇭🇰 香港 @zmxooo 04
+  alpn:
+  - h3
+  orig_link: hysteria2://qQe1z5kU8kN6SlKnDt9Ru3Qp@202.146.222.89:443?insecure=1&sni=https%3A%2F%2Ft.me%2Fzmxooo#香港@zmxooo4
+  name: 🇭🇰 香港 04 @zmxooo
 - type: hysteria2
   server: 202.146.222.11
   port: 443
   password: qQe1z5kU8kN6SlKnDt9Ru3Qp
-  auth: qQe1z5kU8kN6SlKnDt9Ru3Qp
   sni: 202.146.222.11
   skip-cert-verify: true
-  name: 🇭🇰 香港 @zmxooo 05
+  alpn:
+  - h3
+  orig_link: hysteria2://qQe1z5kU8kN6SlKnDt9Ru3Qp@202.146.222.11:443?insecure=1&sni=https%3A%2F%2Ft.me%2Fzmxooo#香港@zmxooo5
+  name: 🇭🇰 香港 05 @zmxooo
 - type: hysteria2
   server: 202.146.222.29
   port: 443
   password: qQe1z5kU8kN6SlKnDt9Ru3Qp
-  auth: qQe1z5kU8kN6SlKnDt9Ru3Qp
   sni: 202.146.222.29
   skip-cert-verify: true
-  name: 🇭🇰 香港 @zmxooo 06
+  alpn:
+  - h3
+  orig_link: hysteria2://qQe1z5kU8kN6SlKnDt9Ru3Qp@202.146.222.29:443?insecure=1&sni=https%3A%2F%2Ft.me%2Fzmxooo#香港@zmxooo6
+  name: 🇭🇰 香港 06 @zmxooo
 - type: hysteria2
   server: 202.146.222.16
   port: 443
   password: qQe1z5kU8kN6SlKnDt9Ru3Qp
-  auth: qQe1z5kU8kN6SlKnDt9Ru3Qp
   sni: 202.146.222.16
   skip-cert-verify: true
-  name: 🇭🇰 香港 @zmxooo 07
+  alpn:
+  - h3
+  orig_link: hysteria2://qQe1z5kU8kN6SlKnDt9Ru3Qp@202.146.222.16:443?insecure=1&sni=https%3A%2F%2Ft.me%2Fzmxooo#香港@zmxooo7
+  name: 🇭🇰 香港 07 @zmxooo
 - type: hysteria2
   server: 202.146.222.85
   port: 443
   password: qQe1z5kU8kN6SlKnDt9Ru3Qp
-  auth: qQe1z5kU8kN6SlKnDt9Ru3Qp
   sni: 202.146.222.85
   skip-cert-verify: true
-  name: 🇭🇰 香港 @zmxooo 08
+  alpn:
+  - h3
+  orig_link: hysteria2://qQe1z5kU8kN6SlKnDt9Ru3Qp@202.146.222.85:443?insecure=1&sni=https%3A%2F%2Ft.me%2Fzmxooo#香港@zmxooo8
+  name: 🇭🇰 香港 08 @zmxooo
 - type: hysteria2
   server: 202.146.222.45
   port: 443
   password: qQe1z5kU8kN6SlKnDt9Ru3Qp
-  auth: qQe1z5kU8kN6SlKnDt9Ru3Qp
   sni: 202.146.222.45
   skip-cert-verify: true
-  name: 🇭🇰 香港 @zmxooo 09
+  alpn:
+  - h3
+  orig_link: hysteria2://qQe1z5kU8kN6SlKnDt9Ru3Qp@202.146.222.45:443?insecure=1&sni=https%3A%2F%2Ft.me%2Fzmxooo#香港@zmxooo9
+  name: 🇭🇰 香港 09 @zmxooo
 - type: hysteria2
   server: 160.187.100.109
   port: 443
   password: qQe1z5kU8kN6SlKnDt9Ru3Qp
-  auth: qQe1z5kU8kN6SlKnDt9Ru3Qp
   sni: 160.187.100.109
   skip-cert-verify: true
-  name: 🇹🇼 台湾 @zmxooo 01
+  alpn:
+  - h3
+  orig_link: hysteria2://qQe1z5kU8kN6SlKnDt9Ru3Qp@160.187.100.109:443?insecure=1&sni=https%3A%2F%2Ft.me%2Fzmxooo#台湾@zmxooo1
+  name: 🇹🇼 台湾 01 @zmxooo
 - type: hysteria2
   server: 43.200.123.45
   port: 443
   password: qQe1z5kU8kN6SlKnDt9Ru3Qp
-  auth: qQe1z5kU8kN6SlKnDt9Ru3Qp
   sni: 43.200.123.45
   skip-cert-verify: true
-  name: 🇹🇼 台湾 @zmxooo 02
+  alpn:
+  - h3
+  orig_link: hysteria2://qQe1z5kU8kN6SlKnDt9Ru3Qp@43.200.123.45:443?insecure=1&sni=https%3A%2F%2Ft.me%2Fzmxooo#台湾@zmxooo2
+  name: 🇹🇼 台湾 02 @zmxooo
 - type: hysteria2
   server: 23.144.12.162
   port: 443
   password: qQe1z5kU8kN6SlKnDt9Ru3Qp
-  auth: qQe1z5kU8kN6SlKnDt9Ru3Qp
   sni: 23.144.12.162
   skip-cert-verify: true
-  name: 🇺🇸 美国 @zmxooo 01
+  alpn:
+  - h3
+  orig_link: hysteria2://qQe1z5kU8kN6SlKnDt9Ru3Qp@23.144.12.162:443?insecure=1&sni=https%3A%2F%2Ft.me%2Fzmxooo#美国@zmxooo1
+  name: 🇺🇸 美国 02 @zmxooo
+- type: vmess
+  server: 82.198.246.9
+  port: 180
+  uuid: d13fc2f5-3e05-4795-81eb-44143a09e552
+  alterId: 0
+  cipher: auto
+  tls: false
+  network: tcp
+  ws-opts: null
+  orig_link: vmess://eyJhZGQiOiI4Mi4xOTguMjQ2LjkiLCJhaWQiOiIwIiwiYWxwbiI6IiIsImZwIjoiIiwiaG9zdCI6IiIsImlkIjoiZDEzZmMyZjUtM2UwNS00Nzk1LTgxZWItNDQxNDNhMDllNTUyIiwibmV0IjoidGNwIiwicGF0aCI6IiIsInBvcnQiOiIxODAiLCJwcyI6IuiLseWciyIsInNjeSI6ImF1dG8iLCJzbmkiOiIiLCJ0bHMiOiIiLCJ0eXBlIjoiIiwidiI6IjIifQ==
+  name: 🌍 其他地区 02 @zmxooo
+- type: vmess
+  server: 82.198.246.233
+  port: 180
+  uuid: d13fc2f5-3e05-4795-81eb-44143a09e552
+  alterId: 0
+  cipher: auto
+  tls: false
+  network: tcp
+  ws-opts: null
+  orig_link: vmess://eyJhZGQiOiI4Mi4xOTguMjQ2LjIzMyIsImFpZCI6IjAiLCJhbHBuIjoiIiwiZnAiOiIiLCJob3N0IjoiIiwiaWQiOiJkMTNmYzJmNS0zZTA1LTQ3OTUtODFlYi00NDE0M2EwOWU1NTIiLCJuZXQiOiJ0Y3AiLCJwYXRoIjoiIiwicG9ydCI6IjE4MCIsInBzIjoi6Iux5ZyLIDIiLCJzY3kiOiJhdXRvIiwic25pIjoiIiwidGxzIjoiIiwidHlwZSI6IiIsInYiOiIyIn0=
+  name: 🌍 其他地区 03 @zmxooo
+- type: vmess
+  server: 82.198.246.233
+  port: 180
+  uuid: d13fc2f5-3e05-4795-81eb-44143a09e552
+  alterId: 0
+  cipher: auto
+  tls: false
+  network: tcp
+  ws-opts: null
+  orig_link: vmess://eyJhZGQiOiI4Mi4xOTguMjQ2LjIzMyIsImFpZCI6IjAiLCJhbHBuIjoiIiwiZnAiOiIiLCJob3N0IjoiIiwiaWQiOiJkMTNmYzJmNS0zZTA1LTQ3OTUtODFlYi00NDE0M2EwOWU1NTIiLCJuZXQiOiJ0Y3AiLCJwYXRoIjoiIiwicG9ydCI6IjE4MCIsInBzIjoi6Iux5ZyLIDMiLCJzY3kiOiJhdXRvIiwic25pIjoiIiwidGxzIjoiIiwidHlwZSI6IiIsInYiOiIyIn0=
+  name: 🌍 其他地区 04 @zmxooo
+- type: vmess
+  server: 82.198.246.9
+  port: 180
+  uuid: d13fc2f5-3e05-4795-81eb-44143a09e552
+  alterId: 0
+  cipher: auto
+  tls: false
+  network: tcp
+  ws-opts: null
+  orig_link: vmess://eyJhZGQiOiI4Mi4xOTguMjQ2LjkiLCJhaWQiOiIwIiwiYWxwbiI6IiIsImZwIjoiIiwiaG9zdCI6IiIsImlkIjoiZDEzZmMyZjUtM2UwNS00Nzk1LTgxZWItNDQxNDNhMDllNTUyIiwibmV0IjoidGNwIiwicGF0aCI6IiIsInBvcnQiOiIxODAiLCJwcyI6IuiLseWciyA0Iiwic2N5IjoiYXV0byIsInNuaSI6IiIsInRscyI6IiIsInR5cGUiOiIiLCJ2IjoiMiJ9
+  name: 🌍 其他地区 05 @zmxooo
+- type: vmess
+  server: 82.198.246.233
+  port: 180
+  uuid: d13fc2f5-3e05-4795-81eb-44143a09e552
+  alterId: 0
+  cipher: auto
+  tls: false
+  network: tcp
+  ws-opts: null
+  orig_link: vmess://eyJhZGQiOiI4Mi4xOTguMjQ2LjIzMyIsImFpZCI6IjAiLCJhbHBuIjoiIiwiZnAiOiIiLCJob3N0IjoiIiwiaWQiOiJkMTNmYzJmNS0zZTA1LTQ3OTUtODFlYi00NDE0M2EwOWU1NTIiLCJuZXQiOiJ0Y3AiLCJwYXRoIjoiIiwicG9ydCI6IjE4MCIsInBzIjoi6Iux5ZyLIDUiLCJzY3kiOiJhdXRvIiwic25pIjoiIiwidGxzIjoiIiwidHlwZSI6IiIsInYiOiIyIn0=
+  name: 🌍 其他地区 06 @zmxooo
+- type: vmess
+  server: 82.198.246.37
+  port: 180
+  uuid: d13fc2f5-3e05-4795-81eb-44143a09e552
+  alterId: 0
+  cipher: auto
+  tls: false
+  network: tcp
+  ws-opts: null
+  orig_link: vmess://eyJhZGQiOiI4Mi4xOTguMjQ2LjM3IiwiYWlkIjoiMCIsImFscG4iOiIiLCJmcCI6IiIsImhvc3QiOiIiLCJpZCI6ImQxM2ZjMmY1LTNlMDUtNDc5NS04MWViLTQ0MTQzYTA5ZTU1MiIsIm5ldCI6InRjcCIsInBhdGgiOiIiLCJwb3J0IjoiMTgwIiwicHMiOiLoi7HlnIsgNiIsInNjeSI6ImF1dG8iLCJzbmkiOiIiLCJ0bHMiOiIiLCJ0eXBlIjoiIiwidiI6IjIifQ==
+  name: 🌍 其他地区 07 @zmxooo
+- type: vmess
+  server: 82.198.246.9
+  port: 180
+  uuid: d13fc2f5-3e05-4795-81eb-44143a09e552
+  alterId: 0
+  cipher: auto
+  tls: false
+  network: tcp
+  ws-opts: null
+  orig_link: vmess://eyJhZGQiOiI4Mi4xOTguMjQ2LjkiLCJhaWQiOiIwIiwiYWxwbiI6IiIsImZwIjoiIiwiaG9zdCI6IiIsImlkIjoiZDEzZmMyZjUtM2UwNS00Nzk1LTgxZWItNDQxNDNhMDllNTUyIiwibmV0IjoidGNwIiwicGF0aCI6IiIsInBvcnQiOiIxODAiLCJwcyI6IuiLseWciyA3Iiwic2N5IjoiYXV0byIsInNuaSI6IiIsInRscyI6IiIsInR5cGUiOiIiLCJ2IjoiMiJ9
+  name: 🌍 其他地区 08 @zmxooo
+- type: vmess
+  server: 82.198.246.214
+  port: 180
+  uuid: d13fc2f5-3e05-4795-81eb-44143a09e552
+  alterId: 0
+  cipher: auto
+  tls: false
+  network: tcp
+  ws-opts: null
+  orig_link: vmess://eyJhZGQiOiI4Mi4xOTguMjQ2LjIxNCIsImFpZCI6IjAiLCJhbHBuIjoiIiwiZnAiOiIiLCJob3N0IjoiIiwiaWQiOiJkMTNmYzJmNS0zZTA1LTQ3OTUtODFlYi00NDE0M2EwOWU1NTIiLCJuZXQiOiJ0Y3AiLCJwYXRoIjoiIiwicG9ydCI6IjE4MCIsInBzIjoi6Iux5ZyLIDgiLCJzY3kiOiJhdXRvIiwic25pIjoiIiwidGxzIjoiIiwidHlwZSI6IiIsInYiOiIyIn0=
+  name: 🌍 其他地区 09 @zmxooo
+- type: vmess
+  server: 82.198.246.233
+  port: 180
+  uuid: d13fc2f5-3e05-4795-81eb-44143a09e552
+  alterId: 0
+  cipher: auto
+  tls: false
+  network: tcp
+  ws-opts: null
+  orig_link: vmess://eyJhZGQiOiI4Mi4xOTguMjQ2LjIzMyIsImFpZCI6IjAiLCJhbHBuIjoiIiwiZnAiOiIiLCJob3N0IjoiIiwiaWQiOiJkMTNmYzJmNS0zZTA1LTQ3OTUtODFlYi00NDE0M2EwOWU1NTIiLCJuZXQiOiJ0Y3AiLCJwYXRoIjoiIiwicG9ydCI6IjE4MCIsInBzIjoi6Iux5ZyLIDkiLCJzY3kiOiJhdXRvIiwic25pIjoiIiwidGxzIjoiIiwidHlwZSI6IiIsInYiOiIyIn0=
+  name: 🌍 其他地区 10 @zmxooo
+- type: vmess
+  server: 82.198.246.250
+  port: 180
+  uuid: d13fc2f5-3e05-4795-81eb-44143a09e552
+  alterId: 0
+  cipher: auto
+  tls: false
+  network: tcp
+  ws-opts: null
+  orig_link: vmess://eyJhZGQiOiI4Mi4xOTguMjQ2LjI1MCIsImFpZCI6IjAiLCJhbHBuIjoiIiwiZnAiOiIiLCJob3N0IjoiIiwiaWQiOiJkMTNmYzJmNS0zZTA1LTQ3OTUtODFlYi00NDE0M2EwOWU1NTIiLCJuZXQiOiJ0Y3AiLCJwYXRoIjoiIiwicG9ydCI6IjE4MCIsInBzIjoi6Iux5ZyLIDEwIiwic2N5IjoiYXV0byIsInNuaSI6IiIsInRscyI6IiIsInR5cGUiOiIiLCJ2IjoiMiJ9
+  name: 🌍 其他地区 11 @zmxooo
+- type: vmess
+  server: 82.198.246.214
+  port: 180
+  uuid: d13fc2f5-3e05-4795-81eb-44143a09e552
+  alterId: 0
+  cipher: auto
+  tls: false
+  network: tcp
+  ws-opts: null
+  orig_link: vmess://eyJhZGQiOiI4Mi4xOTguMjQ2LjIxNCIsImFpZCI6IjAiLCJhbHBuIjoiIiwiZnAiOiIiLCJob3N0IjoiIiwiaWQiOiJkMTNmYzJmNS0zZTA1LTQ3OTUtODFlYi00NDE0M2EwOWU1NTIiLCJuZXQiOiJ0Y3AiLCJwYXRoIjoiIiwicG9ydCI6IjE4MCIsInBzIjoi6Iux5ZyLIDExIiwic2N5IjoiYXV0byIsInNuaSI6IiIsInRscyI6IiIsInR5cGUiOiIiLCJ2IjoiMiJ9
+  name: 🌍 其他地区 12 @zmxooo
+- type: vmess
+  server: 82.198.246.214
+  port: 180
+  uuid: d13fc2f5-3e05-4795-81eb-44143a09e552
+  alterId: 0
+  cipher: auto
+  tls: false
+  network: tcp
+  ws-opts: null
+  orig_link: vmess://eyJhZGQiOiI4Mi4xOTguMjQ2LjIxNCIsImFpZCI6IjAiLCJhbHBuIjoiIiwiZnAiOiIiLCJob3N0IjoiIiwiaWQiOiJkMTNmYzJmNS0zZTA1LTQ3OTUtODFlYi00NDE0M2EwOWU1NTIiLCJuZXQiOiJ0Y3AiLCJwYXRoIjoiIiwicG9ydCI6IjE4MCIsInBzIjoi576O5ZyL56+A6bueIiwic2N5IjoiYXV0byIsInNuaSI6IiIsInRscyI6IiIsInR5cGUiOiIiLCJ2IjoiMiJ9
+  name: 🌍 其他地区 13 @zmxooo
+- type: vmess
+  server: 82.198.246.233
+  port: 180
+  uuid: d13fc2f5-3e05-4795-81eb-44143a09e552
+  alterId: 0
+  cipher: auto
+  tls: false
+  network: tcp
+  ws-opts: null
+  orig_link: vmess://eyJhZGQiOiI4Mi4xOTguMjQ2LjIzMyIsImFpZCI6IjAiLCJhbHBuIjoiIiwiZnAiOiIiLCJob3N0IjoiIiwiaWQiOiJkMTNmYzJmNS0zZTA1LTQ3OTUtODFlYi00NDE0M2EwOWU1NTIiLCJuZXQiOiJ0Y3AiLCJwYXRoIjoiIiwicG9ydCI6IjE4MCIsInBzIjoi576O5ZyLIiwic2N5IjoiYXV0byIsInNuaSI6IiIsInRscyI6IiIsInR5cGUiOiIiLCJ2IjoiMiJ9
+  name: 🌍 其他地区 14 @zmxooo
+- type: vmess
+  server: 82.198.246.9
+  port: 180
+  uuid: d13fc2f5-3e05-4795-81eb-44143a09e552
+  alterId: 0
+  cipher: auto
+  tls: false
+  network: tcp
+  ws-opts: null
+  orig_link: vmess://eyJhZGQiOiI4Mi4xOTguMjQ2LjkiLCJhaWQiOiIwIiwiYWxwbiI6IiIsImZwIjoiIiwiaG9zdCI6IiIsImlkIjoiZDEzZmMyZjUtM2UwNS00Nzk1LTgxZWItNDQxNDNhMDllNTUyIiwibmV0IjoidGNwIiwicGF0aCI6IiIsInBvcnQiOiIxODAiLCJwcyI6Iue+juWci+evgOm7niAyIiwic2N5IjoiYXV0byIsInNuaSI6IiIsInRscyI6IiIsInR5cGUiOiIiLCJ2IjoiMiJ9
+  name: 🌍 其他地区 15 @zmxooo
+- type: vmess
+  server: 82.198.246.37
+  port: 180
+  uuid: d13fc2f5-3e05-4795-81eb-44143a09e552
+  alterId: 0
+  cipher: auto
+  tls: false
+  network: tcp
+  ws-opts: null
+  orig_link: vmess://eyJhZGQiOiI4Mi4xOTguMjQ2LjM3IiwiYWlkIjoiMCIsImFscG4iOiIiLCJmcCI6IiIsImhvc3QiOiIiLCJpZCI6ImQxM2ZjMmY1LTNlMDUtNDc5NS04MWViLTQ0MTQzYTA5ZTU1MiIsIm5ldCI6InRjcCIsInBhdGgiOiIiLCJwb3J0IjoiMTgwIiwicHMiOiLnvo7lnIsgMiIsInNjeSI6ImF1dG8iLCJzbmkiOiIiLCJ0bHMiOiIiLCJ0eXBlIjoiIiwidiI6IjIifQ==
+  name: 🌍 其他地区 16 @zmxooo
 - type: ss
   server: 103.186.155.79
   port: 38388
-  cipher: aes-256-cfb
-  password: Xn8jKdmDM00IeO%#$#fJAMtsEAEUOpH/YWYtYqDFnT0SV
-  udp: true
-  name: 🇻🇳 越南 @zmxooo 01
+  password: YWVzLTI1Ni1jZmI6WG44aktkbURNMDBJZU8lIyQjZkpBTXRzRUFFVU9wSC9ZV1l0WXFERm5UMFNW
+  uuid: null
+  sni: 103.186.155.79
+  tls: true
+  skip-cert-verify: true
+  orig_link: ss://YWVzLTI1Ni1jZmI6WG44aktkbURNMDBJZU8lIyQjZkpBTXRzRUFFVU9wSC9ZV1l0WXFERm5UMFNW@103.186.155.79:38388#%F0%9F%87%BB%F0%9F%87%B3%20%E8%B6%8A%E5%8D%97%20%7C%20VNM%207
+  cipher: auto
+  name: 🌍 其他地区 17 @zmxooo
 - type: ss
   server: 103.186.155.75
   port: 38388
-  cipher: aes-256-cfb
-  password: Xn8jKdmDM00IeO%#$#fJAMtsEAEUOpH/YWYtYqDFnT0SV
-  udp: true
-  name: 🇻🇳 越南 @zmxooo 02
+  password: YWVzLTI1Ni1jZmI6WG44aktkbURNMDBJZU8lIyQjZkpBTXRzRUFFVU9wSC9ZV1l0WXFERm5UMFNW
+  uuid: null
+  sni: 103.186.155.75
+  tls: true
+  skip-cert-verify: true
+  orig_link: ss://YWVzLTI1Ni1jZmI6WG44aktkbURNMDBJZU8lIyQjZkpBTXRzRUFFVU9wSC9ZV1l0WXFERm5UMFNW@103.186.155.75:38388#%F0%9F%87%BB%F0%9F%87%B3%20%E8%B6%8A%E5%8D%97%20%7C%20VNM%206
+  cipher: auto
+  name: 🌍 其他地区 18 @zmxooo
 - type: ss
   server: 103.186.155.109
   port: 38388
-  cipher: aes-256-cfb
-  password: Xn8jKdmDM00IeO%#$#fJAMtsEAEUOpH/YWYtYqDFnT0SV
-  udp: true
-  name: 🇻🇳 越南 @zmxooo 03
+  password: YWVzLTI1Ni1jZmI6WG44aktkbURNMDBJZU8lIyQjZkpBTXRzRUFFVU9wSC9ZV1l0WXFERm5UMFNW
+  uuid: null
+  sni: 103.186.155.109
+  tls: true
+  skip-cert-verify: true
+  orig_link: ss://YWVzLTI1Ni1jZmI6WG44aktkbURNMDBJZU8lIyQjZkpBTXRzRUFFVU9wSC9ZV1l0WXFERm5UMFNW@103.186.155.109:38388#%F0%9F%87%BB%F0%9F%87%B3%20%E8%B6%8A%E5%8D%97%20%7C%20VNM%203
+  cipher: auto
+  name: 🌍 其他地区 19 @zmxooo
 - type: ss
   server: 103.186.155.8
   port: 38388
-  cipher: aes-256-cfb
-  password: Xn8jKdmDM00IeO%#$#fJAMtsEAEUOpH/YWYtYqDFnT0SV
-  udp: true
-  name: 🇻🇳 越南 @zmxooo 04
+  password: YWVzLTI1Ni1jZmI6WG44aktkbURNMDBJZU8lIyQjZkpBTXRzRUFFVU9wSC9ZV1l0WXFERm5UMFNW
+  uuid: null
+  sni: 103.186.155.8
+  tls: true
+  skip-cert-verify: true
+  orig_link: ss://YWVzLTI1Ni1jZmI6WG44aktkbURNMDBJZU8lIyQjZkpBTXRzRUFFVU9wSC9ZV1l0WXFERm5UMFNW@103.186.155.8:38388#%F0%9F%87%BB%F0%9F%87%B3%20%E8%B6%8A%E5%8D%97%20%7C%20VNM%202
+  cipher: auto
+  name: 🌍 其他地区 20 @zmxooo
 - type: ss
   server: 103.186.155.49
   port: 38388
-  cipher: aes-256-cfb
-  password: Xn8jKdmDM00IeO%#$#fJAMtsEAEUOpH/YWYtYqDFnT0SV
-  udp: true
-  name: 🇻🇳 越南 @zmxooo 05
+  password: YWVzLTI1Ni1jZmI6WG44aktkbURNMDBJZU8lIyQjZkpBTXRzRUFFVU9wSC9ZV1l0WXFERm5UMFNW
+  uuid: null
+  sni: 103.186.155.49
+  tls: true
+  skip-cert-verify: true
+  orig_link: ss://YWVzLTI1Ni1jZmI6WG44aktkbURNMDBJZU8lIyQjZkpBTXRzRUFFVU9wSC9ZV1l0WXFERm5UMFNW@103.186.155.49:38388#%F0%9F%87%BB%F0%9F%87%B3%20%E8%B6%8A%E5%8D%97%20%7C%20VNM
+  cipher: auto
+  name: 🌍 其他地区 21 @zmxooo
 - type: ss
   server: 34.229.121.217
   port: 80
-  cipher: aes-256-gcm
-  password: dada1203
-  udp: true
-  name: 🇺🇸 美国 @zmxooo 02
+  password: YWVzLTI1Ni1nY206ZGFkYTEyMDM
+  uuid: null
+  sni: 34.229.121.217
+  tls: true
+  skip-cert-verify: true
+  orig_link: ss://YWVzLTI1Ni1nY206ZGFkYTEyMDM@34.229.121.217:80#%F0%9F%87%BA%F0%9F%87%B8%20%E7%BE%8E%E5%9B%BD%20%7C%20USA%206
+  cipher: auto
+  name: 🇺🇸 美国 03 @zmxooo
 - type: ss
   server: 3.137.174.85
   port: 443
-  cipher: aes-256-cfb
-  password: amazonskr05
-  udp: true
-  name: 🇺🇸 美国 @zmxooo 03
+  password: YWVzLTI1Ni1jZmI6YW1hem9uc2tyMDU
+  uuid: null
+  sni: 3.137.174.85
+  tls: true
+  skip-cert-verify: true
+  orig_link: ss://YWVzLTI1Ni1jZmI6YW1hem9uc2tyMDU@3.137.174.85:443#%F0%9F%87%BA%F0%9F%87%B8%20%E7%BE%8E%E5%9B%BD%20%7C%20USA%203
+  cipher: auto
+  name: 🇺🇸 美国 04 @zmxooo
 - type: ss
   server: 3.144.123.157
   port: 443
-  cipher: aes-256-cfb
-  password: amazonskr05
-  udp: true
-  name: 🇺🇸 美国 @zmxooo 04
+  password: YWVzLTI1Ni1jZmI6YW1hem9uc2tyMDU
+  uuid: null
+  sni: 3.144.123.157
+  tls: true
+  skip-cert-verify: true
+  orig_link: ss://YWVzLTI1Ni1jZmI6YW1hem9uc2tyMDU@3.144.123.157:443#%F0%9F%87%BA%F0%9F%87%B8%20%E7%BE%8E%E5%9B%BD%20%7C%20USA%202
+  cipher: auto
+  name: 🇺🇸 美国 05 @zmxooo
 - type: hysteria2
   server: vpn-kr-003.fastervpn.world
   port: 443
   password: qQe1z5kU8kN6SlKnDt9Ru3Qp
-  auth: qQe1z5kU8kN6SlKnDt9Ru3Qp
   sni: vpn-kr-003.fastervpn.world
   skip-cert-verify: true
-  name: 🇰🇷 韩国 @zmxooo 01
-- type: hysteria2
-  server: 5.83.129.90
-  port: 54177
-  password: null
-  auth: null
-  sni: 5.83.129.90
-  skip-cert-verify: true
-  name: 🇩🇪 德国 @zmxooo 01
+  alpn:
+  - h3
+  orig_link: hy2://qQe1z5kU8kN6SlKnDt9Ru3Qp@vpn-kr-003.fastervpn.world:443/?insecure=1&sni=vpn-kr-003.fastervpn.world#%F0%9F%87%B0%F0%9F%87%B7%20%E9%9F%A9%E5%9B%BD%20%7C%20KOR
+  name: 🇰🇷 韩国 01 @zmxooo
+- type: vmess
+  server: v13.zgtfqs.click
+  port: 30813
+  uuid: cbb3f877-d1fb-344c-87a9-d153bffd5484
+  alterId: 2
+  cipher: auto
+  tls: false
+  network: tcp
+  ws-opts: null
+  orig_link: vmess://eyJhZGQiOiJ2MTMuemd0ZnFzLmNsaWNrIiwiYWlkIjoiMiIsImFscG4iOiIiLCJmcCI6IiIsImhvc3QiOiIiLCJpZCI6ImNiYjNmODc3LWQxZmItMzQ0Yy04N2E5LWQxNTNiZmZkNTQ4NCIsIm5ldCI6InRjcCIsInBhdGgiOiIiLCJwb3J0IjoiMzA4MTMiLCJzY3kiOiJhdXRvIiwic25pIjoiIiwidGxzIjoiIiwidHlwZSI6IiIsInYiOiIyIiwicHMiOiLlj7Dmub4ifQ==#台湾
+  name: 🇹🇼 台湾 03 @zmxooo
+- type: vmess
+  server: v11.zgtfqs.click
+  port: 30811
+  uuid: cbb3f877-d1fb-344c-87a9-d153bffd5484
+  alterId: 2
+  cipher: auto
+  tls: false
+  network: tcp
+  ws-opts: null
+  orig_link: vmess://eyJhZGQiOiJ2MTEuemd0ZnFzLmNsaWNrIiwiYWlkIjoiMiIsImFscG4iOiIiLCJmcCI6IiIsImhvc3QiOiIiLCJpZCI6ImNiYjNmODc3LWQxZmItMzQ0Yy04N2E5LWQxNTNiZmZkNTQ4NCIsIm5ldCI6InRjcCIsInBhdGgiOiIiLCJwb3J0IjoiMzA4MTEiLCJzY3kiOiJhdXRvIiwic25pIjoiIiwidGxzIjoiIiwidHlwZSI6IiIsInYiOiIyIiwicHMiOiLlj7Dmub4ifQ==#台湾
+  name: 🇹🇼 台湾 04 @zmxooo
+- type: vmess
+  server: v13.zgtfqs.click
+  port: 30813
+  uuid: cbb3f877-d1fb-344c-87a9-d153bffd5484
+  alterId: 2
+  cipher: auto
+  tls: false
+  network: tcp
+  ws-opts: null
+  orig_link: vmess://eyJhZGQiOiJ2MTMuemd0ZnFzLmNsaWNrIiwiYWlkIjoiMiIsImFscG4iOiIiLCJmcCI6IiIsImhvc3QiOiIiLCJpZCI6ImNiYjNmODc3LWQxZmItMzQ0Yy04N2E5LWQxNTNiZmZkNTQ4NCIsIm5ldCI6InRjcCIsInBhdGgiOiIiLCJwb3J0IjoiMzA4MTMiLCJzY3kiOiJhdXRvIiwic25pIjoiIiwidGxzIjoiIiwidHlwZSI6IiIsInYiOiIyIiwicHMiOiLlj7Dmub4ifQ==#台湾
+  name: 🇹🇼 台湾 05 @zmxooo
+- type: vmess
+  server: 103.127.243.55
+  port: 58051
+  uuid: 8e5b521a-4a56-4bd7-baf1-bfcdf55d6cf1
+  alterId: 0
+  cipher: auto
+  tls: false
+  network: tcp
+  ws-opts: null
+  orig_link: vmess://eyJhZGQiOiIxMDMuMTI3LjI0My41NSIsImFpZCI6IjAiLCJhbHBuIjoiIiwiZnAiOiIiLCJob3N0IjoiIiwiaWQiOiI4ZTViNTIxYS00YTU2LTRiZDctYmFmMS1iZmNkZjU1ZDZjZjEiLCJuZXQiOiJ0Y3AiLCJwYXRoIjoiL0FCQ0RFIiwicG9ydCI6IjU4MDUxIiwic2N5IjoiYXV0byIsInNuaSI6IiIsInRscyI6IiIsInR5cGUiOiJodHRwIiwidiI6IjIiLCJwcyI6IuaXpeacrCJ9#日本
+  name: 🇯🇵 日本 01 @zmxooo
 - type: ss
   server: 103.186.155.75
   port: 38388
-  cipher: aes-256-cfb
-  password: Xn8jKdmDM00IeO%#$#fJAMtsEAEUOpH/YWYtYqDFnT0SV
-  udp: true
-  name: 🌍 其他 @zmxooo 01
+  password: YWVzLTI1Ni1jZmI6WG44aktkbURNMDBJZU8lIyQjZkpBTXRzRUFFVU9wSC9ZV1l0WXFERm5UMFNW
+  uuid: null
+  sni: 103.186.155.75
+  tls: true
+  skip-cert-verify: true
+  orig_link: ss://YWVzLTI1Ni1jZmI6WG44aktkbURNMDBJZU8lIyQjZkpBTXRzRUFFVU9wSC9ZV1l0WXFERm5UMFNW@103.186.155.75:38388#%E6%9C%AA%E7%9F%A5_2
+  cipher: auto
+  name: 🌍 其他地区 22 @zmxooo
 - type: trojan
   server: 172.66.44.230
   port: 8443
-  tls: true
-  sni: '[''Koma-YT.PAGeS.Dev'']'
-  skip-cert-verify: true
-  udp: true
   password: 8r%3C%5B9%27l6hAO%238ZQi
-  name: 🇺🇸 美国 @zmxooo 05
+  uuid: null
+  sni: Koma-YT.PAGeS.Dev
+  tls: true
+  skip-cert-verify: true
+  orig_link: trojan://8r%3C%5B9%27l6hAO%238ZQi@172.66.44.230:8443?path=%2Ftro8sFW1S91B6sZrM1%3Fed%3D2560&security=tls&insecure=0&host=Koma-YT.PAGeS.Dev&type=ws&allowInsecure=0&sni=Koma-YT.PAGeS.Dev#%E7%BE%8E%E5%9C%8B%E4%B8%A8
+  name: 🌍 其他地区 23 @zmxooo
 - type: trojan
   server: 220.118.248.123
   port: 18001
-  tls: true
-  sni: '[''Koma-YT.PAGeS.Dev'']'
-  skip-cert-verify: true
-  udp: true
   password: 8r%3C%5B9%27l6hAO%238ZQi
-  name: 🇰🇷 韩国 @zmxooo 02
+  uuid: null
+  sni: Koma-YT.PAGeS.Dev
+  tls: true
+  skip-cert-verify: true
+  orig_link: trojan://8r%3C%5B9%27l6hAO%238ZQi@220.118.248.123:18001?path=%2FtrTelegram%F0%9F%87%A8%F0%9F%87%B3%20%40WangCai2&security=tls&insecure=1&host=Koma-YT.PAGeS.Dev&type=ws&allowInsecure=1&sni=Koma-YT.PAGeS.Dev#%F0%9F%87%B0%F0%9F%87%B7KR%E9%9F%93%E5%9C%8B%E4%B8%A8
+  name: 🇰🇷 韩国 02 @zmxooo
 - type: trojan
   server: 183.107.78.213
   port: 20880
-  tls: true
-  sni: '[''Koma-YT.PAGeS.Dev'']'
-  skip-cert-verify: true
-  udp: true
   password: 8r%3C%5B9%27l6hAO%238ZQi
-  name: 🇰🇷 韩国 @zmxooo 03
+  uuid: null
+  sni: Koma-YT.PAGeS.Dev
+  tls: true
+  skip-cert-verify: true
+  orig_link: trojan://8r%3C%5B9%27l6hAO%238ZQi@183.107.78.213:20880?path=%2FtrTelegram%F0%9F%87%A8%F0%9F%87%B3%20%40WangCai2&security=tls&insecure=1&host=Koma-YT.PAGeS.Dev&type=ws&allowInsecure=1&sni=Koma-YT.PAGeS.Dev#%F0%9F%87%B0%F0%9F%87%B7KR%E9%9F%93%E5%9C%8B%E4%B8%A8
+  name: 🇰🇷 韩国 03 @zmxooo
 - type: trojan
   server: 59.16.228.103
   port: 18469
-  tls: true
-  sni: '[''Koma-YT.PAGeS.Dev'']'
-  skip-cert-verify: true
-  udp: true
   password: 8r%3C%5B9%27l6hAO%238ZQi
-  name: 🇰🇷 韩国 @zmxooo 04
+  uuid: null
+  sni: Koma-YT.PAGeS.Dev
+  tls: true
+  skip-cert-verify: true
+  orig_link: trojan://8r%3C%5B9%27l6hAO%238ZQi@59.16.228.103:18469?path=%2FtrTelegram%F0%9F%87%A8%F0%9F%87%B3%20%40WangCai2&security=tls&insecure=1&host=Koma-YT.PAGeS.Dev&type=ws&allowInsecure=1&sni=Koma-YT.PAGeS.Dev#%F0%9F%87%B0%F0%9F%87%B7KR%E9%9F%93%E5%9C%8B%E4%B8%A8
+  name: 🇰🇷 韩国 04 @zmxooo
 - type: trojan
   server: 59.0.95.106
   port: 32773
-  tls: true
-  sni: '[''Koma-YT.PAGeS.Dev'']'
-  skip-cert-verify: true
-  udp: true
   password: 8r%3C%5B9%27l6hAO%238ZQi
-  name: 🇰🇷 韩国 @zmxooo 05
+  uuid: null
+  sni: Koma-YT.PAGeS.Dev
+  tls: true
+  skip-cert-verify: true
+  orig_link: trojan://8r%3C%5B9%27l6hAO%238ZQi@59.0.95.106:32773?path=%2FtrTelegram%F0%9F%87%A8%F0%9F%87%B3%20%40WangCai2&security=tls&insecure=1&host=Koma-YT.PAGeS.Dev&type=ws&allowInsecure=1&sni=Koma-YT.PAGeS.Dev#%F0%9F%87%B0%F0%9F%87%B7KR%E9%9F%93%E5%9C%8B%E4%B8%A8
+  name: 🇰🇷 韩国 05 @zmxooo
 - type: trojan
   server: 59.12.232.18
   port: 12345
-  tls: true
-  sni: '[''Koma-YT.PAGeS.Dev'']'
-  skip-cert-verify: true
-  udp: true
   password: 8r%3C%5B9%27l6hAO%238ZQi
-  name: 🇰🇷 韩国 @zmxooo 06
+  uuid: null
+  sni: Koma-YT.PAGeS.Dev
+  tls: true
+  skip-cert-verify: true
+  orig_link: trojan://8r%3C%5B9%27l6hAO%238ZQi@59.12.232.18:12345?path=%2FtrTelegram%F0%9F%87%A8%F0%9F%87%B3%20%40WangCai2&security=tls&insecure=1&host=Koma-YT.PAGeS.Dev&type=ws&allowInsecure=1&sni=Koma-YT.PAGeS.Dev#%F0%9F%87%B0%F0%9F%87%B7KR%E9%9F%93%E5%9C%8B%E4%B8%A8
+  name: 🇰🇷 韩国 06 @zmxooo
+- type: vmess
+  server: 82.198.246.9
+  port: 180
+  uuid: d13fc2f5-3e05-4795-81eb-44143a09e552
+  alterId: 0
+  cipher: auto
+  tls: false
+  network: tcp
+  ws-opts: null
+  orig_link: vmess://eyJhZGQiOiI4Mi4xOTguMjQ2LjkiLCJhaWQiOiIwIiwiYWxwbiI6IiIsImZwIjoiIiwiaG9zdCI6IiIsImlkIjoiZDEzZmMyZjUtM2UwNS00Nzk1LTgxZWItNDQxNDNhMDllNTUyIiwibmV0IjoidGNwIiwicGF0aCI6IiIsInBvcnQiOiIxODAiLCJwcyI6IvCfh6nwn4eqREUtODIuMTk4LjI0Ni45LTYwIiwic2N5IjoiYXV0byIsInNuaSI6IiIsInRscyI6IiIsInR5cGUiOiIiLCJ2IjoiMiJ9
+  name: 🇩🇪 德国 01 @zmxooo
+- type: vmess
+  server: 82.198.246.37
+  port: 180
+  uuid: d13fc2f5-3e05-4795-81eb-44143a09e552
+  alterId: 0
+  cipher: auto
+  tls: false
+  network: tcp
+  ws-opts: null
+  orig_link: vmess://eyJhZGQiOiI4Mi4xOTguMjQ2LjM3IiwiYWlkIjoiMCIsImFscG4iOiIiLCJmcCI6IiIsImhvc3QiOiIiLCJpZCI6ImQxM2ZjMmY1LTNlMDUtNDc5NS04MWViLTQ0MTQzYTA5ZTU1MiIsIm5ldCI6InRjcCIsInBhdGgiOiIiLCJwb3J0IjoiMTgwIiwicHMiOiLwn4ep8J+HqkRFLTgyLjE5OC4yNDYuMzctNTgiLCJzY3kiOiJhdXRvIiwic25pIjoiIiwidGxzIjoiIiwidHlwZSI6IiIsInYiOiIyIn0=
+  name: 🇩🇪 德国 02 @zmxooo
+- type: vmess
+  server: 82.198.246.233
+  port: 180
+  uuid: d13fc2f5-3e05-4795-81eb-44143a09e552
+  alterId: 0
+  cipher: auto
+  tls: false
+  network: tcp
+  ws-opts: null
+  orig_link: vmess://eyJhZGQiOiI4Mi4xOTguMjQ2LjIzMyIsImFpZCI6IjAiLCJhbHBuIjoiIiwiZnAiOiIiLCJob3N0IjoiIiwiaWQiOiJkMTNmYzJmNS0zZTA1LTQ3OTUtODFlYi00NDE0M2EwOWU1NTIiLCJuZXQiOiJ0Y3AiLCJwYXRoIjoiIiwicG9ydCI6IjE4MCIsInBzIjoi8J+HqfCfh6pERS04Mi4xOTguMjQ2LjIzMy01OSIsInNjeSI6ImF1dG8iLCJzbmkiOiIiLCJ0bHMiOiIiLCJ0eXBlIjoiIiwidiI6IjIifQ==
+  name: 🇩🇪 德国 03 @zmxooo
+- type: vmess
+  server: 82.198.246.233
+  port: 180
+  uuid: d13fc2f5-3e05-4795-81eb-44143a09e552
+  alterId: 0
+  cipher: auto
+  tls: false
+  network: tcp
+  ws-opts: null
+  orig_link: vmess://eyJhZGQiOiI4Mi4xOTguMjQ2LjIzMyIsImFpZCI6IjAiLCJhbHBuIjoiIiwiZnAiOiIiLCJob3N0IjoiIiwiaWQiOiJkMTNmYzJmNS0zZTA1LTQ3OTUtODFlYi00NDE0M2EwOWU1NTIiLCJuZXQiOiJ0Y3AiLCJwYXRoIjoiIiwicG9ydCI6IjE4MCIsInBzIjoi8J+HqfCfh6pERS04Mi4xOTguMjQ2LjIzMy01MSIsInNjeSI6ImF1dG8iLCJzbmkiOiIiLCJ0bHMiOiIiLCJ0eXBlIjoiIiwidiI6IjIifQ==
+  name: 🇩🇪 德国 04 @zmxooo
+- type: vmess
+  server: 82.198.246.214
+  port: 180
+  uuid: d13fc2f5-3e05-4795-81eb-44143a09e552
+  alterId: 0
+  cipher: auto
+  tls: false
+  network: tcp
+  ws-opts: null
+  orig_link: vmess://eyJhZGQiOiI4Mi4xOTguMjQ2LjIxNCIsImFpZCI6IjAiLCJhbHBuIjoiIiwiZnAiOiIiLCJob3N0IjoiIiwiaWQiOiJkMTNmYzJmNS0zZTA1LTQ3OTUtODFlYi00NDE0M2EwOWU1NTIiLCJuZXQiOiJ0Y3AiLCJwYXRoIjoiIiwicG9ydCI6IjE4MCIsInBzIjoi8J+Hu/Cfh7cg56eR5aiB5nib6IqC54K5IEB6bXhvbyAwMSIsICJzY3kiOiJhdXRvIiwic25pIjoiIiwidGxzIjoiIiwidHlwZSI6IiIsInYiOiIyIn0=
+  name: 🌍 其他地区 24 @zmxooo
+- type: vmess
+  server: 82.198.246.9
+  port: 180
+  uuid: d13fc2f5-3e05-4795-81eb-44143a09e552
+  alterId: 0
+  cipher: auto
+  tls: false
+  network: tcp
+  ws-opts: null
+  orig_link: vmess://eyJhZGQiOiI4Mi4xOTguMjQ2LjkiLCJhaWQiOiIwIiwiYWxwbiI6IiIsImZwIjoiIiwiaG9zdCI6IiIsImlkIjoiZDEzZmMyZjUtM2UwNS00Nzk1LTgxZWItNDQxNDNhMDllNTUyIiwibmV0IjoidGNwIiwicGF0aCI6IiIsInBvcnQiOiIxODAiLCJwcyI6IvCfh7vwn4e3IOeniOWogeeniuiKgueCueSAtEB6bXhvbyAwMiIsICJzY3kiOiJhdXRvIiwic25pIjoiIiwidGxzIjoiIiwidHlwZSI6IiIsInYiOiIyIn0=
+  name: 🌍 其他地区 25 @zmxooo
+- type: vmess
+  server: 82.198.246.37
+  port: 180
+  uuid: d13fc2f5-3e05-4795-81eb-44143a09e552
+  alterId: 0
+  cipher: auto
+  tls: false
+  network: tcp
+  ws-opts: null
+  orig_link: vmess://eyJhZGQiOiI4Mi4xOTguMjQ2LjM3IiwiYWlkIjoiMCIsImFscG4iOiIiLCJmcCI6IiIsImhvc3QiOiIiLCJpZCI6ImQxM2ZjMmY1LTNlMDUtNDc5NS04MWViLTQ0MTQzYTA5ZTU1MiIsIm5ldCI6InRjcCIsInBhdGgiOiIiLCJwb3J0IjoiMTgwIiwicHMiOiLwn4e78J+Ht+eniOWogeeniuiKgueCueSAtEB6bXhvbyAwMyIsICJzY3kiOiJhdXRvIiwic25pIjoiIiwidGxzIjoiIiwidHlwZSI6IiIsInYiOiIyIn0=
+  name: 🌍 其他地区 26 @zmxooo
+- type: vmess
+  server: 82.198.246.233
+  port: 180
+  uuid: d13fc2f5-3e05-4795-81eb-44143a09e552
+  alterId: 0
+  cipher: auto
+  tls: false
+  network: tcp
+  ws-opts: null
+  orig_link: vmess://eyJhZGQiOiI4Mi4xOTguMjQ2LjIzMyIsImFpZCI6IjAiLCJhbHBuIjoiIiwiZnAiOiIiLCJob3N0IjoiIiwiaWQiOiJkMTNmYzJmNS0zZTA1LTQ3OTUtODFlYi00NDE0M2EwOWU1NTIiLCJuZXQiOiJ0Y3AiLCJwYXRoIjoiIiwicG9ydCI6IjE4MCIsInBzIjoi8J+Hu/Cfh7cg56eR5aiB5nib6IqC54K5IEB6bXhvbyAwNCIsICJzY3kiOiJhdXRvIiwic25pIjoiIiwidGxzIjoiIiwidHlwZSI6IiIsInYiOiIyIn0=
+  name: 🌍 其他地区 27 @zmxooo
 - type: ss
   server: 3.137.174.85
   port: 443
-  cipher: aes-256-cfb
-  password: amazonskr05
-  udp: true
-  name: 🇺🇸 美国 @zmxooo 06
+  password: YWVzLTI1Ni1jZmI6YW1hem9uc2tyMDU
+  uuid: null
+  sni: 3.137.174.85
+  tls: true
+  skip-cert-verify: true
+  orig_link: ss://YWVzLTI1Ni1jZmI6YW1hem9uc2tyMDU@3.137.174.85:443#🇺🇸 美国节点 @zmxooo
+    01
+  cipher: auto
+  name: 🇺🇸 美国 06 @zmxooo
 - type: ss
   server: 82.38.31.155
   port: 8080
-  cipher: chacha20-ietf-poly1305
-  password: oZIoA69Q8yhcQV8ka3Pa3A
-  udp: true
-  name: 🇬🇧 英国 @zmxooo 01
+  password: Y2hhY2hhMjAtaWV0Zi1wb2x5MTMwNTpvWklvQTY5UTh5aGNRVjhrYTNQYTNB
+  uuid: null
+  sni: 82.38.31.155
+  tls: true
+  skip-cert-verify: true
+  orig_link: ss://Y2hhY2hhMjAtaWV0Zi1wb2x5MTMwNTpvWklvQTY5UTh5aGNRVjhrYTNQYTNB@82.38.31.155:8080#🇬🇧
+    英国节点 @zmxooo 01
+  cipher: auto
+  name: 🇬🇧 英国 02 @zmxooo
 - type: ss
   server: 82.38.31.35
   port: 8080
-  cipher: chacha20-ietf-poly1305
-  password: oZIoA69Q8yhcQV8ka3Pa3A
-  udp: true
-  name: 🇬🇧 英国 @zmxooo 02
+  password: Y2hhY2hhMjAtaWV0Zi1wb2x5MTMwNTpvWklvQTY5UTh5aGNRVjhrYTNQYTNB
+  uuid: null
+  sni: 82.38.31.35
+  tls: true
+  skip-cert-verify: true
+  orig_link: ss://Y2hhY2hhMjAtaWV0Zi1wb2x5MTMwNTpvWklvQTY5UTh5aGNRVjhrYTNQYTNB@82.38.31.35:8080#🇬🇧
+    英国节点 @zmxooo 02
+  cipher: auto
+  name: 🇬🇧 英国 03 @zmxooo
 - type: trojan
   server: lt-sin.ltdns.top
   port: 37043
-  tls: true
-  sni: '[''ithome.com'']'
-  skip-cert-verify: true
-  udp: true
   password: abb011d5-2749-4fba-9a66-0eb7b1b14d1e
-  name: 🇱🇹 立陶宛 @zmxooo 01
+  uuid: null
+  sni: ithome.com
+  tls: true
+  skip-cert-verify: true
+  orig_link: trojan://abb011d5-2749-4fba-9a66-0eb7b1b14d1e@lt-sin.ltdns.top:37043/?type=tcp&security=tls&sni=ithome.com&allowInsecure=1#🇱🇹
+    立陶宛节点 @zmxooo 01
+  name: 🌍 其他地区 28 @zmxooo
 proxy-groups:
-- name: 🚀 节点选择
+- name: 🚀 自动选择
+  type: url-test
+  proxies:
+  - 🌍 其他地区 01 @zmxooo
+  - 🇺🇸 美国 01 @zmxooo
+  - 🇬🇧 英国 01 @zmxooo
+  - 🇭🇰 香港 01 @zmxooo
+  - 🇭🇰 香港 02 @zmxooo
+  - 🇭🇰 香港 03 @zmxooo
+  - 🇭🇰 香港 04 @zmxooo
+  - 🇭🇰 香港 05 @zmxooo
+  - 🇭🇰 香港 06 @zmxooo
+  - 🇭🇰 香港 07 @zmxooo
+  - 🇭🇰 香港 08 @zmxooo
+  - 🇭🇰 香港 09 @zmxooo
+  - 🇹🇼 台湾 01 @zmxooo
+  - 🇹🇼 台湾 02 @zmxooo
+  - 🇺🇸 美国 02 @zmxooo
+  - 🌍 其他地区 02 @zmxooo
+  - 🌍 其他地区 03 @zmxooo
+  - 🌍 其他地区 04 @zmxooo
+  - 🌍 其他地区 05 @zmxooo
+  - 🌍 其他地区 06 @zmxooo
+  - 🌍 其他地区 07 @zmxooo
+  - 🌍 其他地区 08 @zmxooo
+  - 🌍 其他地区 09 @zmxooo
+  - 🌍 其他地区 10 @zmxooo
+  - 🌍 其他地区 11 @zmxooo
+  - 🌍 其他地区 12 @zmxooo
+  - 🌍 其他地区 13 @zmxooo
+  - 🌍 其他地区 14 @zmxooo
+  - 🌍 其他地区 15 @zmxooo
+  - 🌍 其他地区 16 @zmxooo
+  - 🌍 其他地区 17 @zmxooo
+  - 🌍 其他地区 18 @zmxooo
+  - 🌍 其他地区 19 @zmxooo
+  - 🌍 其他地区 20 @zmxooo
+  - 🌍 其他地区 21 @zmxooo
+  - 🇺🇸 美国 03 @zmxooo
+  - 🇺🇸 美国 04 @zmxooo
+  - 🇺🇸 美国 05 @zmxooo
+  - 🇰🇷 韩国 01 @zmxooo
+  - 🇹🇼 台湾 03 @zmxooo
+  - 🇹🇼 台湾 04 @zmxooo
+  - 🇹🇼 台湾 05 @zmxooo
+  - 🇯🇵 日本 01 @zmxooo
+  - 🌍 其他地区 22 @zmxooo
+  - 🌍 其他地区 23 @zmxooo
+  - 🇰🇷 韩国 02 @zmxooo
+  - 🇰🇷 韩国 03 @zmxooo
+  - 🇰🇷 韩国 04 @zmxooo
+  - 🇰🇷 韩国 05 @zmxooo
+  - 🇰🇷 韩国 06 @zmxooo
+  - 🇩🇪 德国 01 @zmxooo
+  - 🇩🇪 德国 02 @zmxooo
+  - 🇩🇪 德国 03 @zmxooo
+  - 🇩🇪 德国 04 @zmxooo
+  - 🌍 其他地区 24 @zmxooo
+  - 🌍 其他地区 25 @zmxooo
+  - 🌍 其他地区 26 @zmxooo
+  - 🌍 其他地区 27 @zmxooo
+  - 🇺🇸 美国 06 @zmxooo
+  - 🇬🇧 英国 02 @zmxooo
+  - 🇬🇧 英国 03 @zmxooo
+  - 🌍 其他地区 28 @zmxooo
+  url: http://www.gstatic.com/generate_204
+  interval: 300
+- name: 🔰 全部节点
   type: select
   proxies:
-  - ⚡ 自动选择
-  - DIRECT
-  - 🇩🇪 德国
-  - 🇬🇧 英国
-  - 🇭🇰 香港
-  - 🇰🇷 韩国
-  - 🇱🇹 立陶宛
-  - 🇹🇼 台湾
-  - 🇺🇸 美国
-  - 🇻🇳 越南
-  - 🌍 其他
-- name: ⚡ 自动选择
-  type: url-test
-  url: http://gstatic.com
-  interval: 300
-  proxies:
-  - 🇭🇰 香港 @zmxooo 01
-  - 🇭🇰 香港 @zmxooo 02
-  - 🇭🇰 香港 @zmxooo 03
-  - 🇭🇰 香港 @zmxooo 04
-  - 🇭🇰 香港 @zmxooo 05
-  - 🇭🇰 香港 @zmxooo 06
-  - 🇭🇰 香港 @zmxooo 07
-  - 🇭🇰 香港 @zmxooo 08
-  - 🇭🇰 香港 @zmxooo 09
-  - 🇹🇼 台湾 @zmxooo 01
-  - 🇹🇼 台湾 @zmxooo 02
-  - 🇺🇸 美国 @zmxooo 01
-  - 🇻🇳 越南 @zmxooo 01
-  - 🇻🇳 越南 @zmxooo 02
-  - 🇻🇳 越南 @zmxooo 03
-  - 🇻🇳 越南 @zmxooo 04
-  - 🇻🇳 越南 @zmxooo 05
-  - 🇺🇸 美国 @zmxooo 02
-  - 🇺🇸 美国 @zmxooo 03
-  - 🇺🇸 美国 @zmxooo 04
-  - 🇰🇷 韩国 @zmxooo 01
-  - 🇩🇪 德国 @zmxooo 01
-  - 🌍 其他 @zmxooo 01
-  - 🇺🇸 美国 @zmxooo 05
-  - 🇰🇷 韩国 @zmxooo 02
-  - 🇰🇷 韩国 @zmxooo 03
-  - 🇰🇷 韩国 @zmxooo 04
-  - 🇰🇷 韩国 @zmxooo 05
-  - 🇰🇷 韩国 @zmxooo 06
-  - 🇺🇸 美国 @zmxooo 06
-  - 🇬🇧 英国 @zmxooo 01
-  - 🇬🇧 英国 @zmxooo 02
-  - 🇱🇹 立陶宛 @zmxooo 01
-- name: 🇩🇪 德国
-  type: url-test
-  url: http://gstatic.com
-  interval: 300
-  proxies:
-  - 🇩🇪 德国 @zmxooo 01
-- name: 🇬🇧 英国
-  type: url-test
-  url: http://gstatic.com
-  interval: 300
-  proxies:
-  - 🇬🇧 英国 @zmxooo 01
-  - 🇬🇧 英国 @zmxooo 02
-- name: 🇭🇰 香港
-  type: url-test
-  url: http://gstatic.com
-  interval: 300
-  proxies:
-  - 🇭🇰 香港 @zmxooo 01
-  - 🇭🇰 香港 @zmxooo 02
-  - 🇭🇰 香港 @zmxooo 03
-  - 🇭🇰 香港 @zmxooo 04
-  - 🇭🇰 香港 @zmxooo 05
-  - 🇭🇰 香港 @zmxooo 06
-  - 🇭🇰 香港 @zmxooo 07
-  - 🇭🇰 香港 @zmxooo 08
-  - 🇭🇰 香港 @zmxooo 09
-- name: 🇰🇷 韩国
-  type: url-test
-  url: http://gstatic.com
-  interval: 300
-  proxies:
-  - 🇰🇷 韩国 @zmxooo 01
-  - 🇰🇷 韩国 @zmxooo 02
-  - 🇰🇷 韩国 @zmxooo 03
-  - 🇰🇷 韩国 @zmxooo 04
-  - 🇰🇷 韩国 @zmxooo 05
-  - 🇰🇷 韩国 @zmxooo 06
-- name: 🇱🇹 立陶宛
-  type: url-test
-  url: http://gstatic.com
-  interval: 300
-  proxies:
-  - 🇱🇹 立陶宛 @zmxooo 01
-- name: 🇹🇼 台湾
-  type: url-test
-  url: http://gstatic.com
-  interval: 300
-  proxies:
-  - 🇹🇼 台湾 @zmxooo 01
-  - 🇹🇼 台湾 @zmxooo 02
-- name: 🇺🇸 美国
-  type: url-test
-  url: http://gstatic.com
-  interval: 300
-  proxies:
-  - 🇺🇸 美国 @zmxooo 01
-  - 🇺🇸 美国 @zmxooo 02
-  - 🇺🇸 美国 @zmxooo 03
-  - 🇺🇸 美国 @zmxooo 04
-  - 🇺🇸 美国 @zmxooo 05
-  - 🇺🇸 美国 @zmxooo 06
-- name: 🇻🇳 越南
-  type: url-test
-  url: http://gstatic.com
-  interval: 300
-  proxies:
-  - 🇻🇳 越南 @zmxooo 01
-  - 🇻🇳 越南 @zmxooo 02
-  - 🇻🇳 越南 @zmxooo 03
-  - 🇻🇳 越南 @zmxooo 04
-  - 🇻🇳 越南 @zmxooo 05
-- name: 🌍 其他
-  type: url-test
-  url: http://gstatic.com
-  interval: 300
-  proxies:
-  - 🌍 其他 @zmxooo 01
+  - 🌍 其他地区 01 @zmxooo
+  - 🇺🇸 美国 01 @zmxooo
+  - 🇬🇧 英国 01 @zmxooo
+  - 🇭🇰 香港 01 @zmxooo
+  - 🇭🇰 香港 02 @zmxooo
+  - 🇭🇰 香港 03 @zmxooo
+  - 🇭🇰 香港 04 @zmxooo
+  - 🇭🇰 香港 05 @zmxooo
+  - 🇭🇰 香港 06 @zmxooo
+  - 🇭🇰 香港 07 @zmxooo
+  - 🇭🇰 香港 08 @zmxooo
+  - 🇭🇰 香港 09 @zmxooo
+  - 🇹🇼 台湾 01 @zmxooo
+  - 🇹🇼 台湾 02 @zmxooo
+  - 🇺🇸 美国 02 @zmxooo
+  - 🌍 其他地区 02 @zmxooo
+  - 🌍 其他地区 03 @zmxooo
+  - 🌍 其他地区 04 @zmxooo
+  - 🌍 其他地区 05 @zmxooo
+  - 🌍 其他地区 06 @zmxooo
+  - 🌍 其他地区 07 @zmxooo
+  - 🌍 其他地区 08 @zmxooo
+  - 🌍 其他地区 09 @zmxooo
+  - 🌍 其他地区 10 @zmxooo
+  - 🌍 其他地区 11 @zmxooo
+  - 🌍 其他地区 12 @zmxooo
+  - 🌍 其他地区 13 @zmxooo
+  - 🌍 其他地区 14 @zmxooo
+  - 🌍 其他地区 15 @zmxooo
+  - 🌍 其他地区 16 @zmxooo
+  - 🌍 其他地区 17 @zmxooo
+  - 🌍 其他地区 18 @zmxooo
+  - 🌍 其他地区 19 @zmxooo
+  - 🌍 其他地区 20 @zmxooo
+  - 🌍 其他地区 21 @zmxooo
+  - 🇺🇸 美国 03 @zmxooo
+  - 🇺🇸 美国 04 @zmxooo
+  - 🇺🇸 美国 05 @zmxooo
+  - 🇰🇷 韩国 01 @zmxooo
+  - 🇹🇼 台湾 03 @zmxooo
+  - 🇹🇼 台湾 04 @zmxooo
+  - 🇹🇼 台湾 05 @zmxooo
+  - 🇯🇵 日本 01 @zmxooo
+  - 🌍 其他地区 22 @zmxooo
+  - 🌍 其他地区 23 @zmxooo
+  - 🇰🇷 韩国 02 @zmxooo
+  - 🇰🇷 韩国 03 @zmxooo
+  - 🇰🇷 韩国 04 @zmxooo
+  - 🇰🇷 韩国 05 @zmxooo
+  - 🇰🇷 韩国 06 @zmxooo
+  - 🇩🇪 德国 01 @zmxooo
+  - 🇩🇪 德国 02 @zmxooo
+  - 🇩🇪 德国 03 @zmxooo
+  - 🇩🇪 德国 04 @zmxooo
+  - 🌍 其他地区 24 @zmxooo
+  - 🌍 其他地区 25 @zmxooo
+  - 🌍 其他地区 26 @zmxooo
+  - 🌍 其他地区 27 @zmxooo
+  - 🇺🇸 美国 06 @zmxooo
+  - 🇬🇧 英国 02 @zmxooo
+  - 🇬🇧 英国 03 @zmxooo
+  - 🌍 其他地区 28 @zmxooo
 rules:
-- MATCH,🚀 节点选择
+- MATCH,🚀 自动选择
