@@ -1,153 +1,98 @@
-import base64
-import json
-import urllib.parse
-import re
+import base64, json, yaml, urllib.parse, os, re, requests
 
-# ==================== 核心加固引擎 ====================
-
-def universal_decode(data: str) -> str:
-    """
-    【加固 1：万能解码】
-    解决填充缺失、URL 安全字符、以及由于粘贴导致的非法换行/空格。
-    """
-    if not data: return ""
-    # 彻底清理：只保留 Base64 允许的字符
-    data = re.sub(r'[^a-zA-Z0-9+/=_-]', '', data)
-    # 转换 URL 安全格式
-    data = data.replace('-', '+').replace('_', '/')
-    # 自动补全 Padding (Base64 长度必须是 4 的倍数)
-    missing_padding = len(data) % 4
-    if missing_padding:
-        data += '=' * (4 - missing_padding)
+# 1. 核心识别：IP 真实位置查询 + 备注匹配
+def get_final_label(server, remarks):
+    text = urllib.parse.unquote(remarks).lower().strip()
+    meta = [
+        ("🇭🇰 香港", r"hk|香港|hongkong|🇭🇰"), ("🇹🇼 台湾", r"tw|台湾|台灣|taiwan|🇹🇼"),
+        ("🇺🇸 美国", r"us|美国|美國|america|usa|🇺🇸"), ("🇰🇷 韩国", r"kr|韩国|韓國|korea|🇰🇷"),
+        ("🇯🇵 日本", r"jp|日本|japan|🇯🇵"), ("🇸🇬 新加坡", r"sg|新加坡|singapore|🇸🇬"),
+        ("🇩🇪 德国", r"de|德国|德國|germany|ger|🇩🇪"), ("🇬🇧 英国", r"gb|uk|英国|英國|united kingdom|🇬🇧"),
+        ("🇻🇳 越南", r"vn|越南|vietnam|🇻🇳"), ("🇱🇹 立陶宛", r"lt|立陶宛|lithuania"),
+        ("🇷🇺 俄罗斯", r"ru|俄罗斯|俄羅斯|russia|🇷🇺"),
+    ]
+    for label, pattern in meta:
+        if re.search(pattern, text): return label
+    
+    # 备注无国家信息则查询 IP
     try:
-        return base64.b64decode(data).decode('utf-8', 'ignore')
-    except Exception:
-        return ""
+        r = requests.get(f"http://ip-api.com{server}?lang=zh-CN", timeout=2).json()
+        if r.get("status") == "success":
+            c = r.get("country")
+            country_map = {"中国": "🇨🇳 中国", "香港": "🇭🇰 香港", "台湾": "🇹🇼 台湾", "美国": "🇺🇸 美国", "日本": "🇯🇵 日本", "韩国": "🇰🇷 韩国", "新加坡": "🇸🇬 新加坡", "德国": "🇩🇪 德国", "英国": "🇬🇧 英国", "越南": "🇻🇳 越南", "立陶宛": "🇱🇹 立陶宛"}
+            return country_map.get(c, f"🌍 {c}")
+    except: pass
+    return "🌍 其他"
 
-def sanitize_host(value: str) -> str:
-    """
-    【加固 2：深度清洗】
-    从 "https://google.com:443/path" 这种脏数据中提取纯净的域名或 IP。
-    这是防止客户端（如 Clash/小火箭）解析失败的关键。
-    """
-    if not value: return ""
-    decoded = urllib.parse.unquote(value).strip()
-    # 移除协议头
-    if "://" in decoded:
-        decoded = decoded.split("://")[-1]
-    # 移除路径、端口和多余空格
-    return decoded.split('/')[0].split(':')[0].split('?')[0].strip()
-
-# ==================== 分协议强化工厂 ====================
-
-def parse_proxy_link(link: str):
-    link = link.strip()
-    if not link or "://" not in link:
-        return None
-
-    # 【加固 3：预处理】先剥离备注，防止备注里的 # ? @ 符号干扰主 URL 解析
-    parts = link.split('#', 1)
-    main_url = parts[0]
-    remarks = urllib.parse.unquote(parts[1]) if len(parts) > 1 else ""
-
+# 2. 全量协议解析器 (补全所有主流协议)
+def parse_link(link):
     try:
-        # --- VMESS: 解决 JSON 字段不全和 Base64 截断 ---
-        if main_url.startswith('vmess://'):
-            config_json = universal_decode(main_url[8:])
-            if not config_json: return None
-            data = json.loads(config_json)
-            server = data.get("add", "")
-            # 备注优先级：URL 外部 > JSON 内部
-            final_remarks = remarks if remarks else data.get("ps", "")
-            return {
-                "type": "vmess",
-                "server": server,
-                "port": int(data.get("port", 443)),
-                "uuid": data.get("id"),
-                "net": data.get("net", "tcp"),
-                "path": data.get("path", ""),
-                "tls": "tls" if str(data.get("tls")).lower() in ["tls", "1", "true"] else "",
-                "sni": sanitize_host(data.get("sni", server)),
-                "remarks": final_remarks
-            }
+        if link.startswith('vmess://vmess://'): link = link[8:]
+        u = urllib.parse.urlparse(link)
+        
+        # --- VMess ---
+        if link.startswith('vmess://'):
+            b64 = link[8:].split('?')
+            b64 += '=' * (-len(b64) % 4)
+            d = json.loads(base64.b64decode(b64).decode('utf-8'))
+            return {"label": get_final_label(d.get("add"), d.get("ps")), "type": "vmess", "server": d.get("add"), "port": int(d.get("port")), "uuid": d.get("id"), "alterId": 0, "cipher": "auto", "tls": d.get("tls") in ["tls", True, 1], "skip-cert-verify": True}
 
-        # --- VLESS/TROJAN: 解决 Reality 关键参数丢失 ---
-        elif main_url.startswith(('vless://', 'trojan://')):
-            u = urllib.parse.urlparse(main_url)
-            q = {k: v[0] for k, v in urllib.parse.parse_qs(u.query).items()}
-            return {
-                "type": u.scheme,
-                "server": u.hostname,
-                "port": u.port or 443,
-                "uuid": u.username,      # vless
-                "password": u.username,  # trojan
-                "security": q.get("security", ""),
-                "sni": sanitize_host(q.get("sni", u.hostname)),
-                "pbk": q.get("pbk", ""), # Reality 必备
-                "sid": q.get("sid", ""), # Reality 必备
-                "fp": q.get("fp", ""),   # 指纹
-                "net": q.get("type", "tcp"),
-                "path": q.get("path", ""),
-                "serviceName": q.get("serviceName", ""), # gRPC
-                "remarks": remarks
-            }
+        # --- VLESS / Trojan / TUIC ---
+        elif any(link.startswith(p) for p in ['vless://', 'trojan://', 'tuic://']):
+            q = urllib.parse.parse_qs(u.query)
+            p_type = link.split(':')[0]
+            sni = q.get("sni", [""]) or q.get("host", [""]) or [u.hostname]
+            p = {"label": get_final_label(u.hostname, u.fragment), "type": p_type, "server": u.hostname, "port": int(u.port), "tls": True, "sni": str(sni), "skip-cert-verify": True, "udp": True}
+            if p_type == "vless": p.update({"uuid": u.username, "cipher": "auto"})
+            elif p_type == "tuic": p.update({"uuid": u.username, "password": u.password, "alpn": q.get("alpn", ["h3"])})
+            else: p["password"] = u.username
+            return p
 
-        # --- HYSTERIA 2: 兼容 hy2 协议名与 auth 提取 ---
-        elif main_url.startswith(('hysteria2://', 'hy2://')):
-            u = urllib.parse.urlparse(main_url)
-            q = {k: v[0] for k, v in urllib.parse.parse_qs(u.query).items()}
-            auth = u.username if u.username else q.get("auth", "")
-            return {
-                "type": "hysteria2",
-                "server": u.hostname,
-                "port": u.port or 443,
-                "auth": auth,
-                "sni": sanitize_host(q.get("sni", u.hostname)),
-                "remarks": remarks
-            }
-
-        # --- SHADOWSOCKS: 彻底修复 SIP002 格式与插件丢失 ---
-        elif main_url.startswith('ss://'):
-            content = main_url[5:]
-            # SIP002: ss://base64(method:pass)@host:port
-            if '@' in content:
-                user_part, addr_part = content.split('@', 1)
-                user_info = universal_decode(user_part)
-                if ':' not in user_info: return None
-                method, password = user_info.split(':', 1)
-                
-                # 提取地址、端口及插件参数
-                addr_split = addr_part.split('/?', 1)
-                hp = addr_split[0].split(':')
-                server = hp[0]
-                port = int(hp[1]) if len(hp) > 1 else 8388
-                
-                plugin = ""
-                if len(addr_split) > 1:
-                    plugin = urllib.parse.unquote(urllib.parse.parse_qs(addr_split[1]).get("plugin", [""])[0])
+        # --- Shadowsocks (SS) ---
+        elif link.startswith('ss://'):
+            if "@" in u.netloc:
+                userinfo, server = u.netloc.split("@")
+                userinfo += '=' * (-len(userinfo) % 4)
+                method, password = base64.b64decode(userinfo).decode().split(":", 1)
+                host, port = server.split(":")
             else:
-                # Legacy: ss://base64(method:pass@host:port)
-                decoded = universal_decode(content)
-                if '@' in decoded:
-                    user_info, addr_info = decoded.rsplit('@', 1) # 从右切，防止密码里有 @
-                    if ':' not in user_info: return None
-                    method, password = user_info.split(':', 1)
-                    hp = addr_info.split(':')
-                    server, port = hp[0], int(hp[1])
-                    plugin = ""
-                else: return None
+                decoded = base64.b64decode(u.netloc + '=' * (-len(u.netloc) % 4)).decode().split(":", 1)
+                method = decoded[0]
+                password, host_port = decoded[1].rsplit("@", 1)
+                host, port = host_port.split(":")
+            return {"label": get_final_label(host, u.fragment), "type": "ss", "server": host, "port": int(port), "cipher": method, "password": password, "udp": True}
 
-            return {
-                "type": "ss",
-                "server": server,
-                "port": port,
-                "method": method,
-                "password": password,
-                "plugin": plugin,
-                "remarks": remarks
-            }
+        # --- Hysteria 1 & 2 ---
+        elif any(link.startswith(p) for p in ['hysteria://', 'hysteria2://', 'hy2://']):
+            p_type = "hysteria2" if "2" in link or "hy2" in link else "hysteria"
+            return {"label": get_final_label(u.hostname, u.fragment), "type": p_type, "server": u.hostname, "port": int(u.port) if u.port else 443, "password": u.username, "auth": u.username, "sni": u.hostname, "skip-cert-verify": True}
 
-    except Exception as e:
-        # 记录异常但保持运行
-        print(f"解析失败: {link[:30]}... 错误: {e}")
-        return None
+    except: return None
+
+def main():
+    if not os.path.exists('nodes.txt'): return
+    with open('nodes.txt', 'r', encoding='utf-8') as f:
+        ls = f.read().splitlines()
+    
+    pxs, name_count, valid_links = [], {}, []
+    channel_mark = "@zmxooo"
+    
+    for l in ls:
+        l = l.strip()
+        if not l: continue
+        p = parse_link(l)
+        if p:
+            valid_links.append(l)
+            base_label = p.pop('label')
+            name_count[base_label] = name_count.get(base_label, 0) + 1
+            p['name'] = f"{base_label} {channel_mark} {name_count[base_label]:02d}"
+            pxs.append(p)
+
+    if not pxs: return
+
+    # 动态分组生成
+    found_regions = sorted(list(set([p['name'].split(' ')[0] + ' ' + p['name'].split(' ')[1] for p in pxs if ' ' in p['name']])))
+    ags = [{"name": "🚀 节点选择", "type": "select", "proxies": ["⚡ 自动选择", "DIRECT"] + found_regions}]
+    ags.append({"name": "⚡ 自动选择", "type": "url-test", "url": "http://gstatic.com", "interval": 300, "proxies": [p['name'] for p in pxs]})
+    for r in found_regions:
+        ags.append({"name": r, "type": "url-test", "url": "http:/
