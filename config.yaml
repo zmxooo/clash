@@ -41,7 +41,7 @@ proxies:
   network: tcp
 - name: 🇬🇧 英国 01 | @zmxooo
   type: vmess
-  server: 82.198.246.233
+  server: 82.198.246.9
   port: 180
   uuid: d13fc2f5-3e05-4795-81eb-44143a09e552
   alterId: 0
@@ -51,7 +51,7 @@ proxies:
   network: tcp
 - name: 🇬🇧 英国 02 | @zmxooo
   type: vmess
-  server: 82.198.246.97
+  server: 82.198.246.233
   port: 180
   uuid: d13fc2f5-3e05-4795-81eb-44143a09e552
   alterId: 0
@@ -61,7 +61,7 @@ proxies:
   network: tcp
 - name: 🇬🇧 英国 03 | @zmxooo
   type: vmess
-  server: 82.198.246.9
+  server: 82.198.246.233
   port: 180
   uuid: d13fc2f5-3e05-4795-81eb-44143a09e552
   alterId: 0
@@ -71,7 +71,7 @@ proxies:
   network: tcp
 - name: 🇬🇧 英国 04 | @zmxooo
   type: vmess
-  server: 82.198.246.233
+  server: 82.198.246.9
   port: 180
   uuid: d13fc2f5-3e05-4795-81eb-44143a09e552
   alterId: 0
@@ -91,7 +91,7 @@ proxies:
   network: tcp
 - name: 🇬🇧 英国 06 | @zmxooo
   type: vmess
-  server: 82.198.246.9
+  server: 82.198.246.37
   port: 180
   uuid: d13fc2f5-3e05-4795-81eb-44143a09e552
   alterId: 0
@@ -101,7 +101,7 @@ proxies:
   network: tcp
 - name: 🇬🇧 英国 07 | @zmxooo
   type: vmess
-  server: 82.198.246.233
+  server: 82.198.246.9
   port: 180
   uuid: d13fc2f5-3e05-4795-81eb-44143a09e552
   alterId: 0
@@ -111,7 +111,7 @@ proxies:
   network: tcp
 - name: 🇬🇧 英国 08 | @zmxooo
   type: vmess
-  server: 82.198.246.37
+  server: 82.198.246.214
   port: 180
   uuid: d13fc2f5-3e05-4795-81eb-44143a09e552
   alterId: 0
@@ -121,7 +121,7 @@ proxies:
   network: tcp
 - name: 🇬🇧 英国 09 | @zmxooo
   type: vmess
-  server: 82.198.246.9
+  server: 82.198.246.233
   port: 180
   uuid: d13fc2f5-3e05-4795-81eb-44143a09e552
   alterId: 0
@@ -131,26 +131,6 @@ proxies:
   network: tcp
 - name: 🇬🇧 英国 10 | @zmxooo
   type: vmess
-  server: 82.198.246.214
-  port: 180
-  uuid: d13fc2f5-3e05-4795-81eb-44143a09e552
-  alterId: 0
-  cipher: auto
-  tls: false
-  skip-cert-verify: true
-  network: tcp
-- name: 🇬🇧 英国 11 | @zmxooo
-  type: vmess
-  server: 82.198.246.233
-  port: 180
-  uuid: d13fc2f5-3e05-4795-81eb-44143a09e552
-  alterId: 0
-  cipher: auto
-  tls: false
-  skip-cert-verify: true
-  network: tcp
-- name: 🇬🇧 英国 12 | @zmxooo
-  type: vmess
   server: 82.198.246.250
   port: 180
   uuid: d13fc2f5-3e05-4795-81eb-44143a09e552
@@ -159,7 +139,7 @@ proxies:
   tls: false
   skip-cert-verify: true
   network: tcp
-- name: 🇬🇧 英国 13 | @zmxooo
+- name: 🇬🇧 英国 11 | @zmxooo
   type: vmess
   server: 82.198.246.214
   port: 180
@@ -199,9 +179,9 @@ proxies:
   tls: false
   skip-cert-verify: true
   network: tcp
-- name: 🇺🇸 美国 01 | @zmxooo
+- name: 🇺🇸 美国 02 | @zmxooo
   type: vmess
-  server: 82.198.246.233
+  server: 82.198.246.214
   port: 180
   uuid: d13fc2f5-3e05-4795-81eb-44143a09e552
   alterId: 0
@@ -211,7 +191,7 @@ proxies:
   network: tcp
 - name: 🇺🇸 美国 03 | @zmxooo
   type: vmess
-  server: 82.198.246.214
+  server: 82.198.246.233
   port: 180
   uuid: d13fc2f5-3e05-4795-81eb-44143a09e552
   alterId: 0
@@ -221,7 +201,7 @@ proxies:
   network: tcp
 - name: 🇺🇸 美国 04 | @zmxooo
   type: vmess
-  server: 82.198.246.233
+  server: 82.198.246.9
   port: 180
   uuid: d13fc2f5-3e05-4795-81eb-44143a09e552
   alterId: 0
@@ -231,16 +211,6 @@ proxies:
   network: tcp
 - name: 🇺🇸 美国 05 | @zmxooo
   type: vmess
-  server: 82.198.246.9
-  port: 180
-  uuid: d13fc2f5-3e05-4795-81eb-44143a09e552
-  alterId: 0
-  cipher: auto
-  tls: false
-  skip-cert-verify: true
-  network: tcp
-- name: 🇺🇸 美国 06 | @zmxooo
-  type: vmess
   server: 82.198.246.37
   port: 180
   uuid: d13fc2f5-3e05-4795-81eb-44143a09e552
@@ -249,7 +219,7 @@ proxies:
   tls: false
   skip-cert-verify: true
   network: tcp
-- name: 🇺🇸 美国 11 | @zmxooo
+- name: 🇺🇸 美国 10 | @zmxooo
   type: vmess
   server: 82.198.246.214
   port: 180
@@ -259,7 +229,7 @@ proxies:
   tls: false
   skip-cert-verify: true
   network: tcp
-- name: 🇺🇸 美国 12 | @zmxooo
+- name: 🇺🇸 美国 11 | @zmxooo
   type: vmess
   server: 82.198.246.9
   port: 180
@@ -269,7 +239,7 @@ proxies:
   tls: false
   skip-cert-verify: true
   network: tcp
-- name: 🇺🇸 美国 13 | @zmxooo
+- name: 🇺🇸 美国 12 | @zmxooo
   type: vmess
   server: 82.198.246.37
   port: 180
@@ -279,7 +249,7 @@ proxies:
   tls: false
   skip-cert-verify: true
   network: tcp
-- name: 🇺🇸 美国 14 | @zmxooo
+- name: 🇺🇸 美国 13 | @zmxooo
   type: vmess
   server: 82.198.246.233
   port: 180
