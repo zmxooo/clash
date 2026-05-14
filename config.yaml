@@ -4,6 +4,7 @@ proxies:
   server: 202.146.222.41
   port: 443
   password: qQe1z5kU8kN6SlKnDt9Ru3Qp
+  auth: qQe1z5kU8kN6SlKnDt9Ru3Qp
   sni: 202.146.222.41
   skip-cert-verify: true
   name: 🇭🇰 香港 @zmxooo 01
@@ -11,6 +12,7 @@ proxies:
   server: 202.146.222.13
   port: 443
   password: qQe1z5kU8kN6SlKnDt9Ru3Qp
+  auth: qQe1z5kU8kN6SlKnDt9Ru3Qp
   sni: 202.146.222.13
   skip-cert-verify: true
   name: 🇭🇰 香港 @zmxooo 02
@@ -18,6 +20,7 @@ proxies:
   server: 202.146.222.93
   port: 443
   password: qQe1z5kU8kN6SlKnDt9Ru3Qp
+  auth: qQe1z5kU8kN6SlKnDt9Ru3Qp
   sni: 202.146.222.93
   skip-cert-verify: true
   name: 🇭🇰 香港 @zmxooo 03
@@ -25,6 +28,7 @@ proxies:
   server: 202.146.222.89
   port: 443
   password: qQe1z5kU8kN6SlKnDt9Ru3Qp
+  auth: qQe1z5kU8kN6SlKnDt9Ru3Qp
   sni: 202.146.222.89
   skip-cert-verify: true
   name: 🇭🇰 香港 @zmxooo 04
@@ -32,6 +36,7 @@ proxies:
   server: 202.146.222.11
   port: 443
   password: qQe1z5kU8kN6SlKnDt9Ru3Qp
+  auth: qQe1z5kU8kN6SlKnDt9Ru3Qp
   sni: 202.146.222.11
   skip-cert-verify: true
   name: 🇭🇰 香港 @zmxooo 05
@@ -39,6 +44,7 @@ proxies:
   server: 202.146.222.29
   port: 443
   password: qQe1z5kU8kN6SlKnDt9Ru3Qp
+  auth: qQe1z5kU8kN6SlKnDt9Ru3Qp
   sni: 202.146.222.29
   skip-cert-verify: true
   name: 🇭🇰 香港 @zmxooo 06
@@ -46,6 +52,7 @@ proxies:
   server: 202.146.222.16
   port: 443
   password: qQe1z5kU8kN6SlKnDt9Ru3Qp
+  auth: qQe1z5kU8kN6SlKnDt9Ru3Qp
   sni: 202.146.222.16
   skip-cert-verify: true
   name: 🇭🇰 香港 @zmxooo 07
@@ -53,6 +60,7 @@ proxies:
   server: 202.146.222.85
   port: 443
   password: qQe1z5kU8kN6SlKnDt9Ru3Qp
+  auth: qQe1z5kU8kN6SlKnDt9Ru3Qp
   sni: 202.146.222.85
   skip-cert-verify: true
   name: 🇭🇰 香港 @zmxooo 08
@@ -60,6 +68,7 @@ proxies:
   server: 202.146.222.45
   port: 443
   password: qQe1z5kU8kN6SlKnDt9Ru3Qp
+  auth: qQe1z5kU8kN6SlKnDt9Ru3Qp
   sni: 202.146.222.45
   skip-cert-verify: true
   name: 🇭🇰 香港 @zmxooo 09
@@ -67,6 +76,7 @@ proxies:
   server: 160.187.100.109
   port: 443
   password: qQe1z5kU8kN6SlKnDt9Ru3Qp
+  auth: qQe1z5kU8kN6SlKnDt9Ru3Qp
   sni: 160.187.100.109
   skip-cert-verify: true
   name: 🇹🇼 台湾 @zmxooo 01
@@ -74,6 +84,7 @@ proxies:
   server: 43.200.123.45
   port: 443
   password: qQe1z5kU8kN6SlKnDt9Ru3Qp
+  auth: qQe1z5kU8kN6SlKnDt9Ru3Qp
   sni: 43.200.123.45
   skip-cert-verify: true
   name: 🇹🇼 台湾 @zmxooo 02
@@ -81,69 +92,71 @@ proxies:
   server: 23.144.12.162
   port: 443
   password: qQe1z5kU8kN6SlKnDt9Ru3Qp
+  auth: qQe1z5kU8kN6SlKnDt9Ru3Qp
   sni: 23.144.12.162
   skip-cert-verify: true
   name: 🇺🇸 美国 @zmxooo 01
 - type: ss
   server: 103.186.155.79
   port: 38388
-  cipher: aes-256-gcm
-  password: YWVzLTI1Ni1jZmI6WG44aktkbURNMDBJZU8lIyQjZkpBTXRzRUFFVU9wSC9ZV1l0WXFERm5UMFNW
+  cipher: aes-256-cfb
+  password: Xn8jKdmDM00IeO%#$#fJAMtsEAEUOpH/YWYtYqDFnT0SV
   udp: true
   name: 🇻🇳 越南 @zmxooo 01
 - type: ss
   server: 103.186.155.75
   port: 38388
-  cipher: aes-256-gcm
-  password: YWVzLTI1Ni1jZmI6WG44aktkbURNMDBJZU8lIyQjZkpBTXRzRUFFVU9wSC9ZV1l0WXFERm5UMFNW
+  cipher: aes-256-cfb
+  password: Xn8jKdmDM00IeO%#$#fJAMtsEAEUOpH/YWYtYqDFnT0SV
   udp: true
   name: 🇻🇳 越南 @zmxooo 02
 - type: ss
   server: 103.186.155.109
   port: 38388
-  cipher: aes-256-gcm
-  password: YWVzLTI1Ni1jZmI6WG44aktkbURNMDBJZU8lIyQjZkpBTXRzRUFFVU9wSC9ZV1l0WXFERm5UMFNW
+  cipher: aes-256-cfb
+  password: Xn8jKdmDM00IeO%#$#fJAMtsEAEUOpH/YWYtYqDFnT0SV
   udp: true
   name: 🇻🇳 越南 @zmxooo 03
 - type: ss
   server: 103.186.155.8
   port: 38388
-  cipher: aes-256-gcm
-  password: YWVzLTI1Ni1jZmI6WG44aktkbURNMDBJZU8lIyQjZkpBTXRzRUFFVU9wSC9ZV1l0WXFERm5UMFNW
+  cipher: aes-256-cfb
+  password: Xn8jKdmDM00IeO%#$#fJAMtsEAEUOpH/YWYtYqDFnT0SV
   udp: true
   name: 🇻🇳 越南 @zmxooo 04
 - type: ss
   server: 103.186.155.49
   port: 38388
-  cipher: aes-256-gcm
-  password: YWVzLTI1Ni1jZmI6WG44aktkbURNMDBJZU8lIyQjZkpBTXRzRUFFVU9wSC9ZV1l0WXFERm5UMFNW
+  cipher: aes-256-cfb
+  password: Xn8jKdmDM00IeO%#$#fJAMtsEAEUOpH/YWYtYqDFnT0SV
   udp: true
   name: 🇻🇳 越南 @zmxooo 05
 - type: ss
   server: 34.229.121.217
   port: 80
   cipher: aes-256-gcm
-  password: YWVzLTI1Ni1nY206ZGFkYTEyMDM
+  password: dada1203
   udp: true
   name: 🇺🇸 美国 @zmxooo 02
 - type: ss
   server: 3.137.174.85
   port: 443
-  cipher: aes-256-gcm
-  password: YWVzLTI1Ni1jZmI6YW1hem9uc2tyMDU
+  cipher: aes-256-cfb
+  password: amazonskr05
   udp: true
   name: 🇺🇸 美国 @zmxooo 03
 - type: ss
   server: 3.144.123.157
   port: 443
-  cipher: aes-256-gcm
-  password: YWVzLTI1Ni1jZmI6YW1hem9uc2tyMDU
+  cipher: aes-256-cfb
+  password: amazonskr05
   udp: true
   name: 🇺🇸 美国 @zmxooo 04
 - type: hysteria2
   server: vpn-kr-003.fastervpn.world
   port: 443
   password: qQe1z5kU8kN6SlKnDt9Ru3Qp
+  auth: qQe1z5kU8kN6SlKnDt9Ru3Qp
   sni: vpn-kr-003.fastervpn.world
   skip-cert-verify: true
   name: 🇰🇷 韩国 @zmxooo 01
@@ -151,14 +164,15 @@ proxies:
   server: 5.83.129.90
   port: 54177
   password: null
+  auth: null
   sni: 5.83.129.90
   skip-cert-verify: true
   name: 🇩🇪 德国 @zmxooo 01
 - type: ss
   server: 103.186.155.75
   port: 38388
-  cipher: aes-256-gcm
-  password: YWVzLTI1Ni1jZmI6WG44aktkbURNMDBJZU8lIyQjZkpBTXRzRUFFVU9wSC9ZV1l0WXFERm5UMFNW
+  cipher: aes-256-cfb
+  password: Xn8jKdmDM00IeO%#$#fJAMtsEAEUOpH/YWYtYqDFnT0SV
   udp: true
   name: 🌍 其他 @zmxooo 01
 - type: trojan
@@ -218,22 +232,22 @@ proxies:
 - type: ss
   server: 3.137.174.85
   port: 443
-  cipher: aes-256-gcm
-  password: YWVzLTI1Ni1jZmI6YW1hem9uc2tyMDU
+  cipher: aes-256-cfb
+  password: amazonskr05
   udp: true
   name: 🇺🇸 美国 @zmxooo 06
 - type: ss
   server: 82.38.31.155
   port: 8080
-  cipher: aes-256-gcm
-  password: Y2hhY2hhMjAtaWV0Zi1wb2x5MTMwNTpvWklvQTY5UTh5aGNRVjhrYTNQYTNB
+  cipher: chacha20-ietf-poly1305
+  password: oZIoA69Q8yhcQV8ka3Pa3A
   udp: true
   name: 🇬🇧 英国 @zmxooo 01
 - type: ss
   server: 82.38.31.35
   port: 8080
-  cipher: aes-256-gcm
-  password: Y2hhY2hhMjAtaWV0Zi1wb2x5MTMwNTpvWklvQTY5UTh5aGNRVjhrYTNQYTNB
+  cipher: chacha20-ietf-poly1305
+  password: oZIoA69Q8yhcQV8ka3Pa3A
   udp: true
   name: 🇬🇧 英国 @zmxooo 02
 - type: trojan
