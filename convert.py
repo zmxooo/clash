@@ -199,17 +199,10 @@ def main():
                     "port": safe_int(u.port, 443)
                 }
 
-                # 统一处理 hysteria2
-                if p["type"] == "hysteria2":
-                    proxy_cfg.update({
-                        "password": u.username or "",
-                        "sni": urllib.parse.unquote(params.get("sni", proxy_cfg["server"])),
-                        "skip-cert-verify": True
-                    })
-                    if "up" in params:
-                        proxy_cfg["up"] = params["up"]
-                    if "down" in params:
-                        proxy_cfg["down"] = params["down"]
+                        # --- Hysteria 1 & 2 ---
+        elif any(link.startswith(p) for p in ['hysteria://', 'hysteria2://', 'hy2://']):
+            p_type = "hysteria2" if "2" in link or "hy2" in link else "hysteria"
+            return {"label": get_final_label(u.hostname, u.fragment), "type": p_type, "server": u.hostname, "port": int(u.port) if u.port else 443, "password": u.username, "auth": u.username, "sni": u.hostname, "skip-cert-verify": True}
 
                 # 其他协议（保持原有逻辑）
                 elif p["type"] == "ss":
