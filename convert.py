@@ -1,6 +1,3 @@
-**✅ 以下是完整修复版代码**（仅修复 `hy2://` 节点在 base64 订阅中不显示的问题，其他全部保持原封不动）：
-
-```python
 import base64
 import json
 import urllib.parse
@@ -72,7 +69,7 @@ def get_final_label(server: str, remarks: str = "") -> str:
             return IP_CACHE[server]
         try:
             time.sleep(0.35)
-            resp = requests.get(f"http://ip-api.com/json/{server}?lang=zh-CN", timeout=5)  # 顺便修复了这个小问题
+            resp = requests.get(f"http://ip-api.com/json/{server}?lang=zh-CN", timeout=5)
             data = resp.json()
             if data.get("status") == "success":
                 country = data.get("country")
@@ -84,13 +81,11 @@ def get_final_label(server: str, remarks: str = "") -> str:
     return "🧿 其他地区"
 
 def parse_link(link: str):
-    """【工业级核心修复】彻底斩断列表强转符号，精准解包字符串"""
     try:
         link = link.strip()
         if not link or link.startswith(('import', 'def', '#', 'git')):
             return None
 
-        # 剥离备注，确保拿到的是单体纯净文本字符串
         clean_link_str = link.split('#')[0]
 
         if link.startswith('vmess://'):
@@ -106,7 +101,7 @@ def parse_link(link: str):
                 "original_remarks": data.get("ps", "")
             }
         elif link.startswith(('ss://', 'trojan://', 'vless://', 'hysteria2://', 'hy2://')):
-            original_link = link  # 保存原始链接（关键修复）
+            original_link = link
             
             if clean_link_str.startswith("hy2://"):
                 clean_link_str = clean_link_str.replace("hy2://", "hysteria2://", 1)
@@ -119,19 +114,19 @@ def parse_link(link: str):
 
             return {
                 "type": "hysteria2" if u.scheme in ["hy2", "hysteria2"] else u.scheme,
-                "link_str": original_link.split('#')[0],   # ← 核心修复点：保留原始 hy2://
+                "link_str": original_link.split('#')[0],
                 "url_obj": u,
                 "server": u.hostname,
                 "original_remarks": orig_remarks
             }
-    except Exception as e:
+    except:
         return None
     return None
 
 # ==================== 主程序 ====================
 def main():
     if not os.path.exists('nodes.txt'):
-        print("❌ 未找到 nodes.txt 文件")
+        print("未找到 nodes.txt 文件")
         return
 
     with open('nodes.txt', 'r', encoding='utf-8', errors='ignore') as f:
@@ -149,7 +144,7 @@ def main():
     clash_proxies = []
     rocket_links = []
 
-    print(f"🔄 正在处理去重后的 {len(unique_links)} 个节点...")
+    print(f"正在处理去重后的 {len(unique_links)} 个节点...")
 
     for link in unique_links:
         p = parse_link(link)
@@ -188,7 +183,6 @@ def main():
             u = p["url_obj"]
             qs = urllib.parse.parse_qs(u.query)
             
-            # 【铁证修复】精准抓取 List 里的第一个真实元素
             params = {}
             for k, v in qs.items():
                 if v and isinstance(v, list):
@@ -196,7 +190,7 @@ def main():
                 elif v:
                     params[k] = str(v)
 
-            base_uri = p['link_str']                    # 使用修复后的原始 link_str
+            base_uri = p['link_str']
             rocket_links.append(f"{base_uri}#{urllib.parse.quote(new_name)}")
             
             proxy_cfg = {
@@ -225,7 +219,6 @@ def main():
                                 proxy_cfg["server"] = hostinfo
                         else:
                             continue
-                            
                     proxy_cfg.update({"cipher": method, "password": password})
                     
                 elif p["type"] == "trojan":
@@ -245,9 +238,9 @@ def main():
                         "sni": urllib.parse.unquote(params.get("sni", proxy_cfg["server"])),
                         "skip-cert-verify": True
                     })
-                    if proxy_cfg["network"] == "ws":
+                    if proxy_cfg.get("network") == "ws":
                         proxy_cfg["ws-opts"] = {"path": params.get("path", "/")}
-                    elif proxy_cfg["network"] == "grpc":
+                    elif proxy_cfg.get("network") == "grpc":
                         proxy_cfg["grpc-opts"] = {"grpc-service-name": params.get("serviceName", "")}
 
                 elif p["type"] == "hysteria2":
@@ -272,20 +265,20 @@ def main():
 
         with open('sub.txt', 'w', encoding='utf-8') as f:
             f.write(sub_b64)
-        print(f"✅ 通用订阅文件已生成: sub.txt ({len(rocket_links)} 个节点)")
+        print(f"通用订阅文件已生成: sub.txt ({len(rocket_links)} 个节点)")
 
         all_node_names = [p["name"] for p in clash_proxies] if clash_proxies else ["DIRECT"]
 
         proxy_groups = [
-            {"name": "🚀 节点选择", "type": "select", "proxies": ["⚡ 自动测速"] + all_node_names + ["DIRECT"]},
-            {"name": "⚡ 自动测速", "type": "url-test", "proxies": all_node_names, "url": "http://gstatic.com", "interval": 300, "tolerance": 50},
-            {"name": "🌐 谷歌服务", "type": "select", "proxies": ["🚀 节点选择", "⚡ 自动测速", "DIRECT"]},
-            {"name": "🎬 海外媒体", "type": "select", "proxies": ["🚀 节点选择", "⚡ 自动测速"] + all_node_names},
-            {"name": "📲 电报消息", "type": "select", "proxies": ["🚀 节点选择", "DIRECT"]},
-            {"name": "Ⓜ️ 微软服务", "type": "select", "proxies": ["DIRECT", "🚀 节点选择"]},
-            {"name": "🍎 苹果服务", "type": "select", "proxies": ["DIRECT", "🚀 节点选择"]},
-            {"name": "🇨🇳 国内直连", "type": "select", "proxies": ["DIRECT", "🚀 节点选择"]},
-            {"name": "🐟 漏网之鱼", "type": "select", "proxies": ["🚀 节点选择", "DIRECT"]}
+            {"name": "节点选择", "type": "select", "proxies": ["自动测速"] + all_node_names + ["DIRECT"]},
+            {"name": "自动测速", "type": "url-test", "proxies": all_node_names, "url": "http://gstatic.com", "interval": 300, "tolerance": 50},
+            {"name": "谷歌服务", "type": "select", "proxies": ["节点选择", "自动测速", "DIRECT"]},
+            {"name": "海外媒体", "type": "select", "proxies": ["节点选择", "自动测速"] + all_node_names},
+            {"name": "电报消息", "type": "select", "proxies": ["节点选择", "DIRECT"]},
+            {"name": "微软服务", "type": "select", "proxies": ["DIRECT", "节点选择"]},
+            {"name": "苹果服务", "type": "select", "proxies": ["DIRECT", "节点选择"]},
+            {"name": "国内直连", "type": "select", "proxies": ["DIRECT", "节点选择"]},
+            {"name": "漏网之鱼", "type": "select", "proxies": ["节点选择", "DIRECT"]}
         ]
 
         rules = [
@@ -293,22 +286,22 @@ def main():
             "IP-CIDR,127.0.0.0/8,DIRECT",
             "IP-CIDR,192.168.0.0/16,DIRECT",
             "IP-CIDR,10.0.0.0/8,DIRECT",
-            "DOMAIN-KEYWORD,google,🌐 谷歌服务",
-            "DOMAIN-SUFFIX,googleapis.com,🌐 谷歌服务",
-            "DOMAIN-SUFFIX,youtube.com,🎬 海外媒体",
-            "DOMAIN-SUFFIX,netflix.com,🎬 海外媒體",
-            "DOMAIN-SUFFIX,telegram.org,📲 电报消息",
-            "IP-CIDR,91.108.4.0/22,📲 电报消息",
-            "IP-CIDR,149.154.160.0/20,📲 电报消息",
-            "DOMAIN-SUFFIX,microsoft.com,Ⓜ️ 微软服务",
-            "DOMAIN-SUFFIX,windows.com,Ⓜ️ 微软服务",
-            "DOMAIN-SUFFIX,apple.com,🍎 苹果服务",
-            "DOMAIN-SUFFIX,icloud.com,🍎 苹果服务",
-            "DOMAIN-SUFFIX,baidu.com,🇨🇳 国内直连",
-            "DOMAIN-SUFFIX,taobao.com,🇨🇳 国内直连",
-            "DOMAIN-SUFFIX,qq.com,🇨🇳 国内直连",
-            "DOMAIN-KEYWORD,cn,🇨🇳 国内直连",
-            "MATCH,🐟 漏网之鱼"
+            "DOMAIN-KEYWORD,google,谷歌服务",
+            "DOMAIN-SUFFIX,googleapis.com,谷歌服务",
+            "DOMAIN-SUFFIX,youtube.com,海外媒体",
+            "DOMAIN-SUFFIX,netflix.com,海外媒体",
+            "DOMAIN-SUFFIX,telegram.org,电报消息",
+            "IP-CIDR,91.108.4.0/22,电报消息",
+            "IP-CIDR,149.154.160.0/20,电报消息",
+            "DOMAIN-SUFFIX,microsoft.com,微软服务",
+            "DOMAIN-SUFFIX,windows.com,微软服务",
+            "DOMAIN-SUFFIX,apple.com,苹果服务",
+            "DOMAIN-SUFFIX,icloud.com,苹果服务",
+            "DOMAIN-SUFFIX,baidu.com,国内直连",
+            "DOMAIN-SUFFIX,taobao.com,国内直连",
+            "DOMAIN-SUFFIX,qq.com,国内直连",
+            "DOMAIN-KEYWORD,cn,国内直连",
+            "MATCH,漏网之鱼"
         ]
 
         clash_config = {
@@ -319,19 +312,12 @@ def main():
 
         with open('clash.yaml', 'w', encoding='utf-8') as f:
             yaml.dump(clash_config, f, allow_unicode=True, sort_keys=False)
-        print("✅ 包含完美策略分流组的 Clash 配置文件已成功覆写: clash.yaml")
+        print("Clash 配置文件已生成: clash.yaml")
 
-    print("\n📊 运行地区最终统计结果:")
+    print("\n地区统计结果:")
     for region, nodes in sorted(region_map.items(), key=lambda x: len(x), reverse=True):
         print(f"   {region} → {len(nodes)} 个")
 
 
 if __name__ == "__main__":
     main()
-```
-
-**主要修复点**：
-- `hy2://` 节点现在会正确保留原始协议前缀进入 `sub.txt`
-- 顺便修复了 IP 查询地址的格式问题
-
-直接替换你的原文件即可使用。需要测试效果的话，把包含 `hy2://` 的节点放进 `nodes.txt` 后运行即可。
