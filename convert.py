@@ -21,6 +21,9 @@ EMOJI_MAP = {
     "阿联酋": "🇦🇪", "土耳其": "🇹🇷",
 }
 
+# 支持的 Clash (Mihomo) 内核标准白名单
+SUPPORTED_TYPES = ["vmess", "ss", "trojan", "vless", "hysteria2"]
+
 # ==================== 工具函数 ====================
 def parse_vmess_b64(b64_part):
     """安全解码 Base64 字符串并自动补齐填充位"""
@@ -34,7 +37,6 @@ def get_final_label(server: str, remarks: str = "") -> str:
     """国家/地区识别：优先正则规则，其次调用开源 IP 库 API 纠正"""
     text = urllib.parse.unquote(str(remarks)).lower()
 
-    # 正则规则库
     meta = [
         ("香港", r"hk|hongkong|香港|🇨🇳"), ("台湾", r"tw|taiwan|台灣|台湾"),
         ("美国", r"us|unitedstates|美国|美|🇺🇸"), ("英国", r"gb|uk|britain|英国|英國"),
@@ -46,12 +48,11 @@ def get_final_label(server: str, remarks: str = "") -> str:
         if re.search(pattern, text):
             return f"{EMOJI_MAP.get(name, '🌍')} {name}"
 
-    # IP 纯数字检测与国家自动反查
     if server and re.match(r'^\d{1,3}(\.\d{1,3}){3}$', server):
         if server in IP_CACHE:
             return IP_CACHE[server]
         try:
-            time.sleep(0.35)  # 严格遵守 ip-api 限流频率
+            time.sleep(0.35)
             resp = requests.get(f"http://ip-api.com{server}?lang=zh-CN", timeout=5)
             data = resp.json()
             if data.get("status") == "success":
@@ -70,15 +71,19 @@ def get_final_label(server: str, remarks: str = "") -> str:
     return "🧿 其他地区"
 
 def parse_link(link: str):
-    """【真机修复】提取各种底层标准链路的核心属性字典，彻底修复列表切片丢失索引隐患"""
+    """【重构】使用标准 URL 状态机重写，彻底杜绝切片位移导致的协议识别错误"""
     try:
         link = link.strip()
         if not link or link.startswith(('import', 'def', '#', 'git')):
             return None
 
-        if link.startswith('vmess://'):
-            parts = link[8:].split('#')
-            b64_part = parts[0]
+        # 1. 优先提取和剥离备注别名
+        raw_url = link.split('#')[0]
+        raw_ps = urllib.parse.unquote(link.split('#')[1]) if '#' in link else ""
+
+        # 2. 处理 VMESS 逻辑
+        if raw_url.startswith('vmess://'):
+            b64_part = raw_url[8:]
             raw_data = parse_vmess_b64(b64_part)
             data = json.loads(raw_data.decode('utf-8', 'ignore'))
             return {
@@ -89,33 +94,28 @@ def parse_link(link: str):
                 "original_remarks": data.get("ps", "")
             }
             
-        elif link.startswith(('ss://', 'trojan://', 'vless://', 'hysteria2://', 'hy2://')):
-            parts = link.split('#')
-            main_part = parts[0]
-            raw_ps = urllib.parse.unquote(parts[1]) if len(parts) > 1 else ""
+        # 3. 使用标准库规范解析通用协议头
+        parsed = urllib.parse.urlparse(raw_url)
+        proto = parsed.scheme.lower()
+        if proto == 'hy2': 
+            proto = 'hysteria2'
             
-            proto = main_part.split('://')[0].lower()
-            if proto == 'hy2': 
-                proto = 'hysteria2'
-                
-            netloc_part = main_part.split('://')[1] if '://' in main_part else main_part
-            netloc = netloc_part.split('/')[0].split('?')[0]
-            
-            if '@' in netloc:
-                server_host = netloc.split('@')[1].split(':')[0]
-            else:
-                server_host = netloc.split(':')[0]
-                
-            return {
-                "label": get_final_label(server_host, raw_ps),
-                "type": proto, 
-                "link": link
-            }
+        if proto not in SUPPORTED_TYPES:
+            return None
+
+        return {
+            "label": get_final_label(parsed.hostname or "", raw_ps),
+            "type": proto, 
+            "link": link
+        }
     except:
         return None
 
 def clean_clash_proxy(p, new_name):
-    """【真机修复】清洗节点数据，严格安全解包多段式字符串，格式化输出符合各协议标准的组件"""
+    """【重构】双向交叉白名单校验锁，杜绝 type: other 写入 YAML 树"""
+    if not p or p.get("type") not in SUPPORTED_TYPES:
+        return None
+
     try:
         if p["type"] == "vmess":
             data = p["raw_data"]
@@ -133,52 +133,42 @@ def clean_clash_proxy(p, new_name):
                 "udp": True
             }
         
-        parts = p['link'].split('#')
-        main_part = parts[0]
-        netloc_part = main_part.split('://')[1] if '://' in main_part else main_part
-        netloc = netloc_part.split('/')[0].split('?')[0]
-        
-        if '@' in netloc:
-            server = netloc.split('@')[1].split(':')[0]
-            auth_str = netloc.split('@')[0]
-        else:
-            server = netloc.split(':')[0]
-            auth_str = ""
-            
-        port_part = netloc.split('@')[-1]
-        port = int(port_part.split(':')[1]) if ':' in port_part else 443
-        queries = dict(urllib.parse.parse_qsl(main_part.split('?')[1])) if '?' in main_part else {}
+        # 使用标准网络库二次精细解包 URL
+        raw_url = p['link'].split('#')[0]
+        parsed = urllib.parse.urlparse(raw_url)
+        queries = dict(urllib.parse.parse_qsl(parsed.query))
 
         item = {
             "name": new_name,
             "type": p["type"],
-            "server": server,
-            "port": port,
+            "server": parsed.hostname,
+            "port": parsed.port if parsed.port else 443,
             "udp": True
         }
 
+        # 针对各子协议的严格字段重组
         if p['type'] == "ss":
-            cipher = auth_str.split(':')[0] if auth_str else "aes-256-gcm"
-            password = auth_str.split(':')[1] if ':' in auth_str else ""
-            if not password and cipher:
+            if parsed.username:
+                item.update({"cipher": parsed.username, "password": parsed.password or ""})
+            else:
+                # 兼容旧格式中把加密信息放在 host 前面的极端情况
                 try:
-                    user_info = parse_vmess_b64(cipher).decode('utf-8', 'ignore')
+                    user_info = parse_vmess_b64(parsed.netloc.split('@')[0]).decode('utf-8', 'ignore')
                     if ':' in user_info:
-                        cipher, password = user_info.split(':', 1)
+                        item["cipher"], item["password"] = user_info.split(':', 1)
                 except:
-                    pass
-            item.update({"cipher": cipher, "password": password})
-
+                    item.update({"cipher": "aes-256-gcm", "password": parsed.netloc.split('@')[0]})
+            
         elif p['type'] == "trojan":
             item.update({
-                "password": auth_str,
-                "sni": queries.get("sni", server),
+                "password": parsed.username or "",
+                "sni": queries.get("sni", parsed.hostname),
                 "skip-cert-verify": True
             })
 
         elif p['type'] == "vless":
             item.update({
-                "uuid": auth_str,
+                "uuid": parsed.username or "",
                 "cipher": "auto",
                 "tls": True if (queries.get("security") == "tls" or "tls" in p['link']) else False,
                 "network": queries.get("type", "tcp")
@@ -193,10 +183,14 @@ def clean_clash_proxy(p, new_name):
 
         elif p['type'] == "hysteria2":
             item.update({
-                "password": auth_str,  
-                "sni": queries.get("sni", server),
+                "password": parsed.username or "",  
+                "sni": queries.get("sni", parsed.hostname),
                 "skip-cert-verify": True
             })
+            
+        # 终审防御：如果关键字段缺失，直接剔除节点
+        if not item.get("server") or not item.get("type"):
+            return None
             
         return item
     except:
@@ -205,13 +199,12 @@ def clean_clash_proxy(p, new_name):
 # ==================== 主程序 ====================
 def main():
     if not os.path.exists('nodes.txt'):
-        print("❌ 核心致命错误：未能在当前工作路径下寻找到源节点集文件 nodes.txt")
+        print("❌ 未在当前工作路径下寻找到源节点文件 nodes.txt")
         return
 
     with open('nodes.txt', 'r', encoding='utf-8', errors='ignore') as f:
         lines = [line.strip() for line in f if line.strip()]
 
-    # 深度链接去重
     seen = set()
     unique_links = []
     for line in lines:
@@ -224,18 +217,18 @@ def main():
     clash_proxies = []
     rocket_links = []
 
-    print(f"🔄 捕获到唯一非空链路共 {len(unique_links)} 条。开始解析...")
+    print(f"🔄 成功加载 {len(unique_links)} 条非重复节点链路，启动安全清洗机制...")
 
     for link in unique_links:
         p = parse_link(link)
         if not p:
             continue
 
-        label = p.get('label')
+        label = p.get('label', "🧿 其他地区")
         idx = len(region_map[label]) + 1
         new_name = f"{label} {idx:02d} {CHANNEL_MARK}"
 
-        # 1. 组装 Shadowrocket 明文列表
+        # 1. 导出 Shadowrocket 明文行
         if p["type"] == "vmess":
             data = p["raw_data"].copy()
             data['ps'] = new_name
@@ -246,15 +239,15 @@ def main():
             clean_url = link.split('#')[0]
             rocket_links.append(f"{clean_url}#{urllib.parse.quote(new_name)}")
 
-        # 2. 组装并过滤 Clash 代理列表
+        # 2. 导出 Clash 字典，严格执行不为空且通过白名单检验机制
         clash_item = clean_clash_proxy(p, new_name)
-        if clash_item:
+        if clash_item is not None:  
             clash_proxies.append(clash_item)
             region_map[label].append(new_name)
 
-    print("💾 正在持久化输出各客户端配置文件...")
+    print("💾 正在执行物理文件的持久化覆盖...")
     
-    # ============ 格式持久化 1：Shadowrocket 订阅文件 ============
+    # ============ 1. 输出 Shadowrocket 编码集 ============
     if rocket_links:
         try:
             with open('rocket_links.txt', 'w', encoding='utf-8') as f:
@@ -263,19 +256,17 @@ def main():
             rocket_b64 = base64.b64encode('\n'.join(rocket_links).encode('utf-8')).decode('utf-8')
             with open('rocket_subscription.txt', 'w', encoding='utf-8') as f:
                 f.write(rocket_b64)
-            print("   -> [OK] 基础格式明文集及小火箭 Base64 订阅双规格导出成功。")
+            print("   -> [OK] 小火箭 Base64 订阅生成成功。")
         except Exception as e:
             print(f"   -> [ERR] 转换 Shadowrocket 文本失败: {e}")
 
-    # ============ 格式持久化 2：Clash (Mihomo) YAML 分组逻辑 ============
+    # ============ 2. 输出 100% 合规的 Clash YAML 配置 ============
     try:
         proxy_names = [p["name"] for p in clash_proxies]
         
-        # 极端空情况容错
         if not proxy_names:
             proxy_names = ["DIRECT"]
             
-        # 初始化标准顶层代理组
         main_select_group = {
             "name": "🚀 节点选择",
             "type": "select",
@@ -291,10 +282,9 @@ def main():
             "tolerance": 50
         }
         
-        # 实例化分组容器
         groups = [main_select_group, auto_test_group]
 
-        # 动态创建细化的“国家/地域细分策略分组”
+        # 动态将识别出的有效地理组加入策略依赖列表
         for region, nodes in region_map.items():
             if not nodes:
                 continue
@@ -309,10 +299,8 @@ def main():
                 "tolerance": 50
             })
             
-        # 追加底层的全量原始节点作为手动选择项
         main_select_group["proxies"].extend(proxy_names)
 
-        # 构建完整的全局 YAML 树形结构
         clash_config = {
             "port": 7890,
             "socks-port": 7891,
@@ -332,7 +320,7 @@ def main():
         
         with open('clash_config.yaml', 'w', encoding='utf-8') as f:
             yaml.dump(clash_config, f, allow_unicode=True, sort_keys=False, default_flow_style=False)
-        print("   -> [OK] 包含跨组依赖与分流地域树的完整 clash_config.yaml 生成完毕。")
+        print("   -> [OK] 包含策略联动依赖的真实 clash_config.yaml 覆写成功。")
         
     except Exception as e:
         print(f"   -> [ERR] 序列化 Clash 语法树失败: {e}")
