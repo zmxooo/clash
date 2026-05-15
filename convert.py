@@ -23,21 +23,21 @@ def get_final_label(server, remarks):
     if not server: 
         return "🌍 其它地区"
         
-    # 保留原始备注用于 Emoji 和精确匹配
+    # 保留原始备注（以防后面有正常备注的节点）
     raw_text = urllib.parse.unquote(str(remarks)).strip()
     text_lower = raw_text.lower()
-    
-    # ==================== 针对这三个链接的特殊处理 ====================
-    # 第三条：含国旗
-    if "🇫🇷" in raw_text:
+    server_str = str(server).strip()
+
+    # ==================== 针对这三个节点的精准识别 ====================
+    # 第三条：域名 + Emoji 双保险
+    if "planb.mojcn.com" in server_str or "🇫🇷" in raw_text:
         return "🇫🇷 法国"
     
-    # 第一、二条：IP 段特征 + 域名特征
-    server_str = str(server)
-    if "82.198.246" in server_str or "planb.mojcn.com" in server_str:
+    # 第一、二条：精确 IP 段匹配（只匹配 .9 和 .37 这两个，不会误杀其他节点）
+    if server_str == "82.198.246.9" or server_str == "82.198.246.37":
         return "🇫🇷 法国"
-    
-    # ==================== 原有逻辑保持不变 ====================
+
+    # ==================== 下面保留你原来的全部逻辑 ====================
     meta = [
         ("香港", r"hk|香港|hongkong"), 
         ("台湾", r"tw|台湾|台灣|taiwan"), 
@@ -60,18 +60,16 @@ def get_final_label(server, remarks):
     if server in IP_CACHE: 
         return IP_CACHE[server]
 
-    # IP 查询（保留你原本的接口，仅做少量修复）
+    # IP 查询（保留你原本的接口）
     try:
-        clean_server = str(server).split(':')[0]
+        clean_server = server_str.split(':')[0]
         response = requests.get(f"http://ip-api.com/json/{clean_server}?lang=zh-CN", timeout=3).json()
         if response.get("status") == "success":
             country = response.get("country")
             if country in EMOJI_MAP:
                 return f"{EMOJI_MAP[country]} {country}"
-            else:
-                # 额外法国判断
-                if "France" in country or "法国" in country:
-                    return "🇫🇷 法国"
+            elif "France" in country or "法国" in country:
+                return "🇫🇷 法国"
     except:
         pass
 
