@@ -22,57 +22,32 @@ EMOJI_MAP = {
 def get_final_label(server, remarks):
     if not server: 
         return "🌍 其它地区"
-        
-    # 保留原始备注（以防后面有正常备注的节点）
-    raw_text = urllib.parse.unquote(str(remarks)).strip()
-    text_lower = raw_text.lower()
-    server_str = str(server).strip()
-
-    # ==================== 针对这三个节点的精准识别 ====================
-    # 第三条：域名 + Emoji 双保险
-    if "planb.mojcn.com" in server_str or "🇫🇷" in raw_text:
-        return "🇫🇷 法国"
-    
-    # 第一、二条：精确 IP 段匹配（只匹配 .9 和 .37 这两个，不会误杀其他节点）
-    if server_str == "82.198.246.9" or server_str == "82.198.246.37":
-        return "🇫🇷 法国"
-
-    # ==================== 下面保留你原来的全部逻辑 ====================
+    text = urllib.parse.unquote(str(remarks)).lower().strip()
     meta = [
-        ("香港", r"hk|香港|hongkong"), 
-        ("台湾", r"tw|台湾|台灣|taiwan"), 
-        ("美国", r"us|美国|美國|united states"), 
-        ("英国", r"gb|uk|英国|英國"), 
-        ("韩国", r"kr|韩国|韓國|korea"), 
-        ("日本", r"jp|日本|japan"),
-        ("新加坡", r"sg|新加坡|singapore"), 
-        ("越南", r"vn|越南|vietnam"), 
-        ("科威特", r"kw|科威特|kuwait"), 
-        ("德国", r"de|德国|germany"),
+        ("香港", r"hk|香港|hongkong"), ("台湾", r"tw|台湾|台灣|taiwan"), 
+        ("美国", r"us|美国|美國|united states"), ("英国", r"gb|uk|英国|英國"), 
+        ("韩国", r"kr|韩国|韓國|korea"), ("日本", r"jp|日本|japan"),
+        ("新加坡", r"sg|新加坡|singapore"), ("越南", r"vn|越南|vietnam"), 
+        ("科威特", r"kw|科威特|kuwait"), ("德国", r"de|德国|germany"),
         ("立陶宛", r"lt|立陶宛|lithuania")
     ]
-    
     for name, pattern in meta:
-        if re.search(pattern, text_lower): 
+        if re.search(pattern, text): 
             return f"{EMOJI_MAP.get(name, '🌍')} {name}"
     
-    # 缓存
     if server in IP_CACHE: 
         return IP_CACHE[server]
-
-    # IP 查询（保留你原本的接口）
     try:
-        clean_server = server_str.split(':')[0]
-        response = requests.get(f"http://ip-api.com/json/{clean_server}?lang=zh-CN", timeout=3).json()
+        time.sleep(0.1) 
+        response = requests.get(f"http://ip-api.com{server}?lang=zh-CN", timeout=3).json()
         if response.get("status") == "success":
             country = response.get("country")
-            if country in EMOJI_MAP:
-                return f"{EMOJI_MAP[country]} {country}"
-            elif "France" in country or "法国" in country:
-                return "🇫🇷 法国"
+            icon = EMOJI_MAP.get(country, "🌍")
+            label = f"{icon} {country}"
+            IP_CACHE[server] = label
+            return label
     except:
         pass
-
     return "🌍 其它地区"
 
 def safe_b64decode(s):
