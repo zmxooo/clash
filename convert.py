@@ -207,48 +207,5 @@ def main():
             except:
                 pass
 
-    # === 【仅在此处追加要求的功能：动态国家分组与自动测速选择（URL-Test）】 ===
-    clash_groups = []
-    country_auto_group_names = []
-    
-    # 根据安全生成的单个节点名称，动态归类供 url-test 使用
-    region_to_proxy_names = defaultdict(list)
-    for proxy in clash_proxies:
-        for reg in EMOJI_MAP.keys():
-            if reg in proxy["name"]:
-                region_to_proxy_names[reg].append(proxy["name"])
-                break
-
-    for reg, p_names in region_to_proxy_names.items():
-        if not p_names:
-            continue
-        group_name = f"{EMOJI_MAP.get(reg, '🌍')} {reg}-自动选择"
-        country_auto_group_names.append(group_name)
-        
-        clash_groups.append({
-            "name": group_name,
-            "type": "url-test",
-            "url": "http://gstatic.com",
-            "interval": 300,
-            "tolerance": 50,
-            "proxies": p_names
-        })
-
-    all_individual_proxies = [p["name"] for p in clash_proxies]
-    main_group = {
-        "name": "🚀 节点选择",
-        "type": "select",
-        "proxies": ["DIRECT"] + country_auto_group_names + all_individual_proxies
-    }
-    clash_groups.insert(0, main_group)
-
-    clash_config = {
-        "proxies": clash_proxies,
-        "proxy-groups": clash_groups
-    }
-
-    with open('clash_proxies.yml', 'w', encoding='utf-8') as f:
-        yaml.dump(clash_config, f, allow_unicode=True, sort_keys=False)
-
 if __name__ == '__main__':
     main()
