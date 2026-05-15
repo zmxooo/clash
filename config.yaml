@@ -39,7 +39,7 @@ proxies:
   down: 100 Mbps
   skip-cert-verify: true
   sni: https://t.me/zmxooo
-- name: 🇩🇪德国 zmxooo2
+- name: 🇩🇪德国 zmxooo1
   type: vmess
   server: 82.198.246.233
   port: 180
@@ -49,7 +49,7 @@ proxies:
   tls: false
   network: tcp
   skip-cert-verify: true
-- name: 🇩🇪德国 zmxooo3
+- name: 🇩🇪德国 zmxooo2
   type: vmess
   server: 82.198.246.233
   port: 180
@@ -90,15 +90,12 @@ proxies:
   network: tcp
   skip-cert-verify: true
 - name: 🇺🇸美国 zmxooo1
-  type: vmess
-  server: 82.198.246.214
-  port: 180
-  uuid: d13fc2f5-3e05-4795-81eb-44143a09e552
-  alterId: 0
-  cipher: auto
-  tls: false
-  network: tcp
-  skip-cert-verify: true
+  server: 3.137.174.85
+  port: 443
+  udp: true
+  type: ss
+  cipher: aes-256-cfb
+  password: amazonskr05
 - name: 🇺🇸美国 zmxooo2
   server: 3.144.123.157
   port: 443
@@ -107,13 +104,6 @@ proxies:
   cipher: aes-256-cfb
   password: amazonskr05
 - name: 🇺🇸美国 zmxooo3
-  server: 3.137.174.85
-  port: 443
-  udp: true
-  type: ss
-  cipher: aes-256-cfb
-  password: amazonskr05
-- name: 🇺🇸美国 zmxooo4
   type: vmess
   server: 82.198.246.233
   port: 180
@@ -123,7 +113,7 @@ proxies:
   tls: false
   network: tcp
   skip-cert-verify: true
-- name: 🇺🇸美国 zmxooo5
+- name: 🇺🇸美国 zmxooo4
   server: 23.144.12.162
   port: 443
   udp: true
@@ -133,7 +123,7 @@ proxies:
   down: 100 Mbps
   skip-cert-verify: true
   sni: https://t.me/zmxooo
-- name: 🇺🇸美国 zmxooo6
+- name: 🇺🇸美国 zmxooo5
   type: vmess
   server: 82.198.246.9
   port: 180
@@ -143,9 +133,19 @@ proxies:
   tls: false
   network: tcp
   skip-cert-verify: true
-- name: 🇺🇸美国 zmxooo7
+- name: 🇺🇸美国 zmxooo6
   type: vmess
   server: 82.198.246.37
+  port: 180
+  uuid: d13fc2f5-3e05-4795-81eb-44143a09e552
+  alterId: 0
+  cipher: auto
+  tls: false
+  network: tcp
+  skip-cert-verify: true
+- name: 🇺🇸美国 zmxooo8
+  type: vmess
+  server: 82.198.246.214
   port: 180
   uuid: d13fc2f5-3e05-4795-81eb-44143a09e552
   alterId: 0
@@ -483,8 +483,8 @@ proxy-groups:
   - 🇹🇼台湾 zmxooo2
   - 🇹🇼台湾 zmxooo3
   - 🇹🇼台湾 zmxooo4
+  - 🇩🇪德国 zmxooo1
   - 🇩🇪德国 zmxooo2
-  - 🇩🇪德国 zmxooo3
   - 🇩🇪德国 zmxooo4
   - 🇩🇪德国 zmxooo5
   - 🇯🇵日本 zmxooo2
@@ -494,7 +494,7 @@ proxy-groups:
   - 🇺🇸美国 zmxooo4
   - 🇺🇸美国 zmxooo5
   - 🇺🇸美国 zmxooo6
-  - 🇺🇸美国 zmxooo7
+  - 🇺🇸美国 zmxooo8
   - 🇺🇸美国 zmxooo9
   - 🇺🇸美国 zmxooo10
   - 🇺🇸美国 zmxooo11
@@ -539,8 +539,8 @@ proxy-groups:
   - 🇹🇼台湾 zmxooo2
   - 🇹🇼台湾 zmxooo3
   - 🇹🇼台湾 zmxooo4
+  - 🇩🇪德国 zmxooo1
   - 🇩🇪德国 zmxooo2
-  - 🇩🇪德国 zmxooo3
   - 🇩🇪德国 zmxooo4
   - 🇩🇪德国 zmxooo5
   - 🇯🇵日本 zmxooo2
@@ -550,7 +550,7 @@ proxy-groups:
   - 🇺🇸美国 zmxooo4
   - 🇺🇸美国 zmxooo5
   - 🇺🇸美国 zmxooo6
-  - 🇺🇸美国 zmxooo7
+  - 🇺🇸美国 zmxooo8
   - 🇺🇸美国 zmxooo9
   - 🇺🇸美国 zmxooo10
   - 🇺🇸美国 zmxooo11
