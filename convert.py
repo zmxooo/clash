@@ -1,11 +1,4 @@
-import base64
-import json
-import yaml
-import urllib.parse
-import os
-import re
-import requests
-import time
+import base64, json, yaml, urllib.parse, os, re, requests, time
 from collections import defaultdict
 
 # --- 配置区 ---
@@ -13,7 +6,6 @@ CHANNEL_MARK = "zmxooo"
 TEST_URL = "http://gstatic.com"
 IP_CACHE = {}
 
-# 全球化国旗库（脚本会自动补充不在列表中的国家）
 EMOJI_MAP = {
     "香港": "🇭🇰", "台湾": "🇹🇼", "美国": "🇺🇸", "日本": "🇯🇵", 
     "新加坡": "🇸🇬", "韩国": "🇰🇷", "德国": "🇩🇪", "英国": "🇬🇧",
@@ -22,7 +14,6 @@ EMOJI_MAP = {
 }
 
 def get_final_label(server, remarks):
-    """识别国家：正则优先，IP库兜底"""
     text = urllib.parse.unquote(str(remarks)).lower().strip()
     meta = [
         ("香港", r"hk|香港|hongkong"), ("台湾", r"tw|台湾|台灣|taiwan"), 
@@ -33,29 +24,25 @@ def get_final_label(server, remarks):
         if re.search(pattern, text): 
             return f"{EMOJI_MAP.get(name, '🌍')}{name}"
     
-    # 命中缓存避免重复请求
     if server in IP_CACHE: return IP_CACHE[server]
-    
-    # 全球化 IP 识别逻辑
-    try:
-        time.sleep(0.2) # 防止请求过快
-        response = requests.get(f"http://ip-api.com/json/{server}?lang=zh-CN", timeout=5).json()
-        if response.get("status") == "success":
-            country = response.get("country")
-            # 自动获取该国国旗（如果库里没有，默认地球）
-            label = f"{EMOJI_MAP.get(country, '🌍')}{country}"
-            IP_CACHE[server] = label
-            return label
-    except: pass
+    # 仅对像 IP 或域名的 server 进行查询
+    if server and ("." in server):
+        try:
+            time.sleep(0.5) # 防接口频率限制
+            resp = requests.get(f"http://ip-api.com/json/{server}?lang=zh-CN", timeout=5).json()
+            if resp.get("status") == "success":
+                country = resp.get("country")
+                label = f"{EMOJI_MAP.get(country, '🌍')}{country}"
+                IP_CACHE[server] = label
+                return label
+        except: pass
     return "🧿其它地区"
 
 def fix_base64(s):
-    if not s: return ""
     s = "".join(s.split())
     return s + '=' * (-len(s) % 4)
 
 def rebuild_node(link, new_name):
-    """三端协议深度转换逻辑"""
     try:
         if link.startswith('vmess://'):
             b64_part = link[8:].split('#')[0]
@@ -79,8 +66,7 @@ def rebuild_node(link, new_name):
 
         u = urllib.parse.urlparse(link)
         scheme = u.scheme.lower()
-        old_remarks = urllib.parse.unquote(u.fragment) if u.fragment else ""
-        label = get_final_label(u.hostname, old_remarks)
+        label = get_final_label(u.hostname, u.fragment)
         proxy = {"name": new_name, "server": u.hostname, "port": u.port, "skip-cert-verify": True}
 
         if scheme == "ss":
@@ -94,8 +80,13 @@ def rebuild_node(link, new_name):
             proxy.update({
                 "type": "vless", "uuid": u.username, "cipher": "auto",
                 "tls": True if params.get("security") in ["tls", "reality"] else False,
-                "network": params.get("type", "tcp"), "sni": params.get("sni", params.get("host", ""))
+                "network": params.get("type", "tcp"), "sni": params.get("sni", u.hostname)
             })
+            # 补齐 Reality 核心漏洞参数
+            if params.get("security") == "reality":
+                proxy.update({
+                    "reality-opts": {"public-key": params.get("pbk", ""), "short-id": params.get("sid", "")}
+                })
         elif scheme in ["hysteria2", "hy2"]:
             proxy.update({"type": "hysteria2", "password": u.username, "sni": u.hostname})
         else: return None, None, None
@@ -107,8 +98,10 @@ def main():
     if not os.path.exists('nodes.txt'): return
     with open('nodes.txt', 'r', encoding='utf-8') as f:
         raw_links = list(dict.fromkeys([l.strip() for l in f if "://" in l]))
+    
     region_map = defaultdict(list)
     clash_proxies, rocket_links = [], []
+    
     for l in raw_links:
         lbl, _, _ = rebuild_node(l, "TEMP")
         if not lbl: continue
@@ -120,9 +113,11 @@ def main():
             region_map[label].append(new_name)
             clash_proxies.append(proxy)
             rocket_links.append(r_link)
+
     if rocket_links:
         with open('index.html', 'w', encoding='utf-8') as f:
             f.write(base64.b64encode("\n".join(rocket_links).encode()).decode())
+    
     if clash_proxies:
         active_regions = sorted(list(region_map.keys()))
         groups = [
@@ -131,6 +126,7 @@ def main():
         ]
         for r in active_regions:
             groups.append({"name": r, "type": "url-test", "url": TEST_URL, "interval": 300, "proxies": region_map[r]})
+        
         config = {"mixed-port": 7890, "allow-lan": True, "mode": "rule", "proxies": clash_proxies, "proxy-groups": groups, "rules": ["MATCH,🚀节点选择"]}
         with open('clash_config.yaml', 'w', encoding='utf-8') as f:
             yaml.dump(config, f, allow_unicode=True, sort_keys=False)
