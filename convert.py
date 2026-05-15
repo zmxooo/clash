@@ -84,12 +84,12 @@ def rebuild_node(link, new_name):
                 proxy["ws-opts"] = {"path": std_vmess["path"], "headers": {"Host": std_vmess["host"]}}
             return label, proxy, f"vmess://{base64.b64encode(json.dumps(std_vmess).encode()).decode()}"
 
-        # 核心修正：此处通过 [0] 严格剥离旧备注，拿回纯净的原始链接字符串
+        # 核心修正：严格切片提取字符串，严禁传递列表/元组给 urlparse
         clean_link = link.split('#')[0]
         u = urllib.parse.urlparse(clean_link)
         scheme = u.scheme.lower()
         
-        orig_fragment = urllib.parse.urlparse(link).fragment
+        orig_fragment = link.split('#')[1] if '#' in link else ''
         label = get_final_label(u.hostname, orig_fragment)
         proxy = {"name": new_name, "server": u.hostname, "port": u.port if u.port else 443, "skip-cert-verify": True}
 
@@ -117,7 +117,7 @@ def rebuild_node(link, new_name):
         else: 
             return None, None, None
 
-        # 核心修正：恢复正确的纯字符串拼接，确保小火箭订阅内容不再畸形
+        # 核心修正：返回纯正无畸形的节点字符串
         return label, proxy, f"{clean_link}#{urllib.parse.quote(new_name)}"
     except: 
         return None, None, None
