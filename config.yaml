@@ -40,123 +40,13 @@ proxies:
   skip-cert-verify: true
   network: tcp
 - name: 🇬🇧 英国 01 | @zmxooo
-  type: vmess
-  server: 82.198.246.9
-  port: 180
-  uuid: d13fc2f5-3e05-4795-81eb-44143a09e552
-  alterId: 0
-  cipher: auto
-  tls: false
-  skip-cert-verify: true
-  network: tcp
-- name: 🇬🇧 英国 02 | @zmxooo
-  type: vmess
-  server: 82.198.246.233
-  port: 180
-  uuid: d13fc2f5-3e05-4795-81eb-44143a09e552
-  alterId: 0
-  cipher: auto
-  tls: false
-  skip-cert-verify: true
-  network: tcp
-- name: 🇬🇧 英国 03 | @zmxooo
-  type: vmess
-  server: 82.198.246.233
-  port: 180
-  uuid: d13fc2f5-3e05-4795-81eb-44143a09e552
-  alterId: 0
-  cipher: auto
-  tls: false
-  skip-cert-verify: true
-  network: tcp
-- name: 🇬🇧 英国 04 | @zmxooo
-  type: vmess
-  server: 82.198.246.9
-  port: 180
-  uuid: d13fc2f5-3e05-4795-81eb-44143a09e552
-  alterId: 0
-  cipher: auto
-  tls: false
-  skip-cert-verify: true
-  network: tcp
-- name: 🇬🇧 英国 05 | @zmxooo
-  type: vmess
-  server: 82.198.246.233
-  port: 180
-  uuid: d13fc2f5-3e05-4795-81eb-44143a09e552
-  alterId: 0
-  cipher: auto
-  tls: false
-  skip-cert-verify: true
-  network: tcp
-- name: 🇬🇧 英国 06 | @zmxooo
-  type: vmess
-  server: 82.198.246.37
-  port: 180
-  uuid: d13fc2f5-3e05-4795-81eb-44143a09e552
-  alterId: 0
-  cipher: auto
-  tls: false
-  skip-cert-verify: true
-  network: tcp
-- name: 🇬🇧 英国 07 | @zmxooo
-  type: vmess
-  server: 82.198.246.9
-  port: 180
-  uuid: d13fc2f5-3e05-4795-81eb-44143a09e552
-  alterId: 0
-  cipher: auto
-  tls: false
-  skip-cert-verify: true
-  network: tcp
-- name: 🇬🇧 英国 08 | @zmxooo
-  type: vmess
-  server: 82.198.246.214
-  port: 180
-  uuid: d13fc2f5-3e05-4795-81eb-44143a09e552
-  alterId: 0
-  cipher: auto
-  tls: false
-  skip-cert-verify: true
-  network: tcp
-- name: 🇬🇧 英国 09 | @zmxooo
-  type: vmess
-  server: 82.198.246.233
-  port: 180
-  uuid: d13fc2f5-3e05-4795-81eb-44143a09e552
-  alterId: 0
-  cipher: auto
-  tls: false
-  skip-cert-verify: true
-  network: tcp
-- name: 🇬🇧 英国 10 | @zmxooo
-  type: vmess
-  server: 82.198.246.250
-  port: 180
-  uuid: d13fc2f5-3e05-4795-81eb-44143a09e552
-  alterId: 0
-  cipher: auto
-  tls: false
-  skip-cert-verify: true
-  network: tcp
-- name: 🇬🇧 英国 11 | @zmxooo
-  type: vmess
-  server: 82.198.246.214
-  port: 180
-  uuid: d13fc2f5-3e05-4795-81eb-44143a09e552
-  alterId: 0
-  cipher: auto
-  tls: false
-  skip-cert-verify: true
-  network: tcp
-- name: 🇬🇧 英国 12 | @zmxooo
   server: 82.38.31.155
   port: 8080
   udp: true
   type: ss
   cipher: chacha20-ietf-poly1305
   password: oZIoA69Q8yhcQV8ka3Pa3A
-- name: 🇬🇧 英国 13 | @zmxooo
+- name: 🇬🇧 英国 02 | @zmxooo
   server: 82.38.31.35
   port: 8080
   udp: true
@@ -169,8 +59,8 @@ proxies:
   udp: true
   type: hysteria2
   password: qQe1z5kU8kN6SlKnDt9Ru3Qp
-  up: 15
-  down: 50
+  up: 20
+  down: 100
   skip-cert-verify: true
 - name: 🇭🇰 香港 02 | @zmxooo
   server: 202.146.222.13
@@ -178,8 +68,8 @@ proxies:
   udp: true
   type: hysteria2
   password: qQe1z5kU8kN6SlKnDt9Ru3Qp
-  up: 15
-  down: 50
+  up: 20
+  down: 100
   skip-cert-verify: true
 - name: 🇭🇰 香港 03 | @zmxooo
   server: 202.146.222.93
@@ -187,8 +77,8 @@ proxies:
   udp: true
   type: hysteria2
   password: qQe1z5kU8kN6SlKnDt9Ru3Qp
-  up: 15
-  down: 50
+  up: 20
+  down: 100
   skip-cert-verify: true
 - name: 🇭🇰 香港 04 | @zmxooo
   server: 202.146.222.89
@@ -196,8 +86,8 @@ proxies:
   udp: true
   type: hysteria2
   password: qQe1z5kU8kN6SlKnDt9Ru3Qp
-  up: 15
-  down: 50
+  up: 20
+  down: 100
   skip-cert-verify: true
 - name: 🇭🇰 香港 05 | @zmxooo
   server: 202.146.222.11
@@ -205,8 +95,8 @@ proxies:
   udp: true
   type: hysteria2
   password: qQe1z5kU8kN6SlKnDt9Ru3Qp
-  up: 15
-  down: 50
+  up: 20
+  down: 100
   skip-cert-verify: true
 - name: 🇭🇰 香港 06 | @zmxooo
   server: 202.146.222.29
@@ -214,8 +104,8 @@ proxies:
   udp: true
   type: hysteria2
   password: qQe1z5kU8kN6SlKnDt9Ru3Qp
-  up: 15
-  down: 50
+  up: 20
+  down: 100
   skip-cert-verify: true
 - name: 🇭🇰 香港 07 | @zmxooo
   server: 202.146.222.16
@@ -223,8 +113,8 @@ proxies:
   udp: true
   type: hysteria2
   password: qQe1z5kU8kN6SlKnDt9Ru3Qp
-  up: 15
-  down: 50
+  up: 20
+  down: 100
   skip-cert-verify: true
 - name: 🇭🇰 香港 08 | @zmxooo
   server: 202.146.222.85
@@ -232,8 +122,8 @@ proxies:
   udp: true
   type: hysteria2
   password: qQe1z5kU8kN6SlKnDt9Ru3Qp
-  up: 15
-  down: 50
+  up: 20
+  down: 100
   skip-cert-verify: true
 - name: 🇭🇰 香港 09 | @zmxooo
   server: 202.146.222.45
@@ -241,8 +131,8 @@ proxies:
   udp: true
   type: hysteria2
   password: qQe1z5kU8kN6SlKnDt9Ru3Qp
-  up: 15
-  down: 50
+  up: 20
+  down: 100
   skip-cert-verify: true
 - name: 🇯🇵 日本 02 | @zmxooo
   type: vmess
@@ -260,8 +150,8 @@ proxies:
   udp: true
   type: hysteria2
   password: qQe1z5kU8kN6SlKnDt9Ru3Qp
-  up: 15
-  down: 50
+  up: 20
+  down: 100
   skip-cert-verify: true
 - name: 🇹🇼 台湾 01 | @zmxooo
   server: 160.187.100.109
@@ -269,8 +159,8 @@ proxies:
   udp: true
   type: hysteria2
   password: qQe1z5kU8kN6SlKnDt9Ru3Qp
-  up: 15
-  down: 50
+  up: 20
+  down: 100
   skip-cert-verify: true
 - name: 🇹🇼 台湾 02 | @zmxooo
   server: 43.200.123.45
@@ -278,8 +168,8 @@ proxies:
   udp: true
   type: hysteria2
   password: qQe1z5kU8kN6SlKnDt9Ru3Qp
-  up: 15
-  down: 50
+  up: 20
+  down: 100
   skip-cert-verify: true
 - name: 🇹🇼 台湾 03 | @zmxooo
   type: vmess
@@ -307,12 +197,12 @@ proxies:
   udp: true
   type: hysteria2
   password: qQe1z5kU8kN6SlKnDt9Ru3Qp
-  up: 15
-  down: 50
+  up: 20
+  down: 100
   skip-cert-verify: true
 - name: 🇺🇸 美国 02 | @zmxooo
   type: vmess
-  server: 82.198.246.214
+  server: 82.198.246.9
   port: 180
   uuid: d13fc2f5-3e05-4795-81eb-44143a09e552
   alterId: 0
@@ -332,7 +222,7 @@ proxies:
   network: tcp
 - name: 🇺🇸 美国 04 | @zmxooo
   type: vmess
-  server: 82.198.246.9
+  server: 82.198.246.233
   port: 180
   uuid: d13fc2f5-3e05-4795-81eb-44143a09e552
   alterId: 0
@@ -342,47 +232,6 @@ proxies:
   network: tcp
 - name: 🇺🇸 美国 05 | @zmxooo
   type: vmess
-  server: 82.198.246.37
-  port: 180
-  uuid: d13fc2f5-3e05-4795-81eb-44143a09e552
-  alterId: 0
-  cipher: auto
-  tls: false
-  skip-cert-verify: true
-  network: tcp
-- name: 🇺🇸 美国 06 | @zmxooo
-  server: 34.229.121.217
-  port: 80
-  udp: true
-  type: ss
-  cipher: aes-256-gcm
-  password: dada1203
-- name: 🇺🇸 美国 07 | @zmxooo
-  server: 3.137.174.85
-  port: 443
-  udp: true
-  type: ss
-  cipher: aes-256-cfb
-  password: amazonskr05
-- name: 🇺🇸 美国 08 | @zmxooo
-  server: 3.144.123.157
-  port: 443
-  udp: true
-  type: ss
-  cipher: aes-256-cfb
-  password: amazonskr05
-- name: 🇺🇸 美国 10 | @zmxooo
-  type: vmess
-  server: 82.198.246.214
-  port: 180
-  uuid: d13fc2f5-3e05-4795-81eb-44143a09e552
-  alterId: 0
-  cipher: auto
-  tls: false
-  skip-cert-verify: true
-  network: tcp
-- name: 🇺🇸 美国 11 | @zmxooo
-  type: vmess
   server: 82.198.246.9
   port: 180
   uuid: d13fc2f5-3e05-4795-81eb-44143a09e552
@@ -391,17 +240,7 @@ proxies:
   tls: false
   skip-cert-verify: true
   network: tcp
-- name: 🇺🇸 美国 12 | @zmxooo
-  type: vmess
-  server: 82.198.246.37
-  port: 180
-  uuid: d13fc2f5-3e05-4795-81eb-44143a09e552
-  alterId: 0
-  cipher: auto
-  tls: false
-  skip-cert-verify: true
-  network: tcp
-- name: 🇺🇸 美国 13 | @zmxooo
+- name: 🇺🇸 美国 06 | @zmxooo
   type: vmess
   server: 82.198.246.233
   port: 180
@@ -411,7 +250,168 @@ proxies:
   tls: false
   skip-cert-verify: true
   network: tcp
+- name: 🇺🇸 美国 07 | @zmxooo
+  type: vmess
+  server: 82.198.246.37
+  port: 180
+  uuid: d13fc2f5-3e05-4795-81eb-44143a09e552
+  alterId: 0
+  cipher: auto
+  tls: false
+  skip-cert-verify: true
+  network: tcp
+- name: 🇺🇸 美国 08 | @zmxooo
+  type: vmess
+  server: 82.198.246.9
+  port: 180
+  uuid: d13fc2f5-3e05-4795-81eb-44143a09e552
+  alterId: 0
+  cipher: auto
+  tls: false
+  skip-cert-verify: true
+  network: tcp
+- name: 🇺🇸 美国 09 | @zmxooo
+  type: vmess
+  server: 82.198.246.214
+  port: 180
+  uuid: d13fc2f5-3e05-4795-81eb-44143a09e552
+  alterId: 0
+  cipher: auto
+  tls: false
+  skip-cert-verify: true
+  network: tcp
+- name: 🇺🇸 美国 10 | @zmxooo
+  type: vmess
+  server: 82.198.246.233
+  port: 180
+  uuid: d13fc2f5-3e05-4795-81eb-44143a09e552
+  alterId: 0
+  cipher: auto
+  tls: false
+  skip-cert-verify: true
+  network: tcp
+- name: 🇺🇸 美国 11 | @zmxooo
+  type: vmess
+  server: 82.198.246.250
+  port: 180
+  uuid: d13fc2f5-3e05-4795-81eb-44143a09e552
+  alterId: 0
+  cipher: auto
+  tls: false
+  skip-cert-verify: true
+  network: tcp
+- name: 🇺🇸 美国 12 | @zmxooo
+  type: vmess
+  server: 82.198.246.214
+  port: 180
+  uuid: d13fc2f5-3e05-4795-81eb-44143a09e552
+  alterId: 0
+  cipher: auto
+  tls: false
+  skip-cert-verify: true
+  network: tcp
+- name: 🇺🇸 美国 13 | @zmxooo
+  type: vmess
+  server: 82.198.246.214
+  port: 180
+  uuid: d13fc2f5-3e05-4795-81eb-44143a09e552
+  alterId: 0
+  cipher: auto
+  tls: false
+  skip-cert-verify: true
+  network: tcp
 - name: 🇺🇸 美国 14 | @zmxooo
+  type: vmess
+  server: 82.198.246.233
+  port: 180
+  uuid: d13fc2f5-3e05-4795-81eb-44143a09e552
+  alterId: 0
+  cipher: auto
+  tls: false
+  skip-cert-verify: true
+  network: tcp
+- name: 🇺🇸 美国 15 | @zmxooo
+  type: vmess
+  server: 82.198.246.9
+  port: 180
+  uuid: d13fc2f5-3e05-4795-81eb-44143a09e552
+  alterId: 0
+  cipher: auto
+  tls: false
+  skip-cert-verify: true
+  network: tcp
+- name: 🇺🇸 美国 16 | @zmxooo
+  type: vmess
+  server: 82.198.246.37
+  port: 180
+  uuid: d13fc2f5-3e05-4795-81eb-44143a09e552
+  alterId: 0
+  cipher: auto
+  tls: false
+  skip-cert-verify: true
+  network: tcp
+- name: 🇺🇸 美国 17 | @zmxooo
+  server: 34.229.121.217
+  port: 80
+  udp: true
+  type: ss
+  cipher: aes-256-gcm
+  password: dada1203
+- name: 🇺🇸 美国 18 | @zmxooo
+  server: 3.137.174.85
+  port: 443
+  udp: true
+  type: ss
+  cipher: aes-256-cfb
+  password: amazonskr05
+- name: 🇺🇸 美国 19 | @zmxooo
+  server: 3.144.123.157
+  port: 443
+  udp: true
+  type: ss
+  cipher: aes-256-cfb
+  password: amazonskr05
+- name: 🇺🇸 美国 20 | @zmxooo
+  type: vmess
+  server: 82.198.246.214
+  port: 180
+  uuid: d13fc2f5-3e05-4795-81eb-44143a09e552
+  alterId: 0
+  cipher: auto
+  tls: false
+  skip-cert-verify: true
+  network: tcp
+- name: 🇺🇸 美国 21 | @zmxooo
+  type: vmess
+  server: 82.198.246.9
+  port: 180
+  uuid: d13fc2f5-3e05-4795-81eb-44143a09e552
+  alterId: 0
+  cipher: auto
+  tls: false
+  skip-cert-verify: true
+  network: tcp
+- name: 🇺🇸 美国 22 | @zmxooo
+  type: vmess
+  server: 82.198.246.37
+  port: 180
+  uuid: d13fc2f5-3e05-4795-81eb-44143a09e552
+  alterId: 0
+  cipher: auto
+  tls: false
+  skip-cert-verify: true
+  network: tcp
+- name: 🇺🇸 美国 23 | @zmxooo
+  type: vmess
+  server: 82.198.246.233
+  port: 180
+  uuid: d13fc2f5-3e05-4795-81eb-44143a09e552
+  alterId: 0
+  cipher: auto
+  tls: false
+  skip-cert-verify: true
+  network: tcp
+- name: 🇺🇸 美国 24 | @zmxooo
   server: 3.137.174.85
   port: 443
   udp: true
@@ -472,17 +472,6 @@ proxy-groups:
   - 🇩🇪 德国 05 | @zmxooo
   - 🇬🇧 英国 01 | @zmxooo
   - 🇬🇧 英国 02 | @zmxooo
-  - 🇬🇧 英国 03 | @zmxooo
-  - 🇬🇧 英国 04 | @zmxooo
-  - 🇬🇧 英国 05 | @zmxooo
-  - 🇬🇧 英国 06 | @zmxooo
-  - 🇬🇧 英国 07 | @zmxooo
-  - 🇬🇧 英国 08 | @zmxooo
-  - 🇬🇧 英国 09 | @zmxooo
-  - 🇬🇧 英国 10 | @zmxooo
-  - 🇬🇧 英国 11 | @zmxooo
-  - 🇬🇧 英国 12 | @zmxooo
-  - 🇬🇧 英国 13 | @zmxooo
   - 🇭🇰 香港 01 | @zmxooo
   - 🇭🇰 香港 02 | @zmxooo
   - 🇭🇰 香港 03 | @zmxooo
@@ -506,11 +495,22 @@ proxy-groups:
   - 🇺🇸 美国 06 | @zmxooo
   - 🇺🇸 美国 07 | @zmxooo
   - 🇺🇸 美国 08 | @zmxooo
+  - 🇺🇸 美国 09 | @zmxooo
   - 🇺🇸 美国 10 | @zmxooo
   - 🇺🇸 美国 11 | @zmxooo
   - 🇺🇸 美国 12 | @zmxooo
   - 🇺🇸 美国 13 | @zmxooo
   - 🇺🇸 美国 14 | @zmxooo
+  - 🇺🇸 美国 15 | @zmxooo
+  - 🇺🇸 美国 16 | @zmxooo
+  - 🇺🇸 美国 17 | @zmxooo
+  - 🇺🇸 美国 18 | @zmxooo
+  - 🇺🇸 美国 19 | @zmxooo
+  - 🇺🇸 美国 20 | @zmxooo
+  - 🇺🇸 美国 21 | @zmxooo
+  - 🇺🇸 美国 22 | @zmxooo
+  - 🇺🇸 美国 23 | @zmxooo
+  - 🇺🇸 美国 24 | @zmxooo
   - 🇻🇳 越南 01 | @zmxooo
   - 🇻🇳 越南 02 | @zmxooo
   - 🇻🇳 越南 03 | @zmxooo
@@ -528,17 +528,6 @@ proxy-groups:
   - 🇩🇪 德国 05 | @zmxooo
   - 🇬🇧 英国 01 | @zmxooo
   - 🇬🇧 英国 02 | @zmxooo
-  - 🇬🇧 英国 03 | @zmxooo
-  - 🇬🇧 英国 04 | @zmxooo
-  - 🇬🇧 英国 05 | @zmxooo
-  - 🇬🇧 英国 06 | @zmxooo
-  - 🇬🇧 英国 07 | @zmxooo
-  - 🇬🇧 英国 08 | @zmxooo
-  - 🇬🇧 英国 09 | @zmxooo
-  - 🇬🇧 英国 10 | @zmxooo
-  - 🇬🇧 英国 11 | @zmxooo
-  - 🇬🇧 英国 12 | @zmxooo
-  - 🇬🇧 英国 13 | @zmxooo
   - 🇭🇰 香港 01 | @zmxooo
   - 🇭🇰 香港 02 | @zmxooo
   - 🇭🇰 香港 03 | @zmxooo
@@ -562,11 +551,22 @@ proxy-groups:
   - 🇺🇸 美国 06 | @zmxooo
   - 🇺🇸 美国 07 | @zmxooo
   - 🇺🇸 美国 08 | @zmxooo
+  - 🇺🇸 美国 09 | @zmxooo
   - 🇺🇸 美国 10 | @zmxooo
   - 🇺🇸 美国 11 | @zmxooo
   - 🇺🇸 美国 12 | @zmxooo
   - 🇺🇸 美国 13 | @zmxooo
   - 🇺🇸 美国 14 | @zmxooo
+  - 🇺🇸 美国 15 | @zmxooo
+  - 🇺🇸 美国 16 | @zmxooo
+  - 🇺🇸 美国 17 | @zmxooo
+  - 🇺🇸 美国 18 | @zmxooo
+  - 🇺🇸 美国 19 | @zmxooo
+  - 🇺🇸 美国 20 | @zmxooo
+  - 🇺🇸 美国 21 | @zmxooo
+  - 🇺🇸 美国 22 | @zmxooo
+  - 🇺🇸 美国 23 | @zmxooo
+  - 🇺🇸 美国 24 | @zmxooo
   - 🇻🇳 越南 01 | @zmxooo
   - 🇻🇳 越南 02 | @zmxooo
   - 🇻🇳 越南 03 | @zmxooo
