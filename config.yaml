@@ -241,31 +241,31 @@ proxies:
   port: 38388
   cipher: aes-256-cfb
   password: Xn8jKdmDM00IeO%#$#fJAMtsEAEUOpH/YWYtYqDFnT0SV
-  name: 🌍 Vietnam 01 @zmxooo
+  name: 🇻🇳 越南 01 @zmxooo
 - type: ss
   server: 103.186.155.75
   port: 38388
   cipher: aes-256-cfb
   password: Xn8jKdmDM00IeO%#$#fJAMtsEAEUOpH/YWYtYqDFnT0SV
-  name: 🌍 Vietnam 02 @zmxooo
+  name: 🇻🇳 越南 02 @zmxooo
 - type: ss
   server: 103.186.155.109
   port: 38388
   cipher: aes-256-cfb
   password: Xn8jKdmDM00IeO%#$#fJAMtsEAEUOpH/YWYtYqDFnT0SV
-  name: 🌍 Vietnam 03 @zmxooo
+  name: 🇻🇳 越南 03 @zmxooo
 - type: ss
   server: 103.186.155.8
   port: 38388
   cipher: aes-256-cfb
   password: Xn8jKdmDM00IeO%#$#fJAMtsEAEUOpH/YWYtYqDFnT0SV
-  name: 🌍 其它地区 01 @zmxooo
+  name: 🇻🇳 越南 04 @zmxooo
 - type: ss
   server: 103.186.155.49
   port: 38388
   cipher: aes-256-cfb
   password: Xn8jKdmDM00IeO%#$#fJAMtsEAEUOpH/YWYtYqDFnT0SV
-  name: 🌍 其它地区 02 @zmxooo
+  name: 🇻🇳 越南 05 @zmxooo
 - type: ss
   server: 34.229.121.217
   port: 80
@@ -326,7 +326,7 @@ proxies:
   port: 38388
   cipher: aes-256-cfb
   password: Xn8jKdmDM00IeO%#$#fJAMtsEAEUOpH/YWYtYqDFnT0SV
-  name: 🌍 Vietnam 04 @zmxooo
+  name: 🌍 越南 01 @zmxooo
 - type: trojan
   server: 172.66.44.230
   port: 8443
@@ -378,7 +378,7 @@ proxies:
   tls: false
   skip-cert-verify: true
   network: tcp
-  name: 🇫🇷 法国 01 @zmxooo
+  name: 🇩🇪 德国 01 @zmxooo
 - type: vmess
   server: 82.198.246.37
   port: 180
@@ -388,7 +388,7 @@ proxies:
   tls: false
   skip-cert-verify: true
   network: tcp
-  name: 🇫🇷 法国 02 @zmxooo
+  name: 🇩🇪 德国 02 @zmxooo
 - type: vmess
   server: 82.198.246.233
   port: 180
@@ -398,7 +398,7 @@ proxies:
   tls: false
   skip-cert-verify: true
   network: tcp
-  name: 🇫🇷 法国 03 @zmxooo
+  name: 🇩🇪 德国 03 @zmxooo
 - type: vmess
   server: 82.198.246.233
   port: 180
@@ -408,7 +408,7 @@ proxies:
   tls: false
   skip-cert-verify: true
   network: tcp
-  name: 🇫🇷 法国 04 @zmxooo
+  name: 🇩🇪 德国 04 @zmxooo
 - type: ss
   server: 3.137.174.85
   port: 443
@@ -433,7 +433,7 @@ proxies:
   password: abb011d5-2749-4fba-9a66-0eb7b1b14d1e
   sni: ://ithome.com
   skip-cert-verify: true
-  name: 🌍 其它地区 03 @zmxooo
+  name: 🇱🇹 立陶宛 01 @zmxooo
 - type: vmess
   server: 82.198.246.214
   port: 180
@@ -443,7 +443,7 @@ proxies:
   tls: false
   skip-cert-verify: true
   network: tcp
-  name: 🇩🇪 德国 01 @zmxooo
+  name: 🇩🇪 德国 05 @zmxooo
 - type: vmess
   server: 82.198.246.9
   port: 180
@@ -453,7 +453,7 @@ proxies:
   tls: false
   skip-cert-verify: true
   network: tcp
-  name: 🌍 其它地区 04 @zmxooo
+  name: 🇺🇸 美国 11 @zmxooo
 - type: vmess
   server: 82.198.246.37
   port: 180
@@ -463,7 +463,7 @@ proxies:
   tls: false
   skip-cert-verify: true
   network: tcp
-  name: 🌍 其它地区 05 @zmxooo
+  name: 🇺🇸 美国 12 @zmxooo
 - type: vmess
   server: 82.198.246.233
   port: 180
@@ -473,7 +473,7 @@ proxies:
   tls: false
   skip-cert-verify: true
   network: tcp
-  name: 🇩🇪 德国 02 @zmxooo
+  name: 🇩🇪 德国 06 @zmxooo
 - type: vmess
   server: planb.mojcn.com
   port: 16645
@@ -487,7 +487,7 @@ proxies:
     path: /
     headers:
       Host: planb.mojcn.com
-  name: 🇫🇷 法国 05 @zmxooo
+  name: 🇫🇷 法国 01 @zmxooo
 - type: ss
   server: 146.56.138.33
   port: 10443
@@ -503,14 +503,14 @@ proxies:
   tls: false
   skip-cert-verify: true
   network: tcp
-  name: 🇺🇸 美国 11 @zmxooo
+  name: 🇺🇸 美国 13 @zmxooo
 - type: hysteria2
   server: 195.133.53.33
   port: 443
   password: 10550754-cf62-3d3b-ba6a-50be27a275d7
   sni: s516.okgfw.top
   skip-cert-verify: true
-  name: 🌍 其它地区 06 @zmxooo
+  name: 🌍 俄罗斯联邦 01 @zmxooo
 - type: vmess
   server: 82.198.246.214
   port: 180
@@ -520,7 +520,7 @@ proxies:
   tls: false
   skip-cert-verify: true
   network: tcp
-  name: 🇺🇸 美国 12 @zmxooo
+  name: 🇺🇸 美国 14 @zmxooo
 proxy-groups:
 - name: 🚀 节点选择
   type: select
@@ -530,12 +530,14 @@ proxy-groups:
   - 🇹🇼 台湾
   - 🇺🇸 美国
   - 🇬🇧 英国
-  - 🌍 Vietnam
-  - 🌍 其它地区
+  - 🇻🇳 越南
   - 🇰🇷 韩国
   - 🇯🇵 日本
-  - 🇫🇷 法国
+  - 🌍 越南
   - 🇩🇪 德国
+  - 🇱🇹 立陶宛
+  - 🇫🇷 法国
+  - 🌍 俄罗斯联邦
   - DIRECT
 - name: 🎬 自动选择
   type: url-test
@@ -569,11 +571,11 @@ proxy-groups:
   - 🇺🇸 美国 03 @zmxooo
   - 🇺🇸 美国 04 @zmxooo
   - 🇺🇸 美国 05 @zmxooo
-  - 🌍 Vietnam 01 @zmxooo
-  - 🌍 Vietnam 02 @zmxooo
-  - 🌍 Vietnam 03 @zmxooo
-  - 🌍 其它地区 01 @zmxooo
-  - 🌍 其它地区 02 @zmxooo
+  - 🇻🇳 越南 01 @zmxooo
+  - 🇻🇳 越南 02 @zmxooo
+  - 🇻🇳 越南 03 @zmxooo
+  - 🇻🇳 越南 04 @zmxooo
+  - 🇻🇳 越南 05 @zmxooo
   - 🇺🇸 美国 06 @zmxooo
   - 🇺🇸 美国 07 @zmxooo
   - 🇺🇸 美国 08 @zmxooo
@@ -581,30 +583,30 @@ proxy-groups:
   - 🇹🇼 台湾 03 @zmxooo
   - 🇹🇼 台湾 04 @zmxooo
   - 🇯🇵 日本 01 @zmxooo
-  - 🌍 Vietnam 04 @zmxooo
+  - 🌍 越南 01 @zmxooo
   - 🇺🇸 美国 09 @zmxooo
   - 🇰🇷 韩国 02 @zmxooo
   - 🇰🇷 韩国 03 @zmxooo
   - 🇰🇷 韩国 04 @zmxooo
   - 🇰🇷 韩国 05 @zmxooo
   - 🇰🇷 韩国 06 @zmxooo
-  - 🇫🇷 法国 01 @zmxooo
-  - 🇫🇷 法国 02 @zmxooo
-  - 🇫🇷 法国 03 @zmxooo
-  - 🇫🇷 法国 04 @zmxooo
+  - 🇩🇪 德国 01 @zmxooo
+  - 🇩🇪 德国 02 @zmxooo
+  - 🇩🇪 德国 03 @zmxooo
+  - 🇩🇪 德国 04 @zmxooo
   - 🇺🇸 美国 10 @zmxooo
   - 🇬🇧 英国 12 @zmxooo
   - 🇬🇧 英国 13 @zmxooo
-  - 🌍 其它地区 03 @zmxooo
-  - 🇩🇪 德国 01 @zmxooo
-  - 🌍 其它地区 04 @zmxooo
-  - 🌍 其它地区 05 @zmxooo
-  - 🇩🇪 德国 02 @zmxooo
-  - 🇫🇷 法国 05 @zmxooo
-  - 🇰🇷 韩国 07 @zmxooo
+  - 🇱🇹 立陶宛 01 @zmxooo
+  - 🇩🇪 德国 05 @zmxooo
   - 🇺🇸 美国 11 @zmxooo
-  - 🌍 其它地区 06 @zmxooo
   - 🇺🇸 美国 12 @zmxooo
+  - 🇩🇪 德国 06 @zmxooo
+  - 🇫🇷 法国 01 @zmxooo
+  - 🇰🇷 韩国 07 @zmxooo
+  - 🇺🇸 美国 13 @zmxooo
+  - 🌍 俄罗斯联邦 01 @zmxooo
+  - 🇺🇸 美国 14 @zmxooo
 - name: 🇭🇰 香港
   type: url-test
   url: http://gstatic.com
@@ -645,6 +647,8 @@ proxy-groups:
   - 🇺🇸 美国 10 @zmxooo
   - 🇺🇸 美国 11 @zmxooo
   - 🇺🇸 美国 12 @zmxooo
+  - 🇺🇸 美国 13 @zmxooo
+  - 🇺🇸 美国 14 @zmxooo
 - name: 🇬🇧 英国
   type: url-test
   url: http://gstatic.com
@@ -663,26 +667,16 @@ proxy-groups:
   - 🇬🇧 英国 11 @zmxooo
   - 🇬🇧 英国 12 @zmxooo
   - 🇬🇧 英国 13 @zmxooo
-- name: 🌍 Vietnam
+- name: 🇻🇳 越南
   type: url-test
   url: http://gstatic.com
   interval: 300
   proxies:
-  - 🌍 Vietnam 01 @zmxooo
-  - 🌍 Vietnam 02 @zmxooo
-  - 🌍 Vietnam 03 @zmxooo
-  - 🌍 Vietnam 04 @zmxooo
-- name: 🌍 其它地区
-  type: url-test
-  url: http://gstatic.com
-  interval: 300
-  proxies:
-  - 🌍 其它地区 01 @zmxooo
-  - 🌍 其它地区 02 @zmxooo
-  - 🌍 其它地区 03 @zmxooo
-  - 🌍 其它地区 04 @zmxooo
-  - 🌍 其它地区 05 @zmxooo
-  - 🌍 其它地区 06 @zmxooo
+  - 🇻🇳 越南 01 @zmxooo
+  - 🇻🇳 越南 02 @zmxooo
+  - 🇻🇳 越南 03 @zmxooo
+  - 🇻🇳 越南 04 @zmxooo
+  - 🇻🇳 越南 05 @zmxooo
 - name: 🇰🇷 韩国
   type: url-test
   url: http://gstatic.com
@@ -701,16 +695,12 @@ proxy-groups:
   interval: 300
   proxies:
   - 🇯🇵 日本 01 @zmxooo
-- name: 🇫🇷 法国
+- name: 🌍 越南
   type: url-test
   url: http://gstatic.com
   interval: 300
   proxies:
-  - 🇫🇷 法国 01 @zmxooo
-  - 🇫🇷 法国 02 @zmxooo
-  - 🇫🇷 法国 03 @zmxooo
-  - 🇫🇷 法国 04 @zmxooo
-  - 🇫🇷 法国 05 @zmxooo
+  - 🌍 越南 01 @zmxooo
 - name: 🇩🇪 德国
   type: url-test
   url: http://gstatic.com
@@ -718,5 +708,27 @@ proxy-groups:
   proxies:
   - 🇩🇪 德国 01 @zmxooo
   - 🇩🇪 德国 02 @zmxooo
+  - 🇩🇪 德国 03 @zmxooo
+  - 🇩🇪 德国 04 @zmxooo
+  - 🇩🇪 德国 05 @zmxooo
+  - 🇩🇪 德国 06 @zmxooo
+- name: 🇱🇹 立陶宛
+  type: url-test
+  url: http://gstatic.com
+  interval: 300
+  proxies:
+  - 🇱🇹 立陶宛 01 @zmxooo
+- name: 🇫🇷 法国
+  type: url-test
+  url: http://gstatic.com
+  interval: 300
+  proxies:
+  - 🇫🇷 法国 01 @zmxooo
+- name: 🌍 俄罗斯联邦
+  type: url-test
+  url: http://gstatic.com
+  interval: 300
+  proxies:
+  - 🌍 俄罗斯联邦 01 @zmxooo
 rules:
 - MATCH,🚀 节点选择
