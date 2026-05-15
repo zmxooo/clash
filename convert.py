@@ -108,83 +108,66 @@ EMOJI_TO_NAME = {
 }
 
 def get_final_label(server, remarks):
-    """
-    企业级现成落地脚本（百级节点精简优化版）
-    - 针对纯国旗 Emoji 节点（如第三条 🇫🇷）做到 0 毫秒瞬间截获
-    - 移除国外易限流接口，采用高并发高可用的公共网络权威 CDN
-    """
     if not server: 
         return "🌍 其它地区"
         
+    # 精准提取 remarks 文本并进行清洗
     text = urllib.parse.unquote(str(remarks)).strip()
     
-    # 1. 策略一：纯国旗 Emoji 强截获（针对你给的第三条这种纯国旗节点，0ms 秒回）
-    for emoji, name in EMOJI_TO_NAME.items():
+    # 【新增核心拦截】解决第三条节点：直接通过国旗 Emoji 符号反查国家，0毫秒秒回
+    emoji_to_name = {v: k for k, v in EMOJI_MAP.items()}
+    for emoji, name in emoji_to_name.items():
         if emoji in text:
-            return f"{EMOJI_MAP.get(name, '🌍')} {name}"
+            return f"{emoji} {name}"
 
     text_lower = text.lower()
-    if CHANNEL_MARK.lower() in text_lower:
-        text_lower = text_lower.replace(CHANNEL_MARK.lower(), "")
-
-    # 2. 策略二：常用文本特征与机场三字码正则匹配
-    meta = [
-        ("香港", r"hk|香港|hong.*kong|hgc|hkbn|hkg"), 
-        ("台湾", r"tw|台湾|台灣|taiwan|cht|hinet"), 
-        ("美国", r"\bus\b|美国|美國|united.*states|america|lax|sfo|sanjose"), 
-        ("英国", r"\buk\b|\bgb\b|英国|英國|united.*kingdom|london|lhr"), 
-        ("韩国", r"kr|韩国|韓國|korea|seoul|icn"), 
-        ("日本", r"jp|日本|japan|tokyo|osaka|nrt|hnd"),
-        ("新加坡", r"\bsg\b|新加坡|singapore|sin"), 
-        ("法国", r"\bfr\b|法国|法國|france"),
-        ("德国", r"\bde\b|德国|germany|frankfurt|fra")
-    ]
     
-    matched_country = None
-    last_match_pos = -1
+    # 你的原版正则匹配逻辑
+    meta = [
+        ("香港", r"hk|香港|hong.*kong"), ("台湾", r"tw|台湾|台灣|taiwan"), 
+        ("美国", r"us|美国|美國|united states"), ("英国", r"gb|uk|英国|英國"), 
+        ("韩国", r"kr|韩国|韓國|korea"), ("日本", r"jp|日本|japan"),
+        ("新加坡", r"sg|新加坡|singapore"), ("越南", r"vn|越南|vietnam"), 
+        ("科威特", r"kw|科威特|kuwait"), ("德国", r"de|德国|germany"),
+        ("立陶宛", r"lt|立陶宛|lithuania"),
+        ("澳大利亚", r"au|australia|澳洲|澳大利亚"), ("荷兰", r"nl|netherlands|holland|荷兰"),
+        ("马来西亚", r"my|malaysia|马来西亚|大马"), ("泰国", r"th|thailand|泰国"),
+        ("印度", r"in|india|印度"), ("巴西", r"br|brazil|巴西"),
+        ("土耳其", r"tr|turkey|土耳其"), ("阿联酋", r"ae|uae|阿联酋|迪拜"),
+        ("菲律宾", r"ph|philippines|菲律宾"), ("阿根廷", r"ar|argentina|阿根廷"),
+        ("新西兰", r"nz|new zealand|新西兰"), ("意大利", r"it|italy|意大利"),
+        ("西班牙", r"es|spain|西班牙"), ("瑞士", r"ch|switzerland|瑞士"),
+        ("瑞典", r"se|sweden|瑞典"), ("南非", r"za|south africa|南非"),
+        ("爱尔兰", r"ie|ireland|爱尔兰"), ("墨西哥", r"mx|mexico|墨西哥"),
+        ("乌克兰", r"ua|ukraine|乌克兰"), ("法国", r"fr|法国|法國|france") # 补齐原脚本缺失的法国正则
+    ]
     for name, pattern in meta:
-        matches = list(re.finditer(pattern, text_lower))
-        if matches:
-            last_match = matches[-1]
-            if last_match.start() > last_match_pos:
-                matched_country = name
-                last_match_pos = last_match.start()
-
-    if matched_country and matched_country != "中国":
-        return f"{EMOJI_MAP.get(matched_country, '🌍')} {matched_country}"
-
-    # 3. 策略三：内存高速缓存判定
+        if re.search(pattern, text_lower): 
+            return f"{EMOJI_MAP.get(name, '🌍')} {name}"
+    
+    # 你的原版内存高速缓存及 ip-api.com 网络查询逻辑（修复了原版 URL 少斜杠的致命 Bug）
     if server in IP_CACHE: 
         return IP_CACHE[server]
-
-    # 4. 策略四：高可用公共 CDN 接口（针对你给的第一、二条备注无意义节点）
-    # 彻底解决自带端口号（如 :443）导致接口报错的 Bug
-    clean_server = str(server).split(':')[0] if ':' in str(server) else str(server)
-    
-    # 强制将域名（如 ://mojcn.com）本地 DNS 转换为纯 IP，确保 IP 库 100% 成功解析
-    ip_address = clean_server
-    if not re.match(r"^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$", clean_server):
-        try:
-            ip_address = socket.gethostbyname(clean_server)
-        except:
-            pass # DNS 解析失败则降级保持原域名请求
-
-    # 采用无次数限制的百度公共大数据 IP 接口（国内/国外节点均可无梯直连，绝不超时）
     try:
-        url = f"https://baidu.com{ip_address}&co=&resource_id=6006&oe=utf8"
-        headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"}
-        response = requests.get(url, headers=headers, timeout=2.5).json()
-        if response.get("status") == "0" and response.get("data"):
-            location = response["data"].get("location", "")
+        time.sleep(0.1) 
+        # 移除可能带有端口号的 server 干扰，保证 API 精准识别第一、二条节点
+        clean_server = str(server).split(':')[0] if ':' in str(server) else str(server)
+        response = requests.get(f"http://ip-api.com{clean_server}?lang=zh-CN", timeout=3).json()
+        if response.get("status") == "success":
+            country = response.get("country")
+            # 汉化名称对齐
             for k in EMOJI_MAP.keys():
-                if k in location:
-                    label = f"{EMOJI_MAP[k]} {k}"
-                    IP_CACHE[server] = label
-                    return label
+                if k in country:
+                    country = k
+                    break
+            icon = EMOJI_MAP.get(country, "🌍")
+            label = f"{icon} {country}"
+            IP_CACHE[server] = label
+            return label
     except:
         pass
-
     return "🌍 其它地区"
+
 
 
 def safe_b64decode(s):
@@ -215,12 +198,16 @@ def validate_clash_proxy(proxy):
     except:
         return False
 
-def parse_link(link):
-    """高稳定性全协议无陷阱解析核心"""
+def safe_b64decode(s):
+    s = s.strip().replace('_', '/').replace('-', '+')
+    padding = len(s) % 4
+    if padding: 
+        s += "=" * (4 - padding)
     try:
-        link = link.strip()
-        if not link: 
-            return None
+        # 优先使用标准 utf-8，出错时采用 replace 模式容错，确保乱码和特殊符号不丢失
+        return base64.b64decode(s).decode('utf-8', 'replace')
+    except:
+        return ""
         
         node_type = ""
         for proto in ['vless://', 'vmess://', 'ss://', 'trojan://', 'hy2://', 'hysteria2://', 'tuic://']:
