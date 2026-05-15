@@ -1,184 +1,141 @@
 proxies:
-- name: 🇭🇰香港 zmxooo01
+- name: 🇭🇰香港 01 | @zmxooo 01 | @zmxooo
   server: 202.146.222.41
-  type: ss
-- name: 🇭🇰香港 zmxooo02
+  type: hysteria2
+  port: 443
+- name: 🇭🇰香港 02 | @zmxooo 01 | @zmxooo
   server: 202.146.222.13
-  type: ss
-- name: 🇭🇰香港 zmxooo03
+  type: hysteria2
+  port: 443
+- name: 🇭🇰香港 03 | @zmxooo 01 | @zmxooo
   server: 202.146.222.93
-  type: ss
-- name: 🇭🇰香港 zmxooo04
+  type: hysteria2
+  port: 443
+- name: 🇭🇰香港 04 | @zmxooo 01 | @zmxooo
   server: 202.146.222.89
-  type: ss
-- name: 🇭🇰香港 zmxooo05
+  type: hysteria2
+  port: 443
+- name: 🇭🇰香港 05 | @zmxooo 01 | @zmxooo
   server: 202.146.222.11
-  type: ss
-- name: 🇭🇰香港 zmxooo06
+  type: hysteria2
+  port: 443
+- name: 🇭🇰香港 06 | @zmxooo 01 | @zmxooo
   server: 202.146.222.45
-  type: ss
-- name: 🇭🇰香港 zmxooo07
+  type: hysteria2
+  port: 443
+- name: 🇭🇰香港 07 | @zmxooo 01 | @zmxooo
   server: 202.146.222.5
-  type: ss
-- name: 🇭🇰香港 zmxooo08
+  type: hysteria2
+  port: 443
+- name: 🇭🇰香港 08 | @zmxooo 01 | @zmxooo
   server: 202.146.222.1
-  type: ss
-- name: 🇭🇰香港 zmxooo09
+  type: hysteria2
+  port: 443
+- name: 🇭🇰香港 09 | @zmxooo 01 | @zmxooo
   server: 202.146.222.15
-  type: ss
-- name: 🇹🇼台湾 zmxooo01
+  type: hysteria2
+  port: 443
+- name: 🇹🇼台湾 10 | @zmxooo 01 | @zmxooo
   server: 45.132.226.177
-  type: ss
-- name: 🇹🇼台湾 zmxooo02
+  type: hysteria2
+  port: 443
+- name: 🇹🇼台湾 11 | @zmxooo 01 | @zmxooo
   server: 45.132.226.161
-  type: ss
-- name: 🇹🇼台湾 zmxooo03
+  type: hysteria2
+  port: 443
+- name: 🇹🇼台湾 12 | @zmxooo 01 | @zmxooo
   server: 45.132.226.153
-  type: ss
-- name: 🌍其它 zmxooo01
-  server: 152.67.203.35
-  type: ss
-- name: 🌍其它 zmxooo02
-  server: 140.238.23.31
-  type: ss
-- name: 🌍其它 zmxooo03
-  server: 129.153.159.228
-  type: ss
-- name: 🌍其它 zmxooo04
-  server: 43.130.93.140
-  type: ss
-- name: 🌍其它 zmxooo05
-  server: 129.153.159.228
-  type: ss
-- name: 🌍其它 zmxooo08
-  server: 45.76.109.237
-  type: ss
-- name: 🌍其它 zmxooo09
-  server: 152.67.203.35
-  type: ss
-- name: 🌍其它 zmxooo10
-  server: 129.153.159.228
-  type: ss
-- name: 🌍其它 zmxooo11
-  server: 43.130.93.140
-  type: ss
-- name: 🌍其它 zmxooo12
-  server: 45.76.109.237
-  type: ss
-- name: 🌍其它 zmxooo13
-  server: 152.67.203.35
-  type: ss
-- name: 🌍其它 zmxooo14
-  server: 129.153.159.228
-  type: ss
-- name: 🌍其它 zmxooo15
-  server: 43.130.93.140
-  type: ss
-- name: 🇭🇰香港 zmxooo10
+  type: hysteria2
+  port: 443
+- name: 🇭🇰香港 28 | @zmxooo 01 | @zmxooo
   server: 202.146.222.11
   type: ss
-- name: 🇭🇰香港 zmxooo11
+  port: 443
+- name: 🇭🇰香港 29 | @zmxooo 01 | @zmxooo
   server: 202.146.222.5
   type: ss
-- name: 🇭🇰香港 zmxooo12
+  port: 443
+- name: 🇭🇰香港 30 | @zmxooo 01 | @zmxooo
   server: 202.146.222.1
   type: ss
-- name: 🇭🇰香港 zmxooo13
+  port: 443
+- name: 🇭🇰香港 31 | @zmxooo 01 | @zmxooo
   server: 202.146.222.15
   type: ss
-- name: 🇭🇰香港 zmxooo14
+  port: 443
+- name: 🇭🇰香港 32 | @zmxooo 01 | @zmxooo
   server: 202.146.222.13
   type: ss
-- name: 🇭🇰香港 zmxooo15
+  port: 443
+- name: 🇭🇰香港 33 | @zmxooo 01 | @zmxooo
   server: 202.146.222.93
   type: ss
-- name: 🇭🇰香港 zmxooo16
+  port: 443
+- name: 🇭🇰香港 34 | @zmxooo 01 | @zmxooo
   server: 202.146.222.89
   type: ss
-- name: 🇭🇰香港 zmxooo17
+  port: 443
+- name: 🇭🇰香港 35 | @zmxooo 01 | @zmxooo
   server: 202.146.222.45
   type: ss
-- name: 🇹🇼台湾 zmxooo04
+  port: 443
+- name: 🇹🇼台湾 36 | @zmxooo 01 | @zmxooo
   server: 45.132.226.137
-  type: ss
-- name: 🇹🇼台湾 zmxooo05
+  type: hysteria2
+  port: 443
+- name: 🇹🇼台湾 37 | @zmxooo 01 | @zmxooo
   server: 45.132.226.137
-  type: ss
-- name: 🇹🇼台湾 zmxooo06
+  type: https
+  port: 443
+- name: 🇹🇼台湾 38 | @zmxooo 01 | @zmxooo
   server: 45.132.226.169
-  type: ss
-- name: 🌍其它 zmxooo16
-  server: 194.48.118.142
-  type: ss
-- name: 🌍其它 zmxooo17
-  server: 194.48.118.180
-  type: ss
-- name: 🌍其它 zmxooo18
-  server: 194.48.118.56
-  type: ss
-- name: 🌍其它 zmxooo19
-  server: 194.48.118.58
-  type: ss
-- name: 🇹🇼台湾 zmxooo07
+  type: hysteria2
+  port: 443
+- name: 🇹🇼台湾 43 | @zmxooo 01 | @zmxooo
   server: 45.132.226.137
   type: ss
-- name: 🇬🇧英国 zmxooo01
+  port: 443
+- name: 🇬🇧英国 44 | @zmxooo 01 | @zmxooo
   server: 193.187.118.66
-  type: ss
-- name: 🇬🇧英国 zmxooo02
+  type: trojan
+  port: 443
+- name: 🇬🇧英国 45 | @zmxooo 01 | @zmxooo
   server: 193.187.118.172
-  type: ss
-- name: 🇬🇧英国 zmxooo03
+  type: trojan
+  port: 443
+- name: 🇬🇧英国 46 | @zmxooo 01 | @zmxooo
   server: 193.187.118.42
-  type: ss
-- name: 🇬🇧英国 zmxooo04
+  type: trojan
+  port: 443
+- name: 🇬🇧英国 47 | @zmxooo 01 | @zmxooo
   server: 193.187.118.157
-  type: ss
-- name: 🇬🇧英国 zmxooo05
+  type: trojan
+  port: 443
+- name: 🇬🇧英国 48 | @zmxooo 01 | @zmxooo
   server: 193.187.118.125
-  type: ss
-- name: 🇬🇧英国 zmxooo06
+  type: trojan
+  port: 443
+- name: 🇬🇧英国 49 | @zmxooo 01 | @zmxooo
   server: 193.187.118.151
-  type: ss
-- name: 🌍其它 zmxooo20
-  server: 82.198.246.93
-  type: ss
-- name: 🌍其它 zmxooo21
-  server: 82.198.246.93
-  type: ss
-- name: 🌍其它 zmxooo22
-  server: 82.198.246.37
-  type: ss
-- name: 🌍其它 zmxooo23
-  server: 82.198.246.9
-  type: ss
-- name: 🇹🇼台湾 zmxooo08
+  type: trojan
+  port: 443
+- name: 🇹🇼台湾 54 | @zmxooo 01 | @zmxooo
   server: 45.132.226.177
   type: ss
-- name: 🇹🇼台湾 zmxooo09
+  port: 443
+- name: 🇹🇼台湾 55 | @zmxooo 01 | @zmxooo
   server: 45.132.226.161
   type: ss
-- name: 🇹🇼台湾 zmxooo10
+  port: 443
+- name: 🇹🇼台湾 56 | @zmxooo 01 | @zmxooo
   server: 45.132.226.153
   type: ss
-- name: 🇬🇧英国 zmxooo07
+  port: 443
+- name: 🇬🇧英国 57 | @zmxooo 01 | @zmxooo
   server: 193.187.118.66
-  type: ss
-- name: 🌍其它 zmxooo24
-  server: 82.198.246.93
-  type: ss
-- name: 🌍其它 zmxooo25
-  server: 82.198.246.9
-  type: ss
-- name: 🌍其它 zmxooo26
-  server: 82.198.246.37
-  type: ss
-- name: 🌍其它 zmxooo27
-  server: 82.198.246.9
-  type: ss
-- name: 🌍其它 zmxooo28
-  server: 82.198.246.37
-  type: ss
-- name: 🇹🇼台湾 zmxooo11
+  type: trojan
+  port: 443
+- name: 🇹🇼台湾 63 | @zmxooo 01 | @zmxooo
   server: 45.132.226.169
   type: ss
+  port: 443
