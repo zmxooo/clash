@@ -18,9 +18,9 @@ MAX_WORKERS = 10  # 并发线程数
 INDEX_FILE = "index.html"
 CONFIG_FILE = "config.yaml"
 
-# 测速配置（统一采用 Google 204 或 Gstatic 触发自动测速）
+# 测速配置（保持通用兼容性）
 TEST_URL = "http://gstatic.com"
-TEST_INTERVAL = 300  # 每 5 分钟测速一次，用于动态刷新首页最快节点
+TEST_INTERVAL = 300
 
 RULES = [
     ("香港", r"HK|HONGKONG|香港|廣港|CMI|HKT|PCCW|HGC|WTT"),
@@ -41,6 +41,7 @@ EMOJI_MAP = {
     "美国": "🇺🇸", "英国": "🇬🇧", "德国": "🇩🇪", "俄罗斯": "🇷🇺", "越南": "🇻🇳", "泰国": "🇹🇭", "其它": "🌍"
 }
 
+# 加载持久化 IP 缓存
 if os.path.exists(IP_CACHE_FILE):
     try:
         with open(IP_CACHE_FILE, 'r', encoding='utf-8') as f:
@@ -74,7 +75,7 @@ def fetch_ip_api(server):
         return server, "其它"
 
     try:
-        time.sleep(1.3)
+        time.sleep(1.3) # 强控频，规避 API 限流
         url = f"http://ip-api.com{server}?lang=zh-CN"
         r = requests.get(url, timeout=4).json()
         if r.get("status") == "success":
@@ -146,14 +147,12 @@ def main():
         classified_nodes[region].append(link)
 
     final_links, clash_proxies = [], []
-    region_proxy_map = defaultdict(list) 
-    all_proxy_names = []                 
+    all_proxy_names = []  # 存放所有新生成的节点名字
     sorted_regions = sorted(classified_nodes.keys())
     
     for reg in sorted_regions:
         for idx, link in enumerate(classified_nodes[reg], 1):
-            emoji = EMOJI_MAP.get(reg, '🌍')
-            new_name = f"{emoji}{reg} {FIXED_SUFFIX}{idx}"
+            new_name = f"{EMOJI_MAP.get(reg, '🌍')}{reg} {FIXED_SUFFIX}{idx}"
             
             try:
                 if link.startswith('vmess://'):
@@ -172,7 +171,6 @@ def main():
                     if d.get("net") == "ws":
                         proxy["ws-opts"] = {"path": d.get("path", ""), "headers": {"Host": d.get("host", "")}}
                     clash_proxies.append(proxy)
-                    region_proxy_map[reg].append(new_name)
                     all_proxy_names.append(new_name)
                     
                 elif "://" in link:
@@ -195,7 +193,6 @@ def main():
                         })
                         if "sni" in queries: p["sni"] = queries["sni"]
                         clash_proxies.append(p)
-                        region_proxy_map[reg].append(new_name)
                         all_proxy_names.append(new_name)
                         final_links.append(f"{u.scheme}://{p['password']}@{p['server']}:{p['port']}?{urllib.parse.urlencode(queries)}#{urllib.parse.quote(new_name)}")
                         
@@ -211,7 +208,6 @@ def main():
                         if queries.get("type") == "ws":
                             p["ws-opts"] = {"path": queries.get("path", "/"), "headers": {"Host": queries.get("host", p["server"])}}
                         clash_proxies.append(p)
-                        region_proxy_map[reg].append(new_name)
                         all_proxy_names.append(new_name)
                         final_links.append(f"vless://{p['uuid']}@{p['server']}:{p['port']}?{urllib.parse.urlencode(queries)}#{urllib.parse.quote(new_name)}")
                         
@@ -223,7 +219,6 @@ def main():
                             if ":" in dec_user:
                                 p["cipher"], p["password"] = dec_user.split(':', 1)
                                 clash_proxies.append(p)
-                                region_proxy_map[reg].append(new_name)
                                 all_proxy_names.append(new_name)
                                 final_links.append(f"ss://{user_info}@{p['server']}:{p['port']}#{urllib.parse.quote(new_name)}")
                         except:
@@ -231,13 +226,13 @@ def main():
             except:
                 pass
 
-    # 1. 同步更新 index.html
+    # 1. 覆盖同步 index.html
     if final_links:
         with open(INDEX_FILE, 'w', encoding='utf-8') as f:
             f.write("\n".join(final_links))
         print(f"成功同步更新：{INDEX_FILE}")
 
-    # 2. 同步更新 config.yaml 战略分组重构
+    # 2. 覆盖同步 config.yaml 
     if clash_proxies:
         try:
             if os.path.exists(CONFIG_FILE):
@@ -246,55 +241,29 @@ def main():
             else:
                 base_config = {}
                 
+            # 仅仅覆盖写入最新的底层核心节点列表
             base_config["proxies"] = clash_proxies
             
-            # --- 核心逻辑：首页精简展示优化 ---
-            new_groups = []
-            dynamic_country_group_names = []
-            
-            # 建立一个顶层全局主控开关
-            # 首页第一行将显示这个，用户可以直接在这里选择切换“全自动测速”还是具体的某个“国家分组”
-            master_proxy_names = ["♻️ 全局自动测速"]
-            
-            # A. 创建各个国家的分组 (使用 url-test 机制)
-            # 在代理看板首页，Clash 会在分组名字旁边直接透传显示“当前测速最快节点的名字”
-            for r_name in sorted(region_proxy_map.keys()):
-                emoji = EMOJI_MAP.get(r_name, '🌍')
-                group_title = f"{emoji} {r_name}自动测速"
-                dynamic_country_group_names.append(group_title)
-                master_proxy_names.append(group_title)
-                
-                new_groups.append({
-                    "name": group_title,
-                    "type": "url-test",      # 必须是 url-test，才能让 Clash 自动把最快节点的名称顶到首页展示
-                    "url": TEST_URL,
-                    "interval": TEST_INTERVAL,
-                    "proxies": region_proxy_map[r_name]
-                })
-            
-            # B. 创建一个包含所有地区节点的总自动测速组
-            new_groups.append({
-                "name": "♻️ 全局自动测速",
-                "type": "url-test",
-                "url": TEST_URL,
-                "interval": TEST_INTERVAL,
-                "proxies": all_proxy_names
-            })
-            
-            # C. 创建代理工具看板最上层的总控分组（给分流规则规则引用的核心）
-            # 它包含：全局自动测速、10个国家的独立测速组、以及 DIRECT 直连
-            new_groups.insert(0, {
-                "name": "🌍 🚀 节点选择",
-                "type": "select",
-                "proxies": master_proxy_names + ["DIRECT"]
-            })
-            
-            # 将清洗构建完的动态分组覆盖进配置文件
-            base_config["proxy-groups"] = new_groups + [g for g in base_config.get("proxy-groups", []) if g["name"] not in [x["name"] for x in new_groups]]
+            # --- 核心数据对齐：安全地清洗你原本就手写好的策略组内部节点名单 ---
+            if "proxy-groups" in base_config and isinstance(base_config["proxy-groups"], list):
+                for group in base_config["proxy-groups"]:
+                    if "proxies" in group and isinstance(group["proxies"], list):
+                        old_list = group["proxies"]
+                        cleaned_list = []
+                        
+                        # 过滤掉带有特定后缀、在这一次已经被判定为过期的旧动态节点名字
+                        for item in old_list:
+                            if FIXED_SUFFIX in str(item):
+                                continue  # 移除旧的动态残留节点，彻底解决 not found
+                            cleaned_list.append(item)
+                        
+                        # 把这批最新扫描、排序、且真实产生的所有新节点名字，安全地追加注入进你的旧策略组中
+                        # 这样你的旧策略组既不会散架，里边的节点也全都是绝对真实存在的
+                        group["proxies"] = cleaned_list + all_proxy_names
             
             with open(CONFIG_FILE, 'w', encoding='utf-8') as f:
                 yaml.dump(base_config, f, allow_unicode=True, sort_keys=False)
-            print(f"成功同步更新：{CONFIG_FILE} (代理看板首页已调整为最快节点透传模式)")
+            print(f"成功同步更新：{CONFIG_FILE} (已完美融合你原本的手写配置结构)")
         except Exception as e:
             print(f"同步更新 {CONFIG_FILE} 失败，错误原因: {e}")
 
