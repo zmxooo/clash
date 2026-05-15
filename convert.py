@@ -12,7 +12,7 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 # --- 配置参数 ---
 FIXED_SUFFIX = "zmxooo"
 IP_CACHE = {}
-MAX_WORKERS = 10  # 并发线程数
+MAX_WORKERS = 10  # 并发线程数，推荐 10-20
 
 RULES = [
     ("香港", r"HK|HONGKONG|香港|廣港|CMI|HKT|PCCW|HGC|WTT"),
@@ -41,6 +41,7 @@ def fix_base64(s):
     return s + '=' * (-len(s) % 4)
 
 def get_region_from_rules(remarks, host):
+    """第一阶段：纯文本纯正则规则快速匹配（零网络开销）"""
     text = f"{urllib.parse.unquote(str(remarks))} {host}".upper()
     for name, pattern in RULES:
         if re.search(pattern, text):
@@ -48,6 +49,7 @@ def get_region_from_rules(remarks, host):
     return None
 
 def fetch_ip_api(server):
+    """通过 API 查询单个 IP 的区域"""
     if server in IP_CACHE: 
         return server, IP_CACHE[server]
         
@@ -72,29 +74,36 @@ def fetch_ip_api(server):
     return server, "其它"
 
 def process_node_region(link):
+    """解析节点基本信息并识别区域（供线程池调用）"""
     try:
         host, raw_rem = "", ""
         if link.startswith('vmess://'):
-            b64 = link[8:].split('#')
+            b64 = link[8:].split('#')[0]
             d = json.loads(base64.b64decode(fix_base64(b64)).decode('utf-8', 'ignore'))
             host, raw_rem = d.get("add"), d.get("ps")
         elif link.startswith('ss://'):
-            clean_link = link[5:].split('#')
-            raw_rem = urllib.parse.unquote(link.split('#')) if '#' in link else ""
+            clean_link = link[5:].split('#')[0]
+            raw_rem = urllib.parse.unquote(link.split('#')[1]) if '#' in link else ""
             if "@" in clean_link:
                 u = urllib.parse.urlparse(link)
                 host = u.hostname or ""
             else:
                 dec_user = base64.b64decode(fix_base64(clean_link)).decode('utf-8', 'ignore')
-                if "@" in dec_user: host = dec_user.split('@').split(':')
-                else: host = ""
+                if "@" in dec_user: 
+                    host = dec_user.split('@')[1].split(':')[0]
+                else: 
+                    host = ""
         else:
             u = urllib.parse.urlparse(link)
             host = u.hostname or ""
-            raw_rem = urllib.parse.unquote(link.split('#')) if '#' in link else ""
+            raw_rem = urllib.parse.unquote(link.split('#')[1]) if '#' in link else ""
         
+        # 1. 优先正则匹配
         region = get_region_from_rules(raw_rem, host)
-        if region: return link, region, host, raw_rem
+        if region: 
+            return link, region, host, raw_rem
+            
+        # 2. 正则未命中，返回标记，后续批量交由 API 识别
         return link, "NEED_API", host, raw_rem
     except:
         return link, "其它", "", ""
@@ -114,9 +123,10 @@ def main():
         for fut in as_completed(futures):
             res = fut.result()
             first_stage_results.append(res)
-            if res == "NEED_API" and res:
-                api_query_servers.add(res)
+            if res[1] == "NEED_API" and res[2]:
+                api_query_servers.add(res[2])
 
+    # 步骤 2：并发查询 IP API（带每秒频控，防止单 IP 触发 429）
     if api_query_servers:
         with ThreadPoolExecutor(max_workers=2) as api_executor: 
             api_futures = []
@@ -128,6 +138,7 @@ def main():
                 srv, reg = fut.result()
                 IP_CACHE[srv] = reg
 
+    # 步骤 3：根据最终分类结果归类节点
     classified_nodes = defaultdict(list)
     for link, region, host, raw_rem in first_stage_results:
         if region == "NEED_API":
@@ -138,10 +149,132 @@ def main():
     sorted_regions = sorted(classified_nodes.keys())
     
     global_node_idx = 1
-    
-    # 结构化存储：按国家归类节点名字，用于后续动态生成策略组
     region_to_proxy_names = defaultdict(list)
     
+    # 步骤 4：生成节点配置与重命名
     for reg in sorted_regions:
         for link in classified_nodes[reg]:
-            new_name = f"{EMOJI_MAP.get(reg, '🌍')}{reg} {FIXED_SUFFIX}{gl
+            new_name = f"{EMOJI_MAP.get(reg, '🌍')}{reg} {FIXED_SUFFIX}{global_node_idx}"
+            global_node_idx += 1
+            
+            try:
+                if link.startswith('vmess://'):
+                    b64 = link[8:].split('#')[0]
+                    d = json.loads(base64.b64decode(fix_base64(b64)).decode('utf-8', 'ignore'))
+                    d["ps"] = new_name
+                    new_b64 = base64.b64encode(json.dumps(d, ensure_ascii=False).encode('utf-8')).decode('utf-8')
+                    final_links.append(f"vmess://{new_b64}")
+                    
+                    proxy = {
+                        "name": new_name, "type": "vmess", "server": d["add"], "port": int(d["port"]),
+                        "uuid": d["id"], "alterId": int(d.get("aid", 0)), "cipher": "auto",
+                        "tls": True if str(d.get("tls")).lower() in ["tls", "1", "true"] else False,
+                        "network": d.get("net", "tcp"), "skip-cert-verify": True
+                    }
+                    if d.get("net") == "ws":
+                        proxy["ws-opts"] = {"path": d.get("path", ""), "headers": {"Host": d.get("host", "")}}
+                    clash_proxies.append(proxy)
+                    region_to_proxy_names[reg].append(new_name)
+                    
+                elif "://" in link:
+                    u = urllib.parse.urlparse(link)
+                    server_host = u.hostname
+                    server_port = u.port
+                    
+                    if link.startswith('ss://') and not server_host:
+                        clean_link = link[5:].split('#')[0]
+                        dec_user = base64.b64decode(fix_base64(clean_link)).decode('utf-8', 'ignore')
+                        if "@" in dec_user:
+                            server_host = dec_user.split('@')[1].split(':')[0]
+                            try: 
+                                server_port = int(dec_user.split('@')[1].split(':')[1])
+                            except: 
+                                server_port = 8388
+
+                    if not server_host: 
+                        continue
+                    p = {"name": new_name, "server": server_host, "port": server_port or 443, "udp": True}
+                    queries = dict(urllib.parse.parse_qsl(u.query))
+                    
+                    if u.scheme in ["hy2", "hysteria2"]:
+                        p.update({
+                            "type": "hysteria2", "password": u.username, 
+                            "up": queries.get("up", "20 Mbps"), "down": queries.get("down", "100 Mbps"), 
+                            "skip-cert-verify": True
+                        })
+                        if "sni" in queries: p["sni"] = queries["sni"]
+                        clash_proxies.append(p)
+                        region_to_proxy_names[reg].append(new_name)
+                        
+                    elif u.scheme == "vless":
+                        p.update({
+                            "type": "vless", "uuid": u.username, 
+                            "tls": True if queries.get("security") == "tls" or server_port == 443 else False, 
+                            "skip-cert-verify": True, "network": queries.get("type", "tcp")
+                        })
+                        if "flow" in queries: p["flow"] = queries["flow"]
+                        if "sni" in queries: p["sni"] = queries["sni"]
+                        if queries.get("type") == "ws":
+                            p["ws-opts"] = {"path": queries.get("path", "/"), "headers": {"Host": queries.get("host", p["server"])}}
+                        clash_proxies.append(p)
+                        region_to_proxy_names[reg].append(new_name)
+                        
+                    elif u.scheme in ["ss", "shadowsocks"]:
+                        p["type"] = "ss"
+                        if "@" in u.netloc:
+                            user_info = u.username
+                            dec_user = base64.b64decode(fix_base64(user_info)).decode('utf-8', 'ignore')
+                        else:
+                            clean_link = link[5:].split('#')[0]
+                            dec_user = base64.b64decode(fix_base64(clean_link)).decode('utf-8', 'ignore')
+                            if "@" in dec_user: 
+                                dec_user = dec_user.split('@')[0]
+                            
+                        if ":" in dec_user:
+                            p["cipher"], p["password"] = dec_user.split(':', 1)
+                            clash_proxies.append(p)
+                            region_to_proxy_names[reg].append(new_name)
+            except:
+                pass
+
+    # --- 构建动态策略组 ---
+    clash_groups = []
+    country_auto_group_names = []
+    
+    for reg, p_names in region_to_proxy_names.items():
+        if not p_names: 
+            continue
+        group_name = f"{EMOJI_MAP.get(reg, '🌍')} {reg}-自动选择"
+        country_auto_group_names.append(group_name)
+        
+        clash_groups.append({
+            "name": group_name,
+            "type": "url-test",
+            "url": "http://gstatic.com",
+            "interval": 300,
+            "tolerance": 50,
+            "proxies": p_names
+        })
+
+    all_individual_proxies = [p["name"] for p in clash_proxies]
+    main_group = {
+        "name": "🚀 节点选择",
+        "type": "select",
+        "proxies": ["DIRECT"] + country_auto_group_names + all_individual_proxies
+    }
+    clash_groups.insert(0, main_group)
+
+    # 导出文件
+    with open('nodes_clean.txt', 'w', encoding='utf-8') as f:
+        f.write("\n".join(final_links))
+
+    clash_config = {
+        "proxies": clash_proxies,
+        "proxy-groups": clash_groups
+    }
+
+    with open('clash_proxies.yml', 'w', encoding='utf-8') as f:
+        yaml.dump(clash_config, f, allow_unicode=True, sort_keys=False)
+
+if __name__ == '__main__':
+    main()
