@@ -1,46 +1,39 @@
-name: Auto Convert Node
+name: Auto Convert
 
 on:
   push:
     branches: [ main ]
-    paths:
-      - 'nodes.txt'      # 数据变动触发
-      - 'convert.py'     # 脚本逻辑变动触发
-  workflow_dispatch:      # 允许手动触发
+  workflow_dispatch:
 
 jobs:
   convert:
     runs-on: ubuntu-latest
-    # 显式开启写权限，这是防止同步失败的防火墙
-    permissions:
-      contents: write
-      
     steps:
-      - name: 检查代码
+      - name: 检查仓库代码
         uses: actions/checkout@v4
 
-      - name: 设置 Python
-        uses: actions/setup-python@v4
+      - name: 设置 Python 环境
+        uses: actions/setup-python@v5
         with:
           python-version: '3.10'
 
-      - name: 安装依赖
+      - name: 安装必要插件
         run: pip install pyyaml requests
 
-      - name: 执行转换
+      - name: 运行转换脚本
         run: python convert.py
 
-      - name: 同步至仓库
+      - name: 推送生成的文件到仓库
         run: |
           git config --local user.email "actions@github.com"
           git config --local user.name "GitHub Action"
           
-          # 确保这两个关键文件都在监控范围内
-          git add clash_config.yaml index.html
+          # 同时追踪两个输出文件
+          git add config.yaml index.html
           
-          if git diff --staged --quiet; then
-            echo "内容无变动，跳过推送。"
-          else
-            git commit -m "Auto Update [$(date '+%Y-%m-%d %H:%M')]"
-            git push
-          fi
+          # 动态时间戳防止 Git 因无变更而终止
+          git commit -m "自动刷新全协议配置系统 (时间: $(date +'%Y-%m-%d %H:%M:%S'))" || true
+          
+          # 先变基解决并发冲突，再推送到主干
+          git pull --rebase origin main || true
+          git push origin main
