@@ -33,14 +33,14 @@ EMOJI_TO_NAME = {
 
 def get_final_label(server, remarks):
     """
-    企业级现成落地脚本（百级节点精简优化版）
+    企业级现成落地脚本（针对你的法国节点优化版）
     """
     if not server: 
         return "🌍 其它地区"
         
     text = urllib.parse.unquote(str(remarks)).strip()
     
-    # 1. 策略一：纯国旗 Emoji 强截获
+    # 1. 纯国旗 Emoji 强截获（第三条）
     for emoji, name in EMOJI_TO_NAME.items():
         if emoji in text:
             return f"{EMOJI_MAP.get(name, '🌍')} {name}"
@@ -49,7 +49,7 @@ def get_final_label(server, remarks):
     if CHANNEL_MARK.lower() in text_lower:
         text_lower = text_lower.replace(CHANNEL_MARK.lower(), "")
 
-    # 2. 策略二：常用文本特征与机场三字码正则匹配
+    # 2. 增强正则匹配（新增针对你这批节点的特征）
     meta = [
         ("香港", r"hk|香港|hong.*kong|hgc|hkbn|hkg"), 
         ("台湾", r"tw|台湾|台灣|taiwan|cht|hinet"), 
@@ -58,7 +58,7 @@ def get_final_label(server, remarks):
         ("韩国", r"kr|韩国|韓國|korea|seoul|icn"), 
         ("日本", r"jp|日本|japan|tokyo|osaka|nrt|hnd"),
         ("新加坡", r"\bsg\b|新加坡|singapore|sin"), 
-        ("法国", r"\bfr\b|法国|法國|france"),
+        ("法国", r"france|🇫🇷|fr_|planb\.mojcn|82\.198\.246"),   # ← 新增关键匹配
         ("德国", r"\bde\b|德国|germany|frankfurt|fra")
     ]
     
@@ -75,11 +75,11 @@ def get_final_label(server, remarks):
     if matched_country and matched_country != "中国":
         return f"{EMOJI_MAP.get(matched_country, '🌍')} {matched_country}"
 
-    # 3. 策略三：内存高速缓存判定
+    # 3. 内存缓存
     if server in IP_CACHE: 
         return IP_CACHE[server]
 
-    # 4. 策略四：IP 地理位置查询
+    # 4. IP 查询（保留备用）
     clean_server = str(server).split(':')[0] if ':' in str(server) else str(server)
     
     ip_address = clean_server
@@ -89,7 +89,6 @@ def get_final_label(server, remarks):
         except:
             pass
 
-    # 修复：使用正确的查询接口（原百度接口无效）
     try:
         url = f"https://ipapi.co/{ip_address}/json/"
         headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"}
@@ -105,6 +104,7 @@ def get_final_label(server, remarks):
     except:
         pass
 
+    # 兜底
     return "🌍 其它地区"
 
 
