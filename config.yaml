@@ -1,177 +1,508 @@
+mixed-port: 7890
+allow-lan: true
+mode: rule
 proxies:
-- label: 🇭🇰 香港
-  type: hysteria2
+- type: hysteria2
   server: 202.146.222.41
   port: 443
   password: qQe1z5kU8kN6SlKnDt9Ru3Qp
   sni: https://t.me/zmxooo
   skip-cert-verify: true
   name: 🇭🇰 香港 01 @zmxooo
-- label: 🇭🇰 香港
-  type: hysteria2
+- type: hysteria2
   server: 202.146.222.13
   port: 443
   password: qQe1z5kU8kN6SlKnDt9Ru3Qp
   sni: https://t.me/zmxooo
   skip-cert-verify: true
   name: 🇭🇰 香港 02 @zmxooo
-- label: 🇭🇰 香港
-  type: hysteria2
+- type: hysteria2
   server: 202.146.222.93
   port: 443
   password: qQe1z5kU8kN6SlKnDt9Ru3Qp
   sni: https://t.me/zmxooo
   skip-cert-verify: true
   name: 🇭🇰 香港 03 @zmxooo
-- label: 🇭🇰 香港
-  type: hysteria2
+- type: hysteria2
   server: 202.146.222.89
   port: 443
   password: qQe1z5kU8kN6SlKnDt9Ru3Qp
   sni: https://t.me/zmxooo
   skip-cert-verify: true
   name: 🇭🇰 香港 04 @zmxooo
-- label: 🇭🇰 香港
-  type: hysteria2
+- type: hysteria2
   server: 202.146.222.11
   port: 443
   password: qQe1z5kU8kN6SlKnDt9Ru3Qp
   sni: https://t.me/zmxooo
   skip-cert-verify: true
   name: 🇭🇰 香港 05 @zmxooo
-- label: 🇭🇰 香港
-  type: hysteria2
+- type: hysteria2
   server: 202.146.222.45
   port: 443
   password: qQe1z5kU8kN6SlKnDt9Ru3Qp
   sni: https://t.me/zmxooo
   skip-cert-verify: true
   name: 🇭🇰 香港 06 @zmxooo
-- label: 🇭🇰 香港
-  type: hysteria2
+- type: hysteria2
   server: 202.146.222.5
   port: 443
   password: qQe1z5kU8kN6SlKnDt9Ru3Qp
   sni: https://t.me/zmxooo
   skip-cert-verify: true
   name: 🇭🇰 香港 07 @zmxooo
-- label: 🇭🇰 香港
-  type: hysteria2
+- type: hysteria2
   server: 202.146.222.1
   port: 443
   password: qQe1z5kU8kN6SlKnDt9Ru3Qp
   sni: https://t.me/zmxooo
   skip-cert-verify: true
   name: 🇭🇰 香港 08 @zmxooo
-- label: 🇭🇰 香港
-  type: hysteria2
+- type: hysteria2
   server: 202.146.222.15
   port: 443
   password: qQe1z5kU8kN6SlKnDt9Ru3Qp
   sni: https://t.me/zmxooo
   skip-cert-verify: true
   name: 🇭🇰 香港 09 @zmxooo
-- label: 🇹🇼 台湾
-  type: hysteria2
+- type: hysteria2
   server: 45.132.226.177
   port: 443
   password: qQe1z5kU8kN6SlKnDt9Ru3Qp
   sni: https://t.me/zmxooo
   skip-cert-verify: true
   name: 🇹🇼 台湾 01 @zmxooo
-- label: 🇹🇼 台湾
-  type: hysteria2
+- type: hysteria2
   server: 45.132.226.161
   port: 443
   password: qQe1z5kU8kN6SlKnDt9Ru3Qp
   sni: https://t.me/zmxooo
   skip-cert-verify: true
   name: 🇹🇼 台湾 02 @zmxooo
-- label: 🇹🇼 台湾
-  type: hysteria2
+- type: hysteria2
   server: 45.132.226.153
   port: 443
   password: qQe1z5kU8kN6SlKnDt9Ru3Qp
   sni: https://t.me/zmxooo
   skip-cert-verify: true
   name: 🇹🇼 台湾 03 @zmxooo
-- label: 🇹🇼 台湾
-  type: hysteria2
+- type: vmess
+  server: 152.67.203.35
+  port: 22222
+  uuid: 61d9e20f-9680-4e9d-ae4b-ac46efcc01ef
+  alterId: 0
+  cipher: auto
+  tls: false
+  skip-cert-verify: true
+  network: tcp
+  name: 🇺🇸 美国 01 @zmxooo
+- type: vmess
+  server: 140.238.23.31
+  port: 443
+  uuid: 94137a98-98e0-44c1-92b0-96a7336f2a22
+  alterId: 0
+  cipher: auto
+  tls: false
+  skip-cert-verify: true
+  network: tcp
+  name: 🇺🇸 美国 02 @zmxooo
+- type: vmess
+  server: 129.153.159.228
+  port: 443
+  uuid: 616d291c-093e-4fc1-b86d-7e7d8e2ef5f5
+  alterId: 0
+  cipher: auto
+  tls: false
+  skip-cert-verify: true
+  network: tcp
+  name: 🇺🇸 美国 03 @zmxooo
+- type: vmess
+  server: 43.130.93.140
+  port: 46822
+  uuid: 00e8d456-d8d9-4e38-a26f-b5f36a99e1dd
+  alterId: 0
+  cipher: auto
+  tls: false
+  skip-cert-verify: true
+  network: tcp
+  name: 🇺🇸 美国 04 @zmxooo
+- type: vmess
+  server: 129.153.159.228
+  port: 443
+  uuid: 616d291c-093e-4fc1-b86d-7e7d8e2ef5f5
+  alterId: 0
+  cipher: auto
+  tls: false
+  skip-cert-verify: true
+  network: tcp
+  name: 🇺🇸 美国 05 @zmxooo
+- type: vmess
+  server: 45.76.109.237
+  port: 80
+  uuid: c3512366-bb97-476a-a16e-dc72d22b09b1
+  alterId: 0
+  cipher: auto
+  tls: false
+  skip-cert-verify: true
+  network: tcp
+  name: 🇺🇸 美国 06 @zmxooo
+- type: vmess
+  server: 152.67.203.35
+  port: 22222
+  uuid: 61d9e20f-9680-4e9d-ae4b-ac46efcc01ef
+  alterId: 0
+  cipher: auto
+  tls: false
+  skip-cert-verify: true
+  network: tcp
+  name: 🇺🇸 美国 07 @zmxooo
+- type: vmess
+  server: 129.153.159.228
+  port: 443
+  uuid: 616d291c-093e-4fc1-b86d-7e7d8e2ef5f5
+  alterId: 0
+  cipher: auto
+  tls: false
+  skip-cert-verify: true
+  network: tcp
+  name: 🇺🇸 美国 08 @zmxooo
+- type: vmess
+  server: 43.130.93.140
+  port: 46822
+  uuid: 00e8d456-d8d9-4e38-a26f-b5f36a99e1dd
+  alterId: 0
+  cipher: auto
+  tls: false
+  skip-cert-verify: true
+  network: tcp
+  name: 🇺🇸 美国 09 @zmxooo
+- type: vmess
+  server: 45.76.109.237
+  port: 80
+  uuid: c3512366-bb97-476a-a16e-dc72d22b09b1
+  alterId: 0
+  cipher: auto
+  tls: false
+  skip-cert-verify: true
+  network: tcp
+  name: 🇺🇸 美国 10 @zmxooo
+- type: vmess
+  server: 152.67.203.35
+  port: 22222
+  uuid: 61d9e20f-9680-4e9d-ae4b-ac46efcc01ef
+  alterId: 0
+  cipher: auto
+  tls: false
+  skip-cert-verify: true
+  network: tcp
+  name: 🇺🇸 美国 11 @zmxooo
+- type: vmess
+  server: 129.153.159.228
+  port: 443
+  uuid: 616d291c-093e-4fc1-b86d-7e7d8e2ef5f5
+  alterId: 0
+  cipher: auto
+  tls: false
+  skip-cert-verify: true
+  network: tcp
+  name: 🇺🇸 美国 12 @zmxooo
+- type: vmess
+  server: 43.130.93.140
+  port: 46822
+  uuid: 00e8d456-d8d9-4e38-a26f-b5f36a99e1dd
+  alterId: 0
+  cipher: auto
+  tls: false
+  skip-cert-verify: true
+  network: tcp
+  name: 🇺🇸 美国 13 @zmxooo
+- type: ss
+  server: 202.146.222.11
+  port: 43918
+  cipher: aes-256-gcm
+  password: qKe1z5kU8kN6SlKnDt9Ru3Qp
+  name: 🇭🇰 香港 10 @zmxooo
+- type: ss
+  server: 202.146.222.5
+  port: 43918
+  cipher: aes-256-gcm
+  password: qKe1z5kU8kN6SlKnDt9Ru3Qp
+  name: 🇭🇰 香港 11 @zmxooo
+- type: ss
+  server: 202.146.222.1
+  port: 43918
+  cipher: aes-256-gcm
+  password: qKe1z5kU8kN6SlKnDt9Ru3Qp
+  name: 🇭🇰 香港 12 @zmxooo
+- type: ss
+  server: 202.146.222.15
+  port: 43918
+  cipher: aes-256-gcm
+  password: qKe1z5kU8kN6SlKnDt9Ru3Qp
+  name: 🇭🇰 香港 13 @zmxooo
+- type: ss
+  server: 202.146.222.13
+  port: 43918
+  cipher: aes-256-gcm
+  password: qKe1z5kU8kN6SlKnDt9Ru3Qp
+  name: 🇭🇰 香港 14 @zmxooo
+- type: ss
+  server: 202.146.222.93
+  port: 43918
+  cipher: aes-256-gcm
+  password: qKe1z5kU8kN6SlKnDt9Ru3Qp
+  name: 🇭🇰 香港 15 @zmxooo
+- type: ss
+  server: 202.146.222.89
+  port: 43918
+  cipher: aes-256-gcm
+  password: qKe1z5kU8kN6SlKnDt9Ru3Qp
+  name: 🇭🇰 香港 16 @zmxooo
+- type: ss
+  server: 202.146.222.45
+  port: 43918
+  cipher: aes-256-gcm
+  password: qKe1z5kU8kN6SlKnDt9Ru3Qp
+  name: 🇭🇰 香港 17 @zmxooo
+- type: hysteria2
   server: 45.132.226.137
   port: 443
   password: qQe1z5kU8kN6SlKnDt9Ru3Qp
   sni: https://t.me/zmxooo
   skip-cert-verify: true
   name: 🇹🇼 台湾 04 @zmxooo
-- label: 🇹🇼 台湾
-  type: hysteria2
+- type: hysteria2
   server: 45.132.226.169
   port: 443
   password: qQe1z5kU8kN6SlKnDt9Ru3Qp
   sni: https://t.me/zmxooo
   skip-cert-verify: true
   name: 🇹🇼 台湾 05 @zmxooo
-- label: 🇬🇧 英国
-  type: trojan
+- type: vmess
+  server: 194.48.118.142
+  port: 443
+  uuid: 784f2db3-89b0-4e93-9241-b522d0084f2b
+  alterId: 0
+  cipher: auto
+  tls: false
+  skip-cert-verify: true
+  network: tcp
+  name: 🇲🇽 墨西哥 01 @zmxooo
+- type: vmess
+  server: 194.48.118.180
+  port: 443
+  uuid: 784f2db3-89b0-4e93-9241-b522d0084f2b
+  alterId: 0
+  cipher: auto
+  tls: false
+  skip-cert-verify: true
+  network: tcp
+  name: 🇲🇽 墨西哥 02 @zmxooo
+- type: vmess
+  server: 194.48.118.56
+  port: 443
+  uuid: 784f2db3-89b0-4e93-9241-b522d0084f2b
+  alterId: 0
+  cipher: auto
+  tls: false
+  skip-cert-verify: true
+  network: tcp
+  name: 🇲🇽 墨西哥 03 @zmxooo
+- type: vmess
+  server: 194.48.118.58
+  port: 443
+  uuid: 784f2db3-89b0-4e93-9241-b522d0084f2b
+  alterId: 0
+  cipher: auto
+  tls: false
+  skip-cert-verify: true
+  network: tcp
+  name: 🇲🇽 墨西哥 04 @zmxooo
+- type: ss
+  server: 45.132.226.137
+  port: 43918
+  cipher: aes-256-gcm
+  password: qKe1z5kU8kN6SlKnDt9Ru3Qp
+  name: 🇹🇼 台湾 06 @zmxooo
+- type: trojan
   server: 193.187.118.66
   port: 443
   password: qQe1z5kU8kN6SlKnDt9Ru3Qp
   sni: https://t.me/zmxooo
   skip-cert-verify: true
   name: 🇬🇧 英国 01 @zmxooo
-- label: 🇬🇧 英国
-  type: trojan
+- type: trojan
   server: 193.187.118.172
   port: 443
   password: qQe1z5kU8kN6SlKnDt9Ru3Qp
   sni: https://t.me/zmxooo
   skip-cert-verify: true
   name: 🇬🇧 英国 02 @zmxooo
-- label: 🇬🇧 英国
-  type: trojan
+- type: trojan
   server: 193.187.118.42
   port: 443
   password: qQe1z5kU8kN6SlKnDt9Ru3Qp
   sni: https://t.me/zmxooo
   skip-cert-verify: true
   name: 🇬🇧 英国 03 @zmxooo
-- label: 🇬🇧 英国
-  type: trojan
+- type: trojan
   server: 193.187.118.157
   port: 443
   password: qQe1z5kU8kN6SlKnDt9Ru3Qp
   sni: https://t.me/zmxooo
   skip-cert-verify: true
   name: 🇬🇧 英国 04 @zmxooo
-- label: 🇬🇧 英国
-  type: trojan
+- type: trojan
   server: 193.187.118.125
   port: 443
   password: qQe1z5kU8kN6SlKnDt9Ru3Qp
   sni: https://t.me/zmxooo
   skip-cert-verify: true
   name: 🇬🇧 英国 05 @zmxooo
-- label: 🇬🇧 英国
-  type: trojan
+- type: trojan
   server: 193.187.118.151
   port: 443
   password: qQe1z5kU8kN6SlKnDt9Ru3Qp
   sni: https://t.me/zmxooo
   skip-cert-verify: true
   name: 🇬🇧 英国 06 @zmxooo
-- label: 🇬🇧 英国
-  type: trojan
+- type: vmess
+  server: 82.198.246.93
+  port: 180
+  uuid: d13fc2f5-3e05-4795-81eb-44143a09e552
+  alterId: 0
+  cipher: auto
+  tls: false
+  skip-cert-verify: true
+  network: tcp
+  name: 🇲🇽 墨西哥 05 @zmxooo
+- type: vmess
+  server: 82.198.246.93
+  port: 180
+  uuid: d13fc2f5-3e05-4795-81eb-44143a09e552
+  alterId: 0
+  cipher: auto
+  tls: false
+  skip-cert-verify: true
+  network: tcp
+  name: 🇲🇽 墨西哥 06 @zmxooo
+- type: vmess
+  server: 82.198.246.37
+  port: 180
+  uuid: d13fc2f5-3e05-4795-81eb-44143a09e552
+  alterId: 0
+  cipher: auto
+  tls: false
+  skip-cert-verify: true
+  network: tcp
+  name: 🇲🇽 墨西哥 07 @zmxooo
+- type: vmess
+  server: 82.198.246.9
+  port: 180
+  uuid: d13fc2f5-3e05-4795-81eb-44143a09e552
+  alterId: 0
+  cipher: auto
+  tls: false
+  skip-cert-verify: true
+  network: tcp
+  name: 🇲🇽 墨西哥 08 @zmxooo
+- type: ss
+  server: 45.132.226.177
+  port: 43918
+  cipher: aes-256-gcm
+  password: qKe1z5kU8kN6SlKnDt9Ru3Qp
+  name: 🇹🇼 台湾 07 @zmxooo
+- type: ss
+  server: 45.132.226.161
+  port: 43918
+  cipher: aes-256-gcm
+  password: qKe1z5kU8kN6SlKnDt9Ru3Qp
+  name: 🇹🇼 台湾 08 @zmxooo
+- type: ss
+  server: 45.132.226.153
+  port: 43918
+  cipher: aes-256-gcm
+  password: qKe1z5kU8kN6SlKnDt9Ru3Qp
+  name: 🇹🇼 台湾 09 @zmxooo
+- type: trojan
   server: 193.187.118.66
   port: 443
   password: qQe1z5kU8kN6SlKnDt9Ru3Qp
   sni: https://t.me/zmxooo
   skip-cert-verify: true
   name: 🇬🇧 英国 07 @zmxooo
+- type: vmess
+  server: 82.198.246.93
+  port: 180
+  uuid: d13fc2f5-3e05-4795-81eb-44143a09e552
+  alterId: 0
+  cipher: auto
+  tls: false
+  skip-cert-verify: true
+  network: tcp
+  name: 🇲🇽 墨西哥 09 @zmxooo
+- type: vmess
+  server: 82.198.246.9
+  port: 180
+  uuid: d13fc2f5-3e05-4795-81eb-44143a09e552
+  alterId: 0
+  cipher: auto
+  tls: false
+  skip-cert-verify: true
+  network: tcp
+  name: 🇲🇽 墨西哥 10 @zmxooo
+- type: vmess
+  server: 82.198.246.37
+  port: 180
+  uuid: d13fc2f5-3e05-4795-81eb-44143a09e552
+  alterId: 0
+  cipher: auto
+  tls: false
+  skip-cert-verify: true
+  network: tcp
+  name: 🇲🇽 墨西哥 11 @zmxooo
+- type: vmess
+  server: 82.198.246.9
+  port: 180
+  uuid: d13fc2f5-3e05-4795-81eb-44143a09e552
+  alterId: 0
+  cipher: auto
+  tls: false
+  skip-cert-verify: true
+  network: tcp
+  name: 🇲🇽 墨西哥 12 @zmxooo
+- type: vmess
+  server: 82.198.246.37
+  port: 180
+  uuid: d13fc2f5-3e05-4795-81eb-44143a09e552
+  alterId: 0
+  cipher: auto
+  tls: false
+  skip-cert-verify: true
+  network: tcp
+  name: 🇲🇽 墨西哥 13 @zmxooo
+- type: ss
+  server: 45.132.226.169
+  port: 43918
+  cipher: aes-256-gcm
+  password: qKe1z5kU8kN6SlKnDt9Ru3Qp
+  name: 🇹🇼 台湾 10 @zmxooo
 proxy-groups:
 - name: 🚀 节点选择
   type: select
   proxies:
-  - 🔮 自动选择
+  - 🎬 自动选择
+  - 🇭🇰 香港
+  - 🇹🇼 台湾
+  - 🇺🇸 美国
+  - 🇲🇽 墨西哥
+  - 🇬🇧 英国
+  - DIRECT
+- name: 🎬 自动选择
+  type: url-test
+  url: http://gstatic.com
+  interval: 300
+  proxies:
   - 🇭🇰 香港 01 @zmxooo
   - 🇭🇰 香港 02 @zmxooo
   - 🇭🇰 香港 03 @zmxooo
@@ -184,20 +515,58 @@ proxy-groups:
   - 🇹🇼 台湾 01 @zmxooo
   - 🇹🇼 台湾 02 @zmxooo
   - 🇹🇼 台湾 03 @zmxooo
+  - 🇺🇸 美国 01 @zmxooo
+  - 🇺🇸 美国 02 @zmxooo
+  - 🇺🇸 美国 03 @zmxooo
+  - 🇺🇸 美国 04 @zmxooo
+  - 🇺🇸 美国 05 @zmxooo
+  - 🇺🇸 美国 06 @zmxooo
+  - 🇺🇸 美国 07 @zmxooo
+  - 🇺🇸 美国 08 @zmxooo
+  - 🇺🇸 美国 09 @zmxooo
+  - 🇺🇸 美国 10 @zmxooo
+  - 🇺🇸 美国 11 @zmxooo
+  - 🇺🇸 美国 12 @zmxooo
+  - 🇺🇸 美国 13 @zmxooo
+  - 🇭🇰 香港 10 @zmxooo
+  - 🇭🇰 香港 11 @zmxooo
+  - 🇭🇰 香港 12 @zmxooo
+  - 🇭🇰 香港 13 @zmxooo
+  - 🇭🇰 香港 14 @zmxooo
+  - 🇭🇰 香港 15 @zmxooo
+  - 🇭🇰 香港 16 @zmxooo
+  - 🇭🇰 香港 17 @zmxooo
   - 🇹🇼 台湾 04 @zmxooo
   - 🇹🇼 台湾 05 @zmxooo
+  - 🇲🇽 墨西哥 01 @zmxooo
+  - 🇲🇽 墨西哥 02 @zmxooo
+  - 🇲🇽 墨西哥 03 @zmxooo
+  - 🇲🇽 墨西哥 04 @zmxooo
+  - 🇹🇼 台湾 06 @zmxooo
   - 🇬🇧 英国 01 @zmxooo
   - 🇬🇧 英国 02 @zmxooo
   - 🇬🇧 英国 03 @zmxooo
   - 🇬🇧 英国 04 @zmxooo
   - 🇬🇧 英国 05 @zmxooo
   - 🇬🇧 英国 06 @zmxooo
+  - 🇲🇽 墨西哥 05 @zmxooo
+  - 🇲🇽 墨西哥 06 @zmxooo
+  - 🇲🇽 墨西哥 07 @zmxooo
+  - 🇲🇽 墨西哥 08 @zmxooo
+  - 🇹🇼 台湾 07 @zmxooo
+  - 🇹🇼 台湾 08 @zmxooo
+  - 🇹🇼 台湾 09 @zmxooo
   - 🇬🇧 英国 07 @zmxooo
-- name: 🔮 自动选择
+  - 🇲🇽 墨西哥 09 @zmxooo
+  - 🇲🇽 墨西哥 10 @zmxooo
+  - 🇲🇽 墨西哥 11 @zmxooo
+  - 🇲🇽 墨西哥 12 @zmxooo
+  - 🇲🇽 墨西哥 13 @zmxooo
+  - 🇹🇼 台湾 10 @zmxooo
+- name: 🇭🇰 香港
   type: url-test
   url: http://gstatic.com
   interval: 300
-  tolerance: 50
   proxies:
   - 🇭🇰 香港 01 @zmxooo
   - 🇭🇰 香港 02 @zmxooo
@@ -208,11 +577,70 @@ proxy-groups:
   - 🇭🇰 香港 07 @zmxooo
   - 🇭🇰 香港 08 @zmxooo
   - 🇭🇰 香港 09 @zmxooo
+  - 🇭🇰 香港 10 @zmxooo
+  - 🇭🇰 香港 11 @zmxooo
+  - 🇭🇰 香港 12 @zmxooo
+  - 🇭🇰 香港 13 @zmxooo
+  - 🇭🇰 香港 14 @zmxooo
+  - 🇭🇰 香港 15 @zmxooo
+  - 🇭🇰 香港 16 @zmxooo
+  - 🇭🇰 香港 17 @zmxooo
+- name: 🇹🇼 台湾
+  type: url-test
+  url: http://gstatic.com
+  interval: 300
+  proxies:
   - 🇹🇼 台湾 01 @zmxooo
   - 🇹🇼 台湾 02 @zmxooo
   - 🇹🇼 台湾 03 @zmxooo
   - 🇹🇼 台湾 04 @zmxooo
   - 🇹🇼 台湾 05 @zmxooo
+  - 🇹🇼 台湾 06 @zmxooo
+  - 🇹🇼 台湾 07 @zmxooo
+  - 🇹🇼 台湾 08 @zmxooo
+  - 🇹🇼 台湾 09 @zmxooo
+  - 🇹🇼 台湾 10 @zmxooo
+- name: 🇺🇸 美国
+  type: url-test
+  url: http://gstatic.com
+  interval: 300
+  proxies:
+  - 🇺🇸 美国 01 @zmxooo
+  - 🇺🇸 美国 02 @zmxooo
+  - 🇺🇸 美国 03 @zmxooo
+  - 🇺🇸 美国 04 @zmxooo
+  - 🇺🇸 美国 05 @zmxooo
+  - 🇺🇸 美国 06 @zmxooo
+  - 🇺🇸 美国 07 @zmxooo
+  - 🇺🇸 美国 08 @zmxooo
+  - 🇺🇸 美国 09 @zmxooo
+  - 🇺🇸 美国 10 @zmxooo
+  - 🇺🇸 美国 11 @zmxooo
+  - 🇺🇸 美国 12 @zmxooo
+  - 🇺🇸 美国 13 @zmxooo
+- name: 🇲🇽 墨西哥
+  type: url-test
+  url: http://gstatic.com
+  interval: 300
+  proxies:
+  - 🇲🇽 墨西哥 01 @zmxooo
+  - 🇲🇽 墨西哥 02 @zmxooo
+  - 🇲🇽 墨西哥 03 @zmxooo
+  - 🇲🇽 墨西哥 04 @zmxooo
+  - 🇲🇽 墨西哥 05 @zmxooo
+  - 🇲🇽 墨西哥 06 @zmxooo
+  - 🇲🇽 墨西哥 07 @zmxooo
+  - 🇲🇽 墨西哥 08 @zmxooo
+  - 🇲🇽 墨西哥 09 @zmxooo
+  - 🇲🇽 墨西哥 10 @zmxooo
+  - 🇲🇽 墨西哥 11 @zmxooo
+  - 🇲🇽 墨西哥 12 @zmxooo
+  - 🇲🇽 墨西哥 13 @zmxooo
+- name: 🇬🇧 英国
+  type: url-test
+  url: http://gstatic.com
+  interval: 300
+  proxies:
   - 🇬🇧 英国 01 @zmxooo
   - 🇬🇧 英国 02 @zmxooo
   - 🇬🇧 英国 03 @zmxooo
