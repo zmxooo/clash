@@ -25,10 +25,9 @@ def get_final_label(server, remarks):
             return f"{EMOJI_MAP.get(name, '🌍')}{name}"
     
     if server in IP_CACHE: return IP_CACHE[server]
-    # 仅对像 IP 或域名的 server 进行查询
     if server and ("." in server):
         try:
-            time.sleep(0.5) # 防接口频率限制
+            time.sleep(0.5) 
             resp = requests.get(f"http://ip-api.com/json/{server}?lang=zh-CN", timeout=5).json()
             if resp.get("status") == "success":
                 country = resp.get("country")
@@ -82,11 +81,8 @@ def rebuild_node(link, new_name):
                 "tls": True if params.get("security") in ["tls", "reality"] else False,
                 "network": params.get("type", "tcp"), "sni": params.get("sni", u.hostname)
             })
-            # 补齐 Reality 核心漏洞参数
             if params.get("security") == "reality":
-                proxy.update({
-                    "reality-opts": {"public-key": params.get("pbk", ""), "short-id": params.get("sid", "")}
-                })
+                proxy.update({"reality-opts": {"public-key": params.get("pbk", ""), "short-id": params.get("sid", "")}})
         elif scheme in ["hysteria2", "hy2"]:
             proxy.update({"type": "hysteria2", "password": u.username, "sni": u.hostname})
         else: return None, None, None
@@ -106,7 +102,7 @@ def main():
         lbl, _, _ = rebuild_node(l, "TEMP")
         if not lbl: continue
         idx = len(region_map[lbl]) + 1
-        # 命名格式：国旗国家 + 空格 + zmxooo序号
+        # 格式：🇭🇰香港 zmxooo01
         new_name = f"{lbl} {CHANNEL_MARK}{idx:02d}"
         label, proxy, r_link = rebuild_node(l, new_name)
         if proxy:
