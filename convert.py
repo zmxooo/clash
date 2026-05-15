@@ -9,40 +9,45 @@ import time
 from collections import defaultdict
 
 # --- 配置区 ---
-CHANNEL_MARK = "@zmxooo"
+CHANNEL_MARK = "zmxooo"
 TEST_URL = "http://gstatic.com"
 IP_CACHE = {}
 
-# 常用图标映射
+# 全球化国旗库（脚本会自动补充不在列表中的国家）
 EMOJI_MAP = {
-    "香港": "🇭🇰", "台湾": "🇹🇼", "美国": "🇺🇸", "英国": "🇬🇧", "韩国": "🇰🇷", 
-    "日本": "🇯🇵", "新加坡": "🇸🇬", "越南": "🇻🇳", "德国": "🇩🇪", "法国": "🇫🇷"
+    "香港": "🇭🇰", "台湾": "🇹🇼", "美国": "🇺🇸", "日本": "🇯🇵", 
+    "新加坡": "🇸🇬", "韩国": "🇰🇷", "德国": "🇩🇪", "英国": "🇬🇧",
+    "俄罗斯": "🇷🇺", "法国": "🇫🇷", "加拿大": "🇨🇦", "荷兰": "🇳🇱",
+    "泰国": "🇹🇭", "越南": "🇻🇳", "印度": "🇮🇳", "澳大利亚": "🇦🇺"
 }
 
 def get_final_label(server, remarks):
-    """识别国家：正则匹配备注 + IP 库查询"""
+    """识别国家：正则优先，IP库兜底"""
     text = urllib.parse.unquote(str(remarks)).lower().strip()
     meta = [
         ("香港", r"hk|香港|hongkong"), ("台湾", r"tw|台湾|台灣|taiwan"), 
-        ("美国", r"us|美国|美國|united states"), ("英国", r"gb|uk|英国|英國"), 
-        ("韩国", r"kr|韩国|韓國|korea"), ("日本", r"jp|日本|japan"),
-        ("新加坡", r"sg|新加坡|singapore"), ("德国", r"de|德国|germany")
+        ("美国", r"us|美国|美國|united states"), ("日本", r"jp|日本|japan"),
+        ("新加坡", r"sg|新加坡|singapore"), ("韩国", r"kr|韩国|韓國|korea")
     ]
     for name, pattern in meta:
         if re.search(pattern, text): 
-            return f"{EMOJI_MAP.get(name, '🌍')} {name}"
+            return f"{EMOJI_MAP.get(name, '🌍')}{name}"
     
+    # 命中缓存避免重复请求
     if server in IP_CACHE: return IP_CACHE[server]
+    
+    # 全球化 IP 识别逻辑
     try:
-        time.sleep(0.2) 
+        time.sleep(0.2) # 防止请求过快
         response = requests.get(f"http://ip-api.com/json/{server}?lang=zh-CN", timeout=5).json()
         if response.get("status") == "success":
             country = response.get("country")
-            label = f"{EMOJI_MAP.get(country, '🌍')} {country}"
+            # 自动获取该国国旗（如果库里没有，默认地球）
+            label = f"{EMOJI_MAP.get(country, '🌍')}{country}"
             IP_CACHE[server] = label
             return label
     except: pass
-    return "🧿 其它地区"
+    return "🧿其它地区"
 
 def fix_base64(s):
     if not s: return ""
@@ -50,9 +55,8 @@ def fix_base64(s):
     return s + '=' * (-len(s) % 4)
 
 def rebuild_node(link, new_name):
-    """深度解析并重构不同协议的节点数据"""
+    """三端协议深度转换逻辑"""
     try:
-        # --- VMess 协议 ---
         if link.startswith('vmess://'):
             b64_part = link[8:].split('#')[0]
             d = json.loads(base64.b64decode(fix_base64(b64_part)).decode('utf-8', 'ignore'))
@@ -71,18 +75,12 @@ def rebuild_node(link, new_name):
             }
             if proxy["network"] == "ws":
                 proxy["ws-opts"] = {"path": std_vmess["path"], "headers": {"Host": std_vmess["host"]}}
-            elif proxy["network"] == "grpc":
-                proxy["grpc-opts"] = {"grpc-service-name": std_vmess["path"]}
-            
-            new_b64 = base64.b64encode(json.dumps(std_vmess).encode()).decode()
-            return label, proxy, f"vmess://{new_b64}"
+            return label, proxy, f"vmess://{base64.b64encode(json.dumps(std_vmess).encode()).decode()}"
 
-        # --- 通用协议 (SS, Trojan, VLESS, HY2) ---
         u = urllib.parse.urlparse(link)
         scheme = u.scheme.lower()
         old_remarks = urllib.parse.unquote(u.fragment) if u.fragment else ""
         label = get_final_label(u.hostname, old_remarks)
-        
         proxy = {"name": new_name, "server": u.hostname, "port": u.port, "skip-cert-verify": True}
 
         if scheme == "ss":
@@ -109,41 +107,31 @@ def main():
     if not os.path.exists('nodes.txt'): return
     with open('nodes.txt', 'r', encoding='utf-8') as f:
         raw_links = list(dict.fromkeys([l.strip() for l in f if "://" in l]))
-
     region_map = defaultdict(list)
     clash_proxies, rocket_links = [], []
-
     for l in raw_links:
-        # 预扫获取国家分组
         lbl, _, _ = rebuild_node(l, "TEMP")
         if not lbl: continue
-        
-        new_name = f"{lbl} {len(region_map[lbl])+1:02d} {CHANNEL_MARK}"
+        idx = len(region_map[lbl]) + 1
+        # 命名格式：国旗国家 + 空格 + zmxooo序号
+        new_name = f"{lbl} {CHANNEL_MARK}{idx:02d}"
         label, proxy, r_link = rebuild_node(l, new_name)
-        if proxy and r_link:
+        if proxy:
             region_map[label].append(new_name)
             clash_proxies.append(proxy)
             rocket_links.append(r_link)
-
-    # 导出 index.html (小火箭 Base64 订阅)
     if rocket_links:
         with open('index.html', 'w', encoding='utf-8') as f:
             f.write(base64.b64encode("\n".join(rocket_links).encode()).decode())
-
-    # 导出 clash_config.yaml (Clash 配置文件)
     if clash_proxies:
         active_regions = sorted(list(region_map.keys()))
         groups = [
-            {"name": "🚀 节点选择", "type": "select", "proxies": ["🎬 自动选择"] + active_regions + ["DIRECT"]},
-            {"name": "🎬 自动选择", "type": "url-test", "url": TEST_URL, "interval": 300, "proxies": [p['name'] for p in clash_proxies]}
+            {"name": "🚀节点选择", "type": "select", "proxies": ["🎬自动选择"] + active_regions + ["DIRECT"]},
+            {"name": "🎬自动选择", "type": "url-test", "url": TEST_URL, "interval": 300, "proxies": [p['name'] for p in clash_proxies]}
         ]
         for r in active_regions:
             groups.append({"name": r, "type": "url-test", "url": TEST_URL, "interval": 300, "proxies": region_map[r]})
-
-        config = {
-            "mixed-port": 7890, "allow-lan": True, "mode": "rule", 
-            "proxies": clash_proxies, "proxy-groups": groups, "rules": ["MATCH,🚀 节点选择"]
-        }
+        config = {"mixed-port": 7890, "allow-lan": True, "mode": "rule", "proxies": clash_proxies, "proxy-groups": groups, "rules": ["MATCH,🚀节点选择"]}
         with open('clash_config.yaml', 'w', encoding='utf-8') as f:
             yaml.dump(config, f, allow_unicode=True, sort_keys=False)
 
