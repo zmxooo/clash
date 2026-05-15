@@ -146,7 +146,8 @@ def main():
         classified_nodes[region].append(link)
 
     final_links, clash_proxies = [], []
-    all_proxy_names = []  
+    region_proxy_map = defaultdict(list)  # 按国家划分节点名称列表
+    all_proxy_names = []                 
     sorted_regions = sorted(classified_nodes.keys())
     
     for reg in sorted_regions:
@@ -170,6 +171,7 @@ def main():
                     if d.get("net") == "ws":
                         proxy["ws-opts"] = {"path": d.get("path", ""), "headers": {"Host": d.get("host", "")}}
                     clash_proxies.append(proxy)
+                    region_proxy_map[reg].append(new_name)
                     all_proxy_names.append(new_name)
                     
                 elif "://" in link:
@@ -192,6 +194,7 @@ def main():
                         })
                         if "sni" in queries: p["sni"] = queries["sni"]
                         clash_proxies.append(p)
+                        region_proxy_map[reg].append(new_name)
                         all_proxy_names.append(new_name)
                         final_links.append(f"{u.scheme}://{p['password']}@{p['server']}:{p['port']}?{urllib.parse.urlencode(queries)}#{urllib.parse.quote(new_name)}")
                         
@@ -207,6 +210,7 @@ def main():
                         if queries.get("type") == "ws":
                             p["ws-opts"] = {"path": queries.get("path", "/"), "headers": {"Host": queries.get("host", p["server"])}}
                         clash_proxies.append(p)
+                        region_proxy_map[reg].append(new_name)
                         all_proxy_names.append(new_name)
                         final_links.append(f"vless://{p['uuid']}@{p['server']}:{p['port']}?{urllib.parse.urlencode(queries)}#{urllib.parse.quote(new_name)}")
                         
@@ -218,6 +222,7 @@ def main():
                             if ":" in dec_user:
                                 p["cipher"], p["password"] = dec_user.split(':', 1)
                                 clash_proxies.append(p)
+                                region_proxy_map[reg].append(new_name)
                                 all_proxy_names.append(new_name)
                                 final_links.append(f"ss://{user_info}@{p['server']}:{p['port']}#{urllib.parse.quote(new_name)}")
                         except:
@@ -225,61 +230,81 @@ def main():
             except:
                 pass
 
+    # 1. 覆盖同步 index.html
     if final_links:
         with open(INDEX_FILE, 'w', encoding='utf-8') as f:
             f.write("\n".join(final_links))
 
-    # 2. 覆盖同步 config.yaml 并强制纠正代理组
+    # 2. 彻底重新生成 config.yaml (完全抛弃历史损坏框架)
     if clash_proxies:
         try:
-            if os.path.exists(CONFIG_FILE):
-                with open(CONFIG_FILE, 'r', encoding='utf-8') as f:
-                    base_config = yaml.safe_load(f) or {}
-            else:
-                base_config = {}
+            # --- 代码内置高标准基础骨架 ---
+            base_config = {
+                "port": 7890,
+                "socks-port": 7891,
+                "allow-lan": True,
+                "mode": "rule",
+                "log-level": "info",
+                "external-controller": "127.0.0.1:9090",
+                "dns": {
+                    "enable": True,
+                    "ipv6": False,
+                    "listen": "0.0.0.0:53",
+                    "enhanced-mode": "fake-ip",
+                    "fake-ip-range": "198.18.0.1/16",
+                    "default-nameserver": ["119.29.29.29", "223.5.5.5"],
+                    "nameserver": ["https://doh.pub", "https://alicdn.com"]
+                }
+            }
                 
+            # 填入最新清洗完的纯净节点
             base_config["proxies"] = clash_proxies
             
-            # --- 终极防御逻辑：全自动扫描校验你的原始手写策略组 ---
-            if "proxy-groups" in base_config and isinstance(base_config["proxy-groups"], list):
-                for group in base_config["proxy-groups"]:
-                    if "proxies" in group and isinstance(group["proxies"], list):
-                        old_list = group["proxies"]
-                        cleaned_list = []
-                        
-                        # 遍历你手写的每个节点或子分组引用
-                        for item in old_list:
-                            item_str = str(item)
-                            
-                            # 情况 A：如果该项属于动态生成的节点（带有 zmxooo 后缀）
-                            if FIXED_SUFFIX in item_str:
-                                # 检查本次运行到底有没有真正生成这个节点
-                                if item_str in all_proxy_names:
-                                    cleaned_list.append(item_str)  # 生成了，保留
-                                else:
-                                    # 没生成（比如这次机场没有台湾节点）
-                                    # 智能寻找本次生成的同国家其他节点替代，如果没有，用全局第一个节点兜底！
-                                    country_prefix = item_str.split(FIXED_SUFFIX)[0].strip()
-                                    matched_backups = [n for n in all_proxy_names if country_prefix in n]
-                                    if matched_backups:
-                                        cleaned_list.append(matched_backups[0])
-                                    elif all_proxy_names:
-                                        cleaned_list.append(all_proxy_names[0]) # 极限制止 not found 报错
-                            else:
-                                # 情况 B：属于 DIRECT 或其他子分组名称，保持原样
-                                cleaned_list.append(item)
-                        
-                        # 如果是“自动选择”等主控测速组，将其转换为 url-test，直接透传当前最快节点到代理看板首页
-                        if group.get("name") in ["♻️ 自动选择", "自动选择"] or "自动" in group.get("name", ""):
-                            group["type"] = "url-test"
-                            group["url"] = TEST_URL
-                            group["interval"] = TEST_INTERVAL
-                            
-                        group["proxies"] = cleaned_list
+            # --- 核心设计：重组全自动动态测速分组 ---
+            new_groups = []
+            dynamic_country_group_names = []
+            
+            # A. 遍历当前生成的所有国家，动态建立独立国家的 url-test 分组
+            # 这能完美确保在工具首页，每个国家只展示最快的那一个名字
+            for r_name in sorted(region_proxy_map.keys()):
+                emoji = EMOJI_MAP.get(r_name, '🌍')
+                group_title = f"{emoji} {r_name}自动选择"
+                dynamic_country_group_names.append(group_title)
+                
+                new_groups.append({
+                    "name": group_title,
+                    "type": "url-test",
+                    "url": TEST_URL,
+                    "interval": TEST_INTERVAL,
+                    "proxies": region_proxy_map[r_name]
+                })
+            
+            # B. 建立总控“♻️ 自动选择”分组 (包含所有生成的节点)
+            new_groups.append({
+                "name": "♻️ 自动选择",
+                "type": "url-test",
+                "url": TEST_URL,
+                "interval": TEST_INTERVAL,
+                "proxies": all_proxy_names
+            })
+            
+            # C. 看板首页总控栏 (包含全局自动选择，各个国家的分组选择以及直连)
+            new_groups.insert(0, {
+                "name": "🚀 节点选择",
+                "type": "select",
+                "proxies": ["♻️ 自动选择"] + dynamic_country_group_names + ["DIRECT"]
+            })
+            
+            base_config["proxy-groups"] = new_groups
+            
+            # --- 配置通用分流规则流 ---
+            base_config["rules"] = [
+                "MATCH,🚀 节点选择"
+            ]
             
             with open(CONFIG_FILE, 'w', encoding='utf-8') as f:
                 yaml.dump(base_config, f, allow_unicode=True, sort_keys=False)
-            print(f"同步已彻底修复成功：{CONFIG_FILE}")
+            print(f"配置文件已彻底完成重构刷新：{CONFIG_FILE}，所有冲突已清除！")
         except Exception as e:
             print(f"同步失败: {e}")
 
