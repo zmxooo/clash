@@ -1,5 +1,5 @@
 proxies:
-- name: 🇩🇪 德國 01 | @zmxooo
+- name: 🇩🇪 德国 02 | @zmxooo
   type: vmess
   server: 82.198.246.9
   port: 180
@@ -9,7 +9,7 @@ proxies:
   tls: false
   skip-cert-verify: true
   network: tcp
-- name: 🇩🇪 德國 02 | @zmxooo
+- name: 🇩🇪 德国 03 | @zmxooo
   type: vmess
   server: 82.198.246.37
   port: 180
@@ -19,7 +19,7 @@ proxies:
   tls: false
   skip-cert-verify: true
   network: tcp
-- name: 🇩🇪 德國 03 | @zmxooo
+- name: 🇩🇪 德国 04 | @zmxooo
   type: vmess
   server: 82.198.246.233
   port: 180
@@ -29,7 +29,7 @@ proxies:
   tls: false
   skip-cert-verify: true
   network: tcp
-- name: 🇩🇪 德國 04 | @zmxooo
+- name: 🇩🇪 德国 05 | @zmxooo
   type: vmess
   server: 82.198.246.233
   port: 180
@@ -39,7 +39,7 @@ proxies:
   tls: false
   skip-cert-verify: true
   network: tcp
-- name: 🇬🇧 英國 01 | @zmxooo
+- name: 🇬🇧 英国 01 | @zmxooo
   type: vmess
   server: 82.198.246.9
   port: 180
@@ -49,7 +49,7 @@ proxies:
   tls: false
   skip-cert-verify: true
   network: tcp
-- name: 🇬🇧 英國 02 | @zmxooo
+- name: 🇬🇧 英国 02 | @zmxooo
   type: vmess
   server: 82.198.246.233
   port: 180
@@ -59,7 +59,7 @@ proxies:
   tls: false
   skip-cert-verify: true
   network: tcp
-- name: 🇬🇧 英國 03 | @zmxooo
+- name: 🇬🇧 英国 03 | @zmxooo
   type: vmess
   server: 82.198.246.233
   port: 180
@@ -69,7 +69,7 @@ proxies:
   tls: false
   skip-cert-verify: true
   network: tcp
-- name: 🇬🇧 英國 04 | @zmxooo
+- name: 🇬🇧 英国 04 | @zmxooo
   type: vmess
   server: 82.198.246.9
   port: 180
@@ -79,7 +79,7 @@ proxies:
   tls: false
   skip-cert-verify: true
   network: tcp
-- name: 🇬🇧 英國 05 | @zmxooo
+- name: 🇬🇧 英国 05 | @zmxooo
   type: vmess
   server: 82.198.246.233
   port: 180
@@ -89,7 +89,7 @@ proxies:
   tls: false
   skip-cert-verify: true
   network: tcp
-- name: 🇬🇧 英國 06 | @zmxooo
+- name: 🇬🇧 英国 06 | @zmxooo
   type: vmess
   server: 82.198.246.37
   port: 180
@@ -99,7 +99,7 @@ proxies:
   tls: false
   skip-cert-verify: true
   network: tcp
-- name: 🇬🇧 英國 07 | @zmxooo
+- name: 🇬🇧 英国 07 | @zmxooo
   type: vmess
   server: 82.198.246.9
   port: 180
@@ -109,7 +109,7 @@ proxies:
   tls: false
   skip-cert-verify: true
   network: tcp
-- name: 🇬🇧 英國 08 | @zmxooo
+- name: 🇬🇧 英国 08 | @zmxooo
   type: vmess
   server: 82.198.246.214
   port: 180
@@ -119,7 +119,7 @@ proxies:
   tls: false
   skip-cert-verify: true
   network: tcp
-- name: 🇬🇧 英國 09 | @zmxooo
+- name: 🇬🇧 英国 09 | @zmxooo
   type: vmess
   server: 82.198.246.233
   port: 180
@@ -129,7 +129,7 @@ proxies:
   tls: false
   skip-cert-verify: true
   network: tcp
-- name: 🇬🇧 英國 10 | @zmxooo
+- name: 🇬🇧 英国 10 | @zmxooo
   type: vmess
   server: 82.198.246.250
   port: 180
@@ -139,7 +139,7 @@ proxies:
   tls: false
   skip-cert-verify: true
   network: tcp
-- name: 🇬🇧 英國 11 | @zmxooo
+- name: 🇬🇧 英国 11 | @zmxooo
   type: vmess
   server: 82.198.246.214
   port: 180
@@ -159,47 +159,7 @@ proxies:
   tls: false
   skip-cert-verify: true
   network: tcp
-- name: 🇺🇸 美國 01 | @zmxooo
-  type: vmess
-  server: 82.198.246.214
-  port: 180
-  uuid: d13fc2f5-3e05-4795-81eb-44143a09e552
-  alterId: 0
-  cipher: auto
-  tls: false
-  skip-cert-verify: true
-  network: tcp
-- name: 🇺🇸 美國 02 | @zmxooo
-  type: vmess
-  server: 82.198.246.233
-  port: 180
-  uuid: d13fc2f5-3e05-4795-81eb-44143a09e552
-  alterId: 0
-  cipher: auto
-  tls: false
-  skip-cert-verify: true
-  network: tcp
-- name: 🇺🇸 美國 03 | @zmxooo
-  type: vmess
-  server: 82.198.246.9
-  port: 180
-  uuid: d13fc2f5-3e05-4795-81eb-44143a09e552
-  alterId: 0
-  cipher: auto
-  tls: false
-  skip-cert-verify: true
-  network: tcp
-- name: 🇺🇸 美國 04 | @zmxooo
-  type: vmess
-  server: 82.198.246.37
-  port: 180
-  uuid: d13fc2f5-3e05-4795-81eb-44143a09e552
-  alterId: 0
-  cipher: auto
-  tls: false
-  skip-cert-verify: true
-  network: tcp
-- name: 🌍 台湾 01 | @zmxooo
+- name: 🇹🇼 台湾 03 | @zmxooo
   type: vmess
   server: v13.zgtfqs.click
   port: 30813
@@ -209,7 +169,7 @@ proxies:
   tls: false
   skip-cert-verify: true
   network: tcp
-- name: 🌍 台湾 02 | @zmxooo
+- name: 🇹🇼 台湾 04 | @zmxooo
   type: vmess
   server: v11.zgtfqs.click
   port: 30811
@@ -219,7 +179,7 @@ proxies:
   tls: false
   skip-cert-verify: true
   network: tcp
-- name: 🌍 美国 02 | @zmxooo
+- name: 🇺🇸 美国 02 | @zmxooo
   type: vmess
   server: 82.198.246.214
   port: 180
@@ -229,27 +189,7 @@ proxies:
   tls: false
   skip-cert-verify: true
   network: tcp
-- name: 🌍 美国 03 | @zmxooo
-  type: vmess
-  server: 82.198.246.9
-  port: 180
-  uuid: d13fc2f5-3e05-4795-81eb-44143a09e552
-  alterId: 0
-  cipher: auto
-  tls: false
-  skip-cert-verify: true
-  network: tcp
-- name: 🌍 美国 04 | @zmxooo
-  type: vmess
-  server: 82.198.246.37
-  port: 180
-  uuid: d13fc2f5-3e05-4795-81eb-44143a09e552
-  alterId: 0
-  cipher: auto
-  tls: false
-  skip-cert-verify: true
-  network: tcp
-- name: 🌍 美国 05 | @zmxooo
+- name: 🇺🇸 美国 03 | @zmxooo
   type: vmess
   server: 82.198.246.233
   port: 180
@@ -259,3 +199,128 @@ proxies:
   tls: false
   skip-cert-verify: true
   network: tcp
+- name: 🇺🇸 美国 04 | @zmxooo
+  type: vmess
+  server: 82.198.246.9
+  port: 180
+  uuid: d13fc2f5-3e05-4795-81eb-44143a09e552
+  alterId: 0
+  cipher: auto
+  tls: false
+  skip-cert-verify: true
+  network: tcp
+- name: 🇺🇸 美国 05 | @zmxooo
+  type: vmess
+  server: 82.198.246.37
+  port: 180
+  uuid: d13fc2f5-3e05-4795-81eb-44143a09e552
+  alterId: 0
+  cipher: auto
+  tls: false
+  skip-cert-verify: true
+  network: tcp
+- name: 🇺🇸 美国 10 | @zmxooo
+  type: vmess
+  server: 82.198.246.214
+  port: 180
+  uuid: d13fc2f5-3e05-4795-81eb-44143a09e552
+  alterId: 0
+  cipher: auto
+  tls: false
+  skip-cert-verify: true
+  network: tcp
+- name: 🇺🇸 美国 11 | @zmxooo
+  type: vmess
+  server: 82.198.246.9
+  port: 180
+  uuid: d13fc2f5-3e05-4795-81eb-44143a09e552
+  alterId: 0
+  cipher: auto
+  tls: false
+  skip-cert-verify: true
+  network: tcp
+- name: 🇺🇸 美国 12 | @zmxooo
+  type: vmess
+  server: 82.198.246.37
+  port: 180
+  uuid: d13fc2f5-3e05-4795-81eb-44143a09e552
+  alterId: 0
+  cipher: auto
+  tls: false
+  skip-cert-verify: true
+  network: tcp
+- name: 🇺🇸 美国 13 | @zmxooo
+  type: vmess
+  server: 82.198.246.233
+  port: 180
+  uuid: d13fc2f5-3e05-4795-81eb-44143a09e552
+  alterId: 0
+  cipher: auto
+  tls: false
+  skip-cert-verify: true
+  network: tcp
+proxy-groups:
+- name: 🚀 节点选择
+  type: select
+  proxies:
+  - ♻️ 自动选择
+  - DIRECT
+  - 🇩🇪 德国 02 | @zmxooo
+  - 🇩🇪 德国 03 | @zmxooo
+  - 🇩🇪 德国 04 | @zmxooo
+  - 🇩🇪 德国 05 | @zmxooo
+  - 🇬🇧 英国 01 | @zmxooo
+  - 🇬🇧 英国 02 | @zmxooo
+  - 🇬🇧 英国 03 | @zmxooo
+  - 🇬🇧 英国 04 | @zmxooo
+  - 🇬🇧 英国 05 | @zmxooo
+  - 🇬🇧 英国 06 | @zmxooo
+  - 🇬🇧 英国 07 | @zmxooo
+  - 🇬🇧 英国 08 | @zmxooo
+  - 🇬🇧 英国 09 | @zmxooo
+  - 🇬🇧 英国 10 | @zmxooo
+  - 🇬🇧 英国 11 | @zmxooo
+  - 🇯🇵 日本 02 | @zmxooo
+  - 🇹🇼 台湾 03 | @zmxooo
+  - 🇹🇼 台湾 04 | @zmxooo
+  - 🇺🇸 美国 02 | @zmxooo
+  - 🇺🇸 美国 03 | @zmxooo
+  - 🇺🇸 美国 04 | @zmxooo
+  - 🇺🇸 美国 05 | @zmxooo
+  - 🇺🇸 美国 10 | @zmxooo
+  - 🇺🇸 美国 11 | @zmxooo
+  - 🇺🇸 美国 12 | @zmxooo
+  - 🇺🇸 美国 13 | @zmxooo
+- name: ♻️ 自动选择
+  type: url-test
+  url: http://www.gstatic.com/generate_204
+  interval: 300
+  proxies:
+  - 🇩🇪 德国 02 | @zmxooo
+  - 🇩🇪 德国 03 | @zmxooo
+  - 🇩🇪 德国 04 | @zmxooo
+  - 🇩🇪 德国 05 | @zmxooo
+  - 🇬🇧 英国 01 | @zmxooo
+  - 🇬🇧 英国 02 | @zmxooo
+  - 🇬🇧 英国 03 | @zmxooo
+  - 🇬🇧 英国 04 | @zmxooo
+  - 🇬🇧 英国 05 | @zmxooo
+  - 🇬🇧 英国 06 | @zmxooo
+  - 🇬🇧 英国 07 | @zmxooo
+  - 🇬🇧 英国 08 | @zmxooo
+  - 🇬🇧 英国 09 | @zmxooo
+  - 🇬🇧 英国 10 | @zmxooo
+  - 🇬🇧 英国 11 | @zmxooo
+  - 🇯🇵 日本 02 | @zmxooo
+  - 🇹🇼 台湾 03 | @zmxooo
+  - 🇹🇼 台湾 04 | @zmxooo
+  - 🇺🇸 美国 02 | @zmxooo
+  - 🇺🇸 美国 03 | @zmxooo
+  - 🇺🇸 美国 04 | @zmxooo
+  - 🇺🇸 美国 05 | @zmxooo
+  - 🇺🇸 美国 10 | @zmxooo
+  - 🇺🇸 美国 11 | @zmxooo
+  - 🇺🇸 美国 12 | @zmxooo
+  - 🇺🇸 美国 13 | @zmxooo
+rules:
+- MATCH,🚀 节点选择
