@@ -433,7 +433,7 @@ proxies:
   password: abb011d5-2749-4fba-9a66-0eb7b1b14d1e
   sni: ://ithome.com
   skip-cert-verify: true
-  name: 🇱🇹 立陶宛 01 @zmxooo
+  name: 🌍 其它地区 02 @zmxooo
 - type: vmess
   server: 82.198.246.214
   port: 180
@@ -453,7 +453,7 @@ proxies:
   tls: false
   skip-cert-verify: true
   network: tcp
-  name: 🌍 其它地区 02 @zmxooo
+  name: 🌍 其它地区 03 @zmxooo
 - type: vmess
   server: 82.198.246.37
   port: 180
@@ -463,7 +463,7 @@ proxies:
   tls: false
   skip-cert-verify: true
   network: tcp
-  name: 🌍 其它地区 03 @zmxooo
+  name: 🌍 其它地区 04 @zmxooo
 - type: vmess
   server: 82.198.246.233
   port: 180
@@ -487,7 +487,7 @@ proxies:
     path: /
     headers:
       Host: planb.mojcn.com
-  name: 🌍 其它地区 04 @zmxooo
+  name: 🇫🇷 法国 01 @zmxooo
 - type: ss
   server: 146.56.138.33
   port: 10443
@@ -510,7 +510,7 @@ proxies:
   password: 10550754-cf62-3d3b-ba6a-50be27a275d7
   sni: s516.okgfw.top
   skip-cert-verify: true
-  name: 🌍 其它地区 05 @zmxooo
+  name: 🇷🇺 俄罗斯 01 @zmxooo
 - type: vmess
   server: 82.198.246.214
   port: 180
@@ -535,7 +535,8 @@ proxy-groups:
   - 🇯🇵 日本
   - 🌍 其它地区
   - 🇩🇪 德国
-  - 🇱🇹 立陶宛
+  - 🇫🇷 法国
+  - 🇷🇺 俄罗斯
   - DIRECT
 - name: 🎬 自动选择
   type: url-test
@@ -595,15 +596,15 @@ proxy-groups:
   - 🇺🇸 美国 10 @zmxooo
   - 🇬🇧 英国 12 @zmxooo
   - 🇬🇧 英国 13 @zmxooo
-  - 🇱🇹 立陶宛 01 @zmxooo
-  - 🇩🇪 德国 05 @zmxooo
   - 🌍 其它地区 02 @zmxooo
+  - 🇩🇪 德国 05 @zmxooo
   - 🌍 其它地区 03 @zmxooo
-  - 🇩🇪 德国 06 @zmxooo
   - 🌍 其它地区 04 @zmxooo
+  - 🇩🇪 德国 06 @zmxooo
+  - 🇫🇷 法国 01 @zmxooo
   - 🇰🇷 韩国 07 @zmxooo
   - 🇺🇸 美国 11 @zmxooo
-  - 🌍 其它地区 05 @zmxooo
+  - 🇷🇺 俄罗斯 01 @zmxooo
   - 🇺🇸 美国 12 @zmxooo
 - name: 🇭🇰 香港
   type: url-test
@@ -700,7 +701,6 @@ proxy-groups:
   - 🌍 其它地区 02 @zmxooo
   - 🌍 其它地区 03 @zmxooo
   - 🌍 其它地区 04 @zmxooo
-  - 🌍 其它地区 05 @zmxooo
 - name: 🇩🇪 德国
   type: url-test
   url: http://gstatic.com
@@ -712,11 +712,17 @@ proxy-groups:
   - 🇩🇪 德国 04 @zmxooo
   - 🇩🇪 德国 05 @zmxooo
   - 🇩🇪 德国 06 @zmxooo
-- name: 🇱🇹 立陶宛
+- name: 🇫🇷 法国
   type: url-test
   url: http://gstatic.com
   interval: 300
   proxies:
-  - 🇱🇹 立陶宛 01 @zmxooo
+  - 🇫🇷 法国 01 @zmxooo
+- name: 🇷🇺 俄罗斯
+  type: url-test
+  url: http://gstatic.com
+  interval: 300
+  proxies:
+  - 🇷🇺 俄罗斯 01 @zmxooo
 rules:
 - MATCH,🚀 节点选择
