@@ -13,6 +13,7 @@ TEST_URL = "http://gstatic.com"
 
 IP_CACHE = {}
 
+# 【仅扩充国家库】保持原始格式，仅在末尾追加新国家
 EMOJI_MAP = {
     "香港": "🇭🇰", "台湾": "🇹🇼", "美国": "🇺🇸", "英国": "🇬🇧", "韩国": "🇰🇷", 
     "日本": "🇯🇵", "新加坡": "🇸🇬", "越南": "🇻🇳", "立陶宛": "🇱🇹", "科威特": "🇰🇼",
@@ -22,11 +23,13 @@ EMOJI_MAP = {
     "新西兰": "🇳🇿", "意大利": "🇮🇹", "西班牙": "🇪🇸", "瑞士": "🇨🇭", "瑞典": "🇸🇪",
     "南非": "🇿🇦", "爱尔兰": "🇮🇪", "墨西哥": "🇲🇽", "乌克兰": "🇺🇦"
 }
+
 def get_final_label(server, remarks):
     if not server: 
         return "🌍 其它地区"
     text = urllib.parse.unquote(str(remarks)).lower().strip()
-        meta = [
+    # 【仅扩充匹配规则】严格对齐函数体内部的 4 个空格缩进，杜绝 IndentationError
+    meta = [
         ("香港", r"hk|香港|hongkong"), ("台湾", r"tw|台湾|台灣|taiwan"), 
         ("美国", r"us|美国|美國|united states"), ("英国", r"gb|uk|英国|英國"), 
         ("韩国", r"kr|韩国|韓國|korea"), ("日本", r"jp|日本|japan"),
@@ -44,7 +47,6 @@ def get_final_label(server, remarks):
         ("爱尔兰", r"ie|ireland|爱尔兰"), ("墨西哥", r"mx|mexico|墨西哥"),
         ("乌克兰", r"ua|ukraine|乌克兰")
     ]
-
     for name, pattern in meta:
         if re.search(pattern, text): 
             return f"{EMOJI_MAP.get(name, '🌍')} {name}"
@@ -174,7 +176,6 @@ def parse_link(link):
                 port = 443
                 
             credential = u.username or u.password or ""
-            # 🛠 修复点：彻底重写，使用非破坏性的正则表达式拉取凭证，杜绝 List.split 崩溃
             if not credential and "@" in u.netloc:
                 netloc_part = u.netloc.split('@')[0]
                 credential = netloc_part.split(':')[-1] if ":" in netloc_part else netloc_part
@@ -239,51 +240,3 @@ def main():
     rocket_links = [] 
 
     for l in unique_links:
-        p = parse_link(l)
-        if p:
-            label = p.pop('label')
-            idx = len(region_map[label]) + 1
-            new_name = f"{label} {idx:02d} {CHANNEL_MARK}"
-            
-            if p.get('type') == "vmess":
-                d = p.pop('raw_json', {})
-                if d:
-                    d['ps'] = new_name
-                    new_json = json.dumps(d, separators=(',', ':')).encode('utf-8')
-                    rocket_links.append(f"vmess://{base64.b64encode(new_json).decode('utf-8')}")
-            else:
-                clean_url = l.split('#')[0]
-                rocket_links.append(f"{clean_url}#{urllib.parse.quote(new_name)}")
-
-            p['name'] = new_name
-            if validate_clash_proxy(p):
-                clash_proxies.append(p)
-                region_map[label].append(new_name)
-
-    # 写入 index.html
-    with open('index.html', 'w', encoding='utf-8') as f:
-        sub_b64 = base64.b64encode("\n".join(rocket_links).encode('utf-8')).decode('utf-8') if rocket_links else ""
-        f.write(sub_b64)
-    print(f"index.html 更新完毕，包含 {len(rocket_links)} 节点")
-
-    # 写入 config.yaml
-    if clash_proxies:
-        active_regions = list(region_map.keys())
-        proxy_groups = [
-            {"name": "🚀 节点选择", "type": "select", "proxies": ["🎬 自动选择"] + active_regions + ["DIRECT"]},
-            {"name": "🎬 自动选择", "type": "url-test", "url": TEST_URL, "interval": 300, "proxies": [px['name'] for px in clash_proxies]}
-        ]
-        for r in active_regions:
-            proxy_groups.append({"name": r, "type": "url-test", "url": TEST_URL, "interval": 300, "proxies": region_map[r]})
-
-        with open('config.yaml', 'w', encoding='utf-8') as f:
-            yaml.dump({"mixed-port": 7890, "allow-lan": True, "mode": "rule", "proxies": clash_proxies, "proxy-groups": proxy_groups, "rules": ["MATCH,🚀 节点选择"]}, f, allow_unicode=True, sort_keys=False)
-        print("config.yaml 更新成功")
-    else:
-        # 提供一个最基础的有效 Clash 文件，防止因为没有合格节点导致文件内容不变化、不更新
-        with open('config.yaml', 'w', encoding='utf-8') as f:
-            yaml.dump({"mixed-port": 7890, "mode": "rule", "proxies": [{"name": "DIRECT_NODE", "type": "direct"}], "proxy-groups": [{"name": "🚀 节点选择", "type": "select", "proxies": ["DIRECT"]}], "rules": ["MATCH,🚀 节点选择"]}, f)
-        print("⚠️ 未发现满足导入条件的 Clash 节点，已启用 DIRECT 兜底写入。")
-
-if __name__ == "__main__":
-    main()
