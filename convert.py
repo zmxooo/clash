@@ -14,8 +14,8 @@ TEST_URL = "http://gstatic.com"
 IP_CACHE = {}
 
 EMOJI_MAP = {
-    "香港": "🇭🇰", "台湾": "🇹🇼", "美国": "🇺🇸", "英国": "🇬🇧", "韩国": "🇰🇷", 
-    "日本": "🇯🇵", "新加坡": "🇸🇬", "越南": "🇻🇳", "德国": "🇩🇪", "俄罗斯": "🇷🇺"
+    "香港": "🇭🇰", "台湾": "🇹🇼", "美国": "🇺🇸", "日本": "🇯🇵", 
+    "新加坡": "🇸🇬", "韩国": "🇰🇷", "德国": "🇩🇪", "英国": "🇬🇧"
 }
 
 def get_final_label(server, remarks):
@@ -31,7 +31,7 @@ def get_final_label(server, remarks):
     
     if server in IP_CACHE: return IP_CACHE[server]
     try:
-        time.sleep(0.2) # 稍微增加延迟防止被封
+        time.sleep(0.2)
         response = requests.get(f"http://ip-api.com/json/{server}?lang=zh-CN", timeout=5).json()
         if response.get("status") == "success":
             country = response.get("country")
@@ -48,12 +48,10 @@ def fix_base64(s):
 
 def rebuild_node(link, new_name):
     try:
-        # 1. VMess 协议深度解析
         if link.startswith('vmess://'):
             b64_part = link[8:].split('#')[0]
             d = json.loads(base64.b64decode(fix_base64(b64_part)).decode('utf-8', 'ignore'))
             label = get_final_label(d.get("add"), d.get("ps", ""))
-            
             std_vmess = {
                 "v": "2", "ps": new_name, "add": str(d.get("add")).strip(),
                 "port": str(d.get("port")), "id": str(d.get("id")), "aid": str(d.get("aid", "0")),
@@ -68,16 +66,12 @@ def rebuild_node(link, new_name):
             }
             if proxy["network"] == "ws":
                 proxy["ws-opts"] = {"path": std_vmess["path"], "headers": {"Host": std_vmess["host"]}}
-            
-            new_b64 = base64.b64encode(json.dumps(std_vmess).encode()).decode()
-            return label, proxy, f"vmess://{new_b64}"
+            return label, proxy, f"vmess://{base64.b64encode(json.dumps(std_vmess).encode()).decode()}"
 
-        # 2. 通用 URI 协议解析 (SS, Trojan, VLESS, HY2)
         u = urllib.parse.urlparse(link)
         scheme = u.scheme.lower()
         old_remarks = urllib.parse.unquote(u.fragment) if u.fragment else ""
         label = get_final_label(u.hostname, old_remarks)
-        
         proxy = {"name": new_name, "server": u.hostname, "port": u.port, "skip-cert-verify": True}
 
         if scheme == "ss":
@@ -104,12 +98,9 @@ def main():
     if not os.path.exists('nodes.txt'): return
     with open('nodes.txt', 'r', encoding='utf-8') as f:
         raw_links = list(dict.fromkeys([l.strip() for l in f if "://" in l]))
-
     region_map = defaultdict(list)
     clash_proxies, rocket_links = [], []
-
     for l in raw_links:
-        # 预扫获取国家
         lbl, _, _ = rebuild_node(l, "TEMP")
         if not lbl: continue
         new_name = f"{lbl} {len(region_map[lbl])+1:02d} {CHANNEL_MARK}"
@@ -118,13 +109,9 @@ def main():
             region_map[label].append(new_name)
             clash_proxies.append(proxy)
             rocket_links.append(r_link)
-
-    # 导出 Base64 (Shadowrocket)
     if rocket_links:
         with open('index.html', 'w', encoding='utf-8') as f:
             f.write(base64.b64encode("\n".join(rocket_links).encode()).decode())
-
-    # 导出 YAML (Clash)
     if clash_proxies:
         active_regions = sorted(list(region_map.keys()))
         groups = [
@@ -133,7 +120,6 @@ def main():
         ]
         for r in active_regions:
             groups.append({"name": r, "type": "url-test", "url": TEST_URL, "interval": 300, "proxies": region_map[r]})
-
         config = {"mixed-port": 7890, "allow-lan": True, "mode": "rule", "proxies": clash_proxies, "proxy-groups": groups, "rules": ["MATCH,🚀 节点选择"]}
         with open('clash_config.yaml', 'w', encoding='utf-8') as f:
             yaml.dump(config, f, allow_unicode=True, sort_keys=False)
