@@ -11,8 +11,8 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 
 # --- 配置参数 ---
 FIXED_SUFFIX = "zmxooo"
-IP_CACHE = {}
-MAX_WORKERS = 10  # 并发线程数，推荐 10-20
+IP_CACHE_FILE = "ip_cache.json"
+MAX_WORKERS = 10  # 并发线程数
 
 RULES = [
     ("香港", r"HK|HONGKONG|香港|廣港|CMI|HKT|PCCW|HGC|WTT"),
@@ -33,13 +33,22 @@ EMOJI_MAP = {
     "美国": "🇺🇸", "英国": "🇬🇧", "德国": "🇩🇪", "俄罗斯": "🇷🇺", "越南": "🇻🇳", "泰国": "🇹🇭", "其它": "🌍"
 }
 
+# 加载持久化 IP 缓存
+if os.path.exists(IP_CACHE_FILE):
+    try:
+        with open(IP_CACHE_FILE, 'r', encoding='utf-8') as f:
+            IP_CACHE = json.load(f)
+    except:
+        IP_CACHE = {}
+else:
+    IP_CACHE = {}
+
 def fix_base64(s):
     if not s: return ""
     s = "".join(s.split()) 
     return s + '=' * (-len(s) % 4)
 
 def get_region_from_rules(remarks, host):
-    """第一阶段：纯文本纯正则规则快速匹配（零网络开销）"""
     text = f"{urllib.parse.unquote(str(remarks))} {host}".upper()
     for name, pattern in RULES:
         if re.search(pattern, text):
@@ -47,20 +56,22 @@ def get_region_from_rules(remarks, host):
     return None
 
 def fetch_ip_api(server):
-    """通过 API 查询单个 IP 的区域"""
     if server in IP_CACHE: 
         return server, IP_CACHE[server]
         
-    # 过滤掉域名，只对 IP 或无法匹配规则的进行查询
-    # 如果是纯域名且带国家后缀，做简单前置拦截
     if server.endswith('.hk'): return server, "香港"
     if server.endswith('.tw'): return server, "台湾"
     if server.endswith('.jp'): return server, "日本"
     
+    # 检测是否为 IP 地址，若非 IP 且无后缀，跳过 API 规避限流
+    if not re.match(r"^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$", server) and "." in server:
+        return server, "其它"
+
     try:
-        # 使用 ip-api.com，限流为 45 req/min
+        # 限流保护：请求间硬性等待 1.3 秒
+        time.sleep(1.3)
         url = f"http://ip-api.com/json/{server}?lang=zh-CN"
-        r = requests.get(url, timeout=3.5).json()
+        r = requests.get(url, timeout=4).json()
         if r.get("status") == "success":
             country = r.get("country", "")
             for name in EMOJI_MAP.keys():
@@ -72,7 +83,6 @@ def fetch_ip_api(server):
     return server, "其它"
 
 def process_node_region(link):
-    """解析节点基本信息并识别区域（供线程池调用）"""
     try:
         host, raw_rem = "", ""
         if link.startswith('vmess://'):
@@ -84,24 +94,22 @@ def process_node_region(link):
             host = u.hostname or ""
             raw_rem = urllib.parse.unquote(link.split('#')[1]) if '#' in link else ""
         
-        # 1. 优先正则匹配
         region = get_region_from_rules(raw_rem, host)
         if region:
             return link, region, host, raw_rem
             
-        # 2. 正则未命中，返回标记，后续批量交由 API 识别
         return link, "NEED_API", host, raw_rem
     except:
         return link, "其它", "", ""
 
 def main():
     if not os.path.exists('nodes.txt'):
+        print("未找到 nodes.txt 输入文件")
         return
 
     with open('nodes.txt', 'r', encoding='utf-8', errors='ignore') as f:
         links = list(dict.fromkeys([l.strip() for l in f if "://" in l]))
 
-    # 步骤 1：利用多线程并发解析节点，并提取出需要调用 API 查询的 IP
     first_stage_results = []
     api_query_servers = set()
     
@@ -113,19 +121,18 @@ def main():
             if res[1] == "NEED_API" and res[2]:
                 api_query_servers.add(res[2])
 
-    # 步骤 2：并发查询 IP API（带每秒频控，防止单 IP 触发 429）
     if api_query_servers:
-        with ThreadPoolExecutor(max_workers=3) as api_executor: # 查询 API 降速到 3 线程，规避限流
-            api_futures = []
-            for idx, srv in enumerate(api_query_servers):
-                # 稍微交错请求时间
-                api_futures.append(api_executor.submit(fetch_ip_api, srv))
-                
+        print(r"正在通过 API 识别未匹配节点的地理位置...")
+        with ThreadPoolExecutor(max_workers=1) as api_executor: # 降为单线程强控频
+            api_futures = [api_executor.submit(fetch_ip_api, srv) for srv in api_query_servers]
             for fut in as_completed(api_futures):
                 srv, reg = fut.result()
                 IP_CACHE[srv] = reg
+        
+        # 写入持久化 IP 缓存文件
+        with open(IP_CACHE_FILE, 'w', encoding='utf-8') as f:
+            json.dump(IP_CACHE, f, ensure_ascii=False, indent=2)
 
-    # 步骤 3：根据最终分类结果归类节点
     classified_nodes = defaultdict(list)
     for link, region, host, raw_rem in first_stage_results:
         if region == "NEED_API":
@@ -135,7 +142,6 @@ def main():
     final_links, clash_proxies = [], []
     sorted_regions = sorted(classified_nodes.keys())
     
-    # 步骤 4：生成节点配置
     for reg in sorted_regions:
         for idx, link in enumerate(classified_nodes[reg], 1):
             new_name = f"{EMOJI_MAP.get(reg, '🌍')}{reg} {FIXED_SUFFIX}{idx}"
@@ -160,25 +166,29 @@ def main():
                     
                 elif "://" in link:
                     u = urllib.parse.urlparse(link)
-                    p = {"name": new_name, "server": u.hostname, "port": u.port or 443, "udp": True}
-                    
-                    # 提取 URL 参数
+                    p = {
+                        "name": new_name, 
+                        "server": u.hostname, 
+                        "port": u.port or (443 if u.scheme in ["hy2", "hysteria2", "vless"] else 80), 
+                        "udp": True
+                    }
                     queries = dict(urllib.parse.parse_qsl(u.query))
                     
                     if u.scheme in ["hy2", "hysteria2"]:
                         p.update({
                             "type": "hysteria2", 
-                            "password": u.username, 
+                            "password": u.username or u.netloc.split('@')[0], 
                             "up": queries.get("up", "20 Mbps"), 
                             "down": queries.get("down", "100 Mbps"), 
                             "skip-cert-verify": True
                         })
                         if "sni" in queries: p["sni"] = queries["sni"]
                         clash_proxies.append(p)
+                        final_links.append(f"{u.scheme}://{p['password']}@{p['server']}:{p['port']}?{urllib.parse.urlencode(queries)}#{urllib.parse.quote(new_name)}")
                         
                     elif u.scheme == "vless":
                         p.update({
-                            "type": "vless", "uuid": u.username, 
+                            "type": "vless", "uuid": u.username or u.netloc.split('@')[0], 
                             "tls": True if queries.get("security") == "tls" or u.port == 443 else False, 
                             "skip-cert-verify": True,
                             "network": queries.get("type", "tcp")
@@ -188,45 +198,34 @@ def main():
                         if queries.get("type") == "ws":
                             p["ws-opts"] = {"path": queries.get("path", "/"), "headers": {"Host": queries.get("host", p["server"])}}
                         clash_proxies.append(p)
+                        final_links.append(f"vless://{p['uuid']}@{p['server']}:{p['port']}?{urllib.parse.urlencode(queries)}#{urllib.parse.quote(new_name)}")
                         
                     elif u.scheme in ["ss", "shadowsocks"]:
                         p["type"] = "ss"
+                        user_info = u.netloc.split('@')[0] if "@" in u.netloc else u.netloc.split('#')[0]
                         try:
-                            # 兼容常规 ss://base64 格式 与 新版 ss://base64@host:port 格式
-                            if "@" in u.netloc:
-                                user_info = u.username
-                            else:
-                                user_info = u.netloc.split('#')[0]
-                            
                             dec_user = base64.b64decode(fix_base64(user_info)).decode('utf-8', 'ignore')
                             if ":" in dec_user:
                                 p["cipher"], p["password"] = dec_user.split(':', 1)
                                 clash_proxies.append(p)
-                        except: 
+                                # 重新组合通用格式的链接
+                                final_links.append(f"ss://{user_info}@{p['server']}:{p['port']}#{urllib.parse.quote(new_name)}")
+                        except:
                             pass
-                    
-                    final_links.append(f"{link.split('#')[0]}#{urllib.parse.quote(new_name)}")
-            except:
-                continue
+            except Exception as e:
+                print(f"处理节点出错 {new_name}: {e}")
 
-    # 生成 index.html
+    # 步骤 5：持久化导出结果
     if final_links:
-        with open('index.html', 'w', encoding='utf-8') as f:
-            f.write(base64.b64encode("\n".join(final_links).encode('utf-8')).decode('utf-8'))
+        with open('output_links.txt', 'w', encoding='utf-8') as f:
+            f.write("\n".join(final_links))
+        print("通用节点格式已导出至: output_links.txt")
 
-    # 生成 config.yaml
     if clash_proxies:
-        p_names = [p["name"] for p in clash_proxies]
-        conf = {
-            "proxies": clash_proxies,
-            "proxy-groups": [
-                {"name": "🚀 节点选择", "type": "select", "proxies": ["♻️ 自动选择", "DIRECT"] + p_names},
-                {"name": "♻️ 自动选择", "type": "url-test", "url": "http://www.gstatic.com/generate_204", "interval": 300, "proxies": p_names}
-            ],
-            "rules": ["MATCH,🚀 节点选择"]
-        }
-        with open('config.yaml', 'w', encoding='utf-8') as f:
-            yaml.dump(conf, f, allow_unicode=True, sort_keys=False)
+        clash_config = {"proxies": clash_proxies}
+        with open('clash_proxies.yaml', 'w', encoding='utf-8') as f:
+            yaml.dump(clash_config, f, allow_unicode=True, sort_keys=False)
+        print("Clash 配置格式已导出至: clash_proxies.yaml")
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     main()
