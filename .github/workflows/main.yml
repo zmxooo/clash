@@ -1,12 +1,19 @@
-name: Auto Convert
+name: Auto Convert Node
+
 on:
   push:
     branches: [ main ]
+    paths:
+      - 'nodes.txt'
   workflow_dispatch:
 
 jobs:
   convert:
     runs-on: ubuntu-latest
+    # 必须显式声明写权限
+    permissions:
+      contents: write
+      
     steps:
       - name: 检查仓库代码
         uses: actions/checkout@v4
@@ -16,8 +23,7 @@ jobs:
         with:
           python-version: '3.10'
 
-      - name: 安装必要插件
-        # 修改 1: 增加了 requests，这是 IP 查询必须的插件
+      - name: 安装依赖
         run: pip install pyyaml requests
 
       - name: 运行转换脚本
@@ -27,7 +33,14 @@ jobs:
         run: |
           git config --local user.email "actions@github.com"
           git config --local user.name "GitHub Action"
-          # 修改 2: 确保 GitHub 同时更新 config.yaml 和 index.html (小火箭订阅)
-          git add config.yaml index.html
-          git commit -m "自动更新订阅文件" || exit 0
-          git push
+          
+          # 关键点：一定要和 convert.py 里的文件名对齐
+          git add clash_config.yaml index.html
+          
+          # 只有在有变动时才提交，防止 workflow 报错
+          if git diff --staged --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "Auto Update Nodes [$(date '+%Y-%m-%d %H:%M')]"
+            git push
+          fi
