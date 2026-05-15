@@ -10,84 +10,84 @@ proxies:
   type: hysteria2
   port: 443
   password: qQe1z5kU8kN6SlKnDt9Ru3Qp
-  sni: 202.146.222.41
+  sni: zmxooo
   skip-cert-verify: true
 - name: 🇭🇰香港 zmxooo02
   server: 202.146.222.13
   type: hysteria2
   port: 443
   password: qQe1z5kU8kN6SlKnDt9Ru3Qp
-  sni: 202.146.222.13
+  sni: zmxooo
   skip-cert-verify: true
 - name: 🇭🇰香港 zmxooo03
   server: 202.146.222.93
   type: hysteria2
   port: 443
   password: qQe1z5kU8kN6SlKnDt9Ru3Qp
-  sni: 202.146.222.93
+  sni: zmxooo
   skip-cert-verify: true
 - name: 🇭🇰香港 zmxooo04
   server: 202.146.222.89
   type: hysteria2
   port: 443
   password: qQe1z5kU8kN6SlKnDt9Ru3Qp
-  sni: 202.146.222.89
+  sni: zmxooo
   skip-cert-verify: true
 - name: 🇭🇰香港 zmxooo05
   server: 202.146.222.11
   type: hysteria2
   port: 443
   password: qQe1z5kU8kN6SlKnDt9Ru3Qp
-  sni: 202.146.222.11
+  sni: zmxooo
   skip-cert-verify: true
 - name: 🇭🇰香港 zmxooo06
   server: 202.146.222.45
   type: hysteria2
   port: 443
   password: qQe1z5kU8kN6SlKnDt9Ru3Qp
-  sni: 202.146.222.45
+  sni: zmxooo
   skip-cert-verify: true
 - name: 🇭🇰香港 zmxooo07
   server: 202.146.222.5
   type: hysteria2
   port: 443
   password: qQe1z5kU8kN6SlKnDt9Ru3Qp
-  sni: 202.146.222.5
+  sni: zmxooo
   skip-cert-verify: true
 - name: 🇭🇰香港 zmxooo08
   server: 202.146.222.1
   type: hysteria2
   port: 443
   password: qQe1z5kU8kN6SlKnDt9Ru3Qp
-  sni: 202.146.222.1
+  sni: zmxooo
   skip-cert-verify: true
 - name: 🇭🇰香港 zmxooo09
   server: 202.146.222.15
   type: hysteria2
   port: 443
   password: qQe1z5kU8kN6SlKnDt9Ru3Qp
-  sni: 202.146.222.15
+  sni: zmxooo
   skip-cert-verify: true
 - name: 🇹🇼台湾 zmxooo01
   server: 45.132.226.177
   type: hysteria2
   port: 443
   password: qQe1z5kU8kN6SlKnDt9Ru3Qp
-  sni: 45.132.226.177
+  sni: zmxooo
   skip-cert-verify: true
 - name: 🇹🇼台湾 zmxooo02
   server: 45.132.226.161
   type: hysteria2
   port: 443
   password: qQe1z5kU8kN6SlKnDt9Ru3Qp
-  sni: 45.132.226.161
+  sni: zmxooo
   skip-cert-verify: true
 - name: 🇹🇼台湾 zmxooo03
   server: 45.132.226.153
   type: hysteria2
   port: 443
   password: qQe1z5kU8kN6SlKnDt9Ru3Qp
-  sni: 45.132.226.153
+  sni: zmxooo
   skip-cert-verify: true
 - name: 🇺🇸美国 zmxooo01
   server: 152.67.203.35
@@ -272,14 +272,14 @@ proxies:
   type: hysteria2
   port: 443
   password: qQe1z5kU8kN6SlKnDt9Ru3Qp
-  sni: 45.132.226.137
+  sni: zmxooo
   skip-cert-verify: true
 - name: 🇹🇼台湾 zmxooo06
   server: 45.132.226.169
   type: hysteria2
   port: 443
   password: qQe1z5kU8kN6SlKnDt9Ru3Qp
-  sni: 45.132.226.169
+  sni: zmxooo
   skip-cert-verify: true
 - name: 🌍其它 zmxooo01
   server: 194.48.118.142
