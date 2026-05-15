@@ -5,7 +5,7 @@ import urllib.parse
 import os
 import re
 
-# --- 核心配置（完全保留您的初版定义） ---
+# --- 核心配置 ---
 CHANNEL_MARK = "zmxooo"
 EMOJI_MAP = {
     "香港": "🇭🇰", "台湾": "🇹🇼", "美国": "🇺🇸", "日本": "🇯🇵", 
@@ -61,10 +61,11 @@ def main():
                 server = data.get("add", "")
                 raw_ps = data.get("ps", "")
             else:
+                # 🛠️ 修复 1：补全 [0] 索引，防止 protocol_type 变成列表导致后续识别全部失效
                 protocol_type = link.split('://')[0]
                 u = urllib.parse.urlparse(link)
                 server = u.hostname or ""
-                raw_ps = urllib.parse.unquote(u.fragment)
+                raw_ps = urllib.parse.unquote(u.fragment or "")
 
             # --- 2. 生成统一样式的备注 ---
             region = get_region_from_text(raw_ps + server)
@@ -100,9 +101,22 @@ def main():
                     p_obj["ws-opts"] = {"path": data.get("path", "/"), "headers": {"Host": data.get("host", "")}}
             elif protocol_type in ["hysteria2", "hy2"]:
                 u = urllib.parse.urlparse(link)
+                # 🛠️ 修复 2：安全解析密码，移除可能存在的 url 参数干扰
+                password = u.username
+                if not password and '@' in u.netloc:
+                    password = u.netloc.split('@')[0]
+                
+                # 提取 sni 参数
+                query_params = urllib.parse.parse_qs(u.query)
+                sni_val = query_params.get('sni', [server])[0]
+                sni_val = urllib.parse.unquote(sni_val).split('/')[-1] if '/' in sni_val else sni_val
+
                 p_obj.update({
-                    "type": "hysteria2", "port": u.port or 443,
-                    "password": u.username, "sni": server, "skip-cert-verify": True
+                    "type": "hysteria2", 
+                    "port": u.port or 443,
+                    "password": password, 
+                    "sni": sni_val, 
+                    "skip-cert-verify": True
                 })
             elif protocol_type == "ss":
                 u = urllib.parse.urlparse(link)
@@ -112,45 +126,51 @@ def main():
                 clash_proxies.append(p_obj)
 
         except Exception as e:
+            # 调试信息，可以帮助你在 Action 中看到具体哪一行报错了
+            print(f"解析单个节点失败，跳过。错误原因: {e}")
             continue
 
     # --- 5. 写入 index.html (Base64) ---
-    full_text = "\n".join(base64_links)
-    encoded_text = base64.b64encode(full_text.encode()).decode()
-    with open('index.html', 'w', encoding='utf-8') as f:
-        f.write(encoded_text)
+    if base64_links:
+        full_text = "\n".join(base64_links)
+        encoded_text = base64.b64encode(full_text.encode()).decode()
+        with open('index.html', 'w', encoding='utf-8') as f:
+            f.write(encoded_text)
+        print(f"成功更新小火箭订阅文件，共 {len(base64_links)} 个节点")
 
-    # --- 6. 安全补全：写入 clash_config.yaml (承接您初版未完的逻辑) ---
-    clash_config = {
-        "port": 7890,
-        "socks-port": 7891,
-        "allow-lan": True,
-        "mode": "rule",
-        "log-level": "info",
-        "external-controller": "127.0.0.1:9090",
-        "proxies": clash_proxies,
-        "proxy-groups": [
-            {
-                "name": "🚀 节点选择",
-                "type": "select",
-                "proxies": ["自动选择"] + [p["name"] for p in clash_proxies]
-            },
-            {
-                "name": "自动选择",
-                "type": "url-test",
-                "url": "http://gstatic.com",
-                "interval": 300,
-                "tolerance": 50,
-                "proxies": [p["name"] for p in clash_proxies]
-            }
-        ],
-        "rules": [
-            "MATCH,🚀 节点选择"
-        ]
-    }
+    # --- 6. 写入 clash_config.yaml ---
+    if clash_proxies:
+        clash_config = {
+            "port": 7890,
+            "socks-port": 7891,
+            "allow-lan": True,
+            "mode": "rule",
+            "log-level": "info",
+            "external-controller": "127.0.0.1:9090",
+            "proxies": clash_proxies,
+            "proxy-groups": [
+                {
+                    "name": "🚀 节点选择",
+                    "type": "select",
+                    "proxies": ["自动选择"] + [p["name"] for p in clash_proxies]
+                },
+                {
+                    "name": "自动选择",
+                    "type": "url-test",
+                    "url": "http://gstatic.com",
+                    "interval": 300,
+                    "tolerance": 50,
+                    "proxies": [p["name"] for p in clash_proxies]
+                }
+            ],
+            "rules": [
+                "MATCH,🚀 节点选择"
+            ]
+        }
 
-    with open('clash_config.yaml', 'w', encoding='utf-8') as f:
-        yaml.dump(clash_config, f, allow_unicode=True, sort_keys=False)
+        with open('clash_config.yaml', 'w', encoding='utf-8') as f:
+            yaml.dump(clash_config, f, allow_unicode=True, sort_keys=False)
+        print(f"成功更新 Clash 订阅文件，共 {len(clash_proxies)} 个节点")
 
 if __name__ == '__main__':
     main()
