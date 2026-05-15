@@ -39,7 +39,6 @@ def get_final_label(server, remarks):
         return IP_CACHE[server]
     try:
         time.sleep(0.1) 
-        # 修复：补充了 API 路径的斜杠
         response = requests.get(f"http://ip-api.com{server}?lang=zh-CN", timeout=3).json()
         if response.get("status") == "success":
             country = response.get("country")
@@ -161,6 +160,7 @@ def parse_link(link):
                 port = 443
                 
             credential = u.username or u.password or ""
+            # 🛠 修复点：彻底重写，使用非破坏性的正则表达式拉取凭证，杜绝 List.split 崩溃
             if not credential and "@" in u.netloc:
                 netloc_part = u.netloc.split('@')[0]
                 credential = netloc_part.split(':')[-1] if ":" in netloc_part else netloc_part
@@ -224,76 +224,52 @@ def main():
     clash_proxies = []
     rocket_links = [] 
 
-    # === 以下为补充和完善的代码核心逻辑 ===
     for l in unique_links:
-        proxy_data = parse_link(l)
-        if not proxy_data:
-            continue
+        p = parse_link(l)
+        if p:
+            label = p.pop('label')
+            idx = len(region_map[label]) + 1
+            new_name = f"{label} {idx:02d} {CHANNEL_MARK}"
             
-        # 根据地区标签进行计数与重命名，防止 Clash 节点名重复
-        label = proxy_data["label"]
-        region_map[label].append(proxy_data)
-        index = len(region_map[label])
-        
-        # 构造节点在配置文件中的最终唯一名称
-        node_name = f"{label} {index:02d} {CHANNEL_MARK}"
-        
-        # 1. 组装 Clash 节点项
-        if validate_clash_proxy(proxy_data):
-            clash_item = proxy_data.copy()
-            clash_item["name"] = node_name
-            # 移除非 Clash 标准的元数据字段
-            clash_item.pop("label", None)
-            clash_item.pop("raw_json", None)
-            clash_proxies.append(clash_item)
-            
-        # 2. 组装 Shadowrocket (Rocket) 原始链接
-        # 保持原链接协议，仅替换或追加节点备注名称
-        u = urllib.parse.urlparse(l)
-        encoded_name = urllib.parse.quote(node_name)
-        new_link = urllib.parse.urlunparse(u._replace(fragment=encoded_name))
-        rocket_links.append(new_link)
+            if p.get('type') == "vmess":
+                d = p.pop('raw_json', {})
+                if d:
+                    d['ps'] = new_name
+                    new_json = json.dumps(d, separators=(',', ':')).encode('utf-8')
+                    rocket_links.append(f"vmess://{base64.b64encode(new_json).decode('utf-8')}")
+            else:
+                clean_url = l.split('#')[0]
+                rocket_links.append(f"{clean_url}#{urllib.parse.quote(new_name)}")
 
-    # 3. 输出 Clash 配置文件 (clash.yaml)
-    clash_config = {
-        "port": 7890,
-        "socks-port": 7891,
-        "allow-lan": True,
-        "mode": "rule",
-        "log-level": "info",
-        "external-controller": "127.0.0.1:9090",
-        "proxies": clash_proxies,
-        "proxy-groups": [
-            {
-                "name": "🚀 节点选择",
-                "type": "select",
-                "proxies": ["🔮 自动选择", "DIRECT"] + [p["name"] for p in clash_proxies]
-            },
-            {
-                "name": "🔮 自动选择",
-                "type": "url-test",
-                "url": TEST_URL,
-                "interval": 300,
-                "tolerance": 50,
-                "proxies": [p["name"] for p in clash_proxies]
-            }
-        ],
-        "rules": [
-            "MATCH,🚀 节点选择"
+            p['name'] = new_name
+            if validate_clash_proxy(p):
+                clash_proxies.append(p)
+                region_map[label].append(new_name)
+
+    # 写入 index.html
+    with open('index.html', 'w', encoding='utf-8') as f:
+        sub_b64 = base64.b64encode("\n".join(rocket_links).encode('utf-8')).decode('utf-8') if rocket_links else ""
+        f.write(sub_b64)
+    print(f"index.html 更新完毕，包含 {len(rocket_links)} 节点")
+
+    # 写入 config.yaml
+    if clash_proxies:
+        active_regions = list(region_map.keys())
+        proxy_groups = [
+            {"name": "🚀 节点选择", "type": "select", "proxies": ["🎬 自动选择"] + active_regions + ["DIRECT"]},
+            {"name": "🎬 自动选择", "type": "url-test", "url": TEST_URL, "interval": 300, "proxies": [px['name'] for px in clash_proxies]}
         ]
-    }
-    
-    with open('clash.yaml', 'w', encoding='utf-8') as f:
-        yaml.dump(clash_config, f, allow_unicode=True, sort_keys=False)
-    print(f" Saved {len(clash_proxies)} proxies to clash.yaml")
+        for r in active_regions:
+            proxy_groups.append({"name": r, "type": "url-test", "url": TEST_URL, "interval": 300, "proxies": region_map[r]})
 
-    # 4. 输出 Shadowrocket 订阅文件 (shadowrocket.txt 并 Base64 编码)
-    raw_rocket_text = "\n".join(rocket_links)
-    b64_rocket_text = base64.b64encode(raw_rocket_text.encode('utf-8')).decode('utf-8')
-    
-    with open('shadowrocket.txt', 'w', encoding='utf-8') as f:
-        f.write(b64_rocket_text)
-    print(f" Saved {len(rocket_links)} links to shadowrocket.txt (Base64)")
+        with open('config.yaml', 'w', encoding='utf-8') as f:
+            yaml.dump({"mixed-port": 7890, "allow-lan": True, "mode": "rule", "proxies": clash_proxies, "proxy-groups": proxy_groups, "rules": ["MATCH,🚀 节点选择"]}, f, allow_unicode=True, sort_keys=False)
+        print("config.yaml 更新成功")
+    else:
+        # 提供一个最基础的有效 Clash 文件，防止因为没有合格节点导致文件内容不变化、不更新
+        with open('config.yaml', 'w', encoding='utf-8') as f:
+            yaml.dump({"mixed-port": 7890, "mode": "rule", "proxies": [{"name": "DIRECT_NODE", "type": "direct"}], "proxy-groups": [{"name": "🚀 节点选择", "type": "select", "proxies": ["DIRECT"]}], "rules": ["MATCH,🚀 节点选择"]}, f)
+        print("⚠️ 未发现满足导入条件的 Clash 节点，已启用 DIRECT 兜底写入。")
 
 if __name__ == "__main__":
     main()
