@@ -1,45 +1,42 @@
 proxies:
-- name: 🇹🇼台湾 zmxooo1
+- name: 🌍其它 zmxooo2
+  server: 103.186.155.75
+  port: 38388
+  udp: true
+  type: ss
+  cipher: aes-256-cfb
+  password: Xn8jKdmDM00IeO%#$#fJAMtsEAEUOpH/YWYtYqDFnT0SV
+- name: 🌍其它 zmxooo3
   type: vmess
-  server: v13.zgtfqs.click
-  port: 30813
-  uuid: cbb3f877-d1fb-344c-87a9-d153bffd5484
-  alterId: 2
+  server: 82.198.246.9
+  port: 180
+  uuid: d13fc2f5-3e05-4795-81eb-44143a09e552
+  alterId: 0
   cipher: auto
   tls: false
   network: tcp
   skip-cert-verify: true
-- name: 🇹🇼台湾 zmxooo2
+- name: 🌍其它 zmxooo4
   type: vmess
-  server: v11.zgtfqs.click
-  port: 30811
-  uuid: cbb3f877-d1fb-344c-87a9-d153bffd5484
-  alterId: 2
+  server: 82.198.246.214
+  port: 180
+  uuid: d13fc2f5-3e05-4795-81eb-44143a09e552
+  alterId: 0
   cipher: auto
   tls: false
   network: tcp
   skip-cert-verify: true
-- name: 🇹🇼台湾 zmxooo3
-  server: 160.187.100.109
-  port: 443
-  udp: true
-  type: hysteria2
-  password: qQe1z5kU8kN6SlKnDt9Ru3Qp
-  up: 20 Mbps
-  down: 100 Mbps
+- name: 🌍其它 zmxooo5
+  type: vmess
+  server: 82.198.246.37
+  port: 180
+  uuid: d13fc2f5-3e05-4795-81eb-44143a09e552
+  alterId: 0
+  cipher: auto
+  tls: false
+  network: tcp
   skip-cert-verify: true
-  sni: https://t.me/zmxooo
-- name: 🇹🇼台湾 zmxooo4
-  server: 43.200.123.45
-  port: 443
-  udp: true
-  type: hysteria2
-  password: qQe1z5kU8kN6SlKnDt9Ru3Qp
-  up: 20 Mbps
-  down: 100 Mbps
-  skip-cert-verify: true
-  sni: https://t.me/zmxooo
-- name: 🇩🇪德国 zmxooo1
+- name: 🌍其它 zmxooo6
   type: vmess
   server: 82.198.246.233
   port: 180
@@ -49,7 +46,57 @@ proxies:
   tls: false
   network: tcp
   skip-cert-verify: true
+- name: 🇹🇼台湾 zmxooo1
+  server: 43.200.123.45
+  port: 443
+  udp: true
+  type: hysteria2
+  password: qQe1z5kU8kN6SlKnDt9Ru3Qp
+  up: 20 Mbps
+  down: 100 Mbps
+  skip-cert-verify: true
+  sni: https://t.me/zmxooo
+- name: 🇹🇼台湾 zmxooo2
+  server: 160.187.100.109
+  port: 443
+  udp: true
+  type: hysteria2
+  password: qQe1z5kU8kN6SlKnDt9Ru3Qp
+  up: 20 Mbps
+  down: 100 Mbps
+  skip-cert-verify: true
+  sni: https://t.me/zmxooo
+- name: 🇹🇼台湾 zmxooo3
+  type: vmess
+  server: v13.zgtfqs.click
+  port: 30813
+  uuid: cbb3f877-d1fb-344c-87a9-d153bffd5484
+  alterId: 2
+  cipher: auto
+  tls: false
+  network: tcp
+  skip-cert-verify: true
+- name: 🇹🇼台湾 zmxooo4
+  type: vmess
+  server: v11.zgtfqs.click
+  port: 30811
+  uuid: cbb3f877-d1fb-344c-87a9-d153bffd5484
+  alterId: 2
+  cipher: auto
+  tls: false
+  network: tcp
+  skip-cert-verify: true
 - name: 🇩🇪德国 zmxooo2
+  type: vmess
+  server: 82.198.246.233
+  port: 180
+  uuid: d13fc2f5-3e05-4795-81eb-44143a09e552
+  alterId: 0
+  cipher: auto
+  tls: false
+  network: tcp
+  skip-cert-verify: true
+- name: 🇩🇪德国 zmxooo3
   type: vmess
   server: 82.198.246.233
   port: 180
@@ -144,33 +191,13 @@ proxies:
   network: tcp
   skip-cert-verify: true
 - name: 🇺🇸美国 zmxooo8
-  type: vmess
-  server: 82.198.246.214
-  port: 180
-  uuid: d13fc2f5-3e05-4795-81eb-44143a09e552
-  alterId: 0
-  cipher: auto
-  tls: false
-  network: tcp
-  skip-cert-verify: true
-- name: 🇺🇸美国 zmxooo9
   server: 34.229.121.217
   port: 80
   udp: true
   type: ss
   cipher: aes-256-gcm
   password: dada1203
-- name: 🇺🇸美国 zmxooo10
-  type: vmess
-  server: 82.198.246.9
-  port: 180
-  uuid: d13fc2f5-3e05-4795-81eb-44143a09e552
-  alterId: 0
-  cipher: auto
-  tls: false
-  network: tcp
-  skip-cert-verify: true
-- name: 🇺🇸美国 zmxooo11
+- name: 🇺🇸美国 zmxooo9
   type: vmess
   server: 82.198.246.214
   port: 180
@@ -180,27 +207,7 @@ proxies:
   tls: false
   network: tcp
   skip-cert-verify: true
-- name: 🇺🇸美国 zmxooo12
-  type: vmess
-  server: 82.198.246.37
-  port: 180
-  uuid: d13fc2f5-3e05-4795-81eb-44143a09e552
-  alterId: 0
-  cipher: auto
-  tls: false
-  network: tcp
-  skip-cert-verify: true
-- name: 🇺🇸美国 zmxooo13
-  type: vmess
-  server: 82.198.246.233
-  port: 180
-  uuid: d13fc2f5-3e05-4795-81eb-44143a09e552
-  alterId: 0
-  cipher: auto
-  tls: false
-  network: tcp
-  skip-cert-verify: true
-- name: 🇺🇸美国 zmxooo14
+- name: 🇺🇸美国 zmxooo10
   server: 3.137.174.85
   port: 443
   udp: true
@@ -209,7 +216,7 @@ proxies:
   password: amazonskr05
 - name: 🇬🇧英国 zmxooo1
   type: vmess
-  server: 82.198.246.233
+  server: 82.198.246.9
   port: 180
   uuid: d13fc2f5-3e05-4795-81eb-44143a09e552
   alterId: 0
@@ -239,7 +246,7 @@ proxies:
   skip-cert-verify: true
 - name: 🇬🇧英国 zmxooo4
   type: vmess
-  server: 82.198.246.9
+  server: 82.198.246.233
   port: 180
   uuid: d13fc2f5-3e05-4795-81eb-44143a09e552
   alterId: 0
@@ -259,7 +266,7 @@ proxies:
   skip-cert-verify: true
 - name: 🇬🇧英国 zmxooo6
   type: vmess
-  server: 82.198.246.214
+  server: 82.198.246.9
   port: 180
   uuid: d13fc2f5-3e05-4795-81eb-44143a09e552
   alterId: 0
@@ -279,7 +286,7 @@ proxies:
   skip-cert-verify: true
 - name: 🇬🇧英国 zmxooo8
   type: vmess
-  server: 82.198.246.233
+  server: 82.198.246.214
   port: 180
   uuid: d13fc2f5-3e05-4795-81eb-44143a09e552
   alterId: 0
@@ -289,7 +296,7 @@ proxies:
   skip-cert-verify: true
 - name: 🇬🇧英国 zmxooo9
   type: vmess
-  server: 82.198.246.250
+  server: 82.198.246.233
   port: 180
   uuid: d13fc2f5-3e05-4795-81eb-44143a09e552
   alterId: 0
@@ -299,7 +306,7 @@ proxies:
   skip-cert-verify: true
 - name: 🇬🇧英国 zmxooo10
   type: vmess
-  server: 82.198.246.37
+  server: 82.198.246.250
   port: 180
   uuid: d13fc2f5-3e05-4795-81eb-44143a09e552
   alterId: 0
@@ -309,7 +316,7 @@ proxies:
   skip-cert-verify: true
 - name: 🇬🇧英国 zmxooo11
   type: vmess
-  server: 82.198.246.9
+  server: 82.198.246.37
   port: 180
   uuid: d13fc2f5-3e05-4795-81eb-44143a09e552
   alterId: 0
@@ -346,27 +353,20 @@ proxies:
   cipher: aes-256-cfb
   password: Xn8jKdmDM00IeO%#$#fJAMtsEAEUOpH/YWYtYqDFnT0SV
 - name: 🇻🇳越南 zmxooo3
-  server: 103.186.155.75
-  port: 38388
-  udp: true
-  type: ss
-  cipher: aes-256-cfb
-  password: Xn8jKdmDM00IeO%#$#fJAMtsEAEUOpH/YWYtYqDFnT0SV
-- name: 🇻🇳越南 zmxooo4
   server: 103.186.155.79
   port: 38388
   udp: true
   type: ss
   cipher: aes-256-cfb
   password: Xn8jKdmDM00IeO%#$#fJAMtsEAEUOpH/YWYtYqDFnT0SV
-- name: 🇻🇳越南 zmxooo5
+- name: 🇻🇳越南 zmxooo4
   server: 103.186.155.8
   port: 38388
   udp: true
   type: ss
   cipher: aes-256-cfb
   password: Xn8jKdmDM00IeO%#$#fJAMtsEAEUOpH/YWYtYqDFnT0SV
-- name: 🇻🇳越南 zmxooo6
+- name: 🇻🇳越南 zmxooo5
   server: 103.186.155.49
   port: 38388
   udp: true
@@ -384,36 +384,6 @@ proxies:
   skip-cert-verify: true
   sni: vpn-kr-003.fastervpn.world
 - name: 🇭🇰香港 zmxooo1
-  server: 202.146.222.11
-  port: 443
-  udp: true
-  type: hysteria2
-  password: qQe1z5kU8kN6SlKnDt9Ru3Qp
-  up: 20 Mbps
-  down: 100 Mbps
-  skip-cert-verify: true
-  sni: https://t.me/zmxooo
-- name: 🇭🇰香港 zmxooo2
-  server: 202.146.222.89
-  port: 443
-  udp: true
-  type: hysteria2
-  password: qQe1z5kU8kN6SlKnDt9Ru3Qp
-  up: 20 Mbps
-  down: 100 Mbps
-  skip-cert-verify: true
-  sni: https://t.me/zmxooo
-- name: 🇭🇰香港 zmxooo3
-  server: 202.146.222.29
-  port: 443
-  udp: true
-  type: hysteria2
-  password: qQe1z5kU8kN6SlKnDt9Ru3Qp
-  up: 20 Mbps
-  down: 100 Mbps
-  skip-cert-verify: true
-  sni: https://t.me/zmxooo
-- name: 🇭🇰香港 zmxooo4
   server: 202.146.222.85
   port: 443
   udp: true
@@ -423,37 +393,7 @@ proxies:
   down: 100 Mbps
   skip-cert-verify: true
   sni: https://t.me/zmxooo
-- name: 🇭🇰香港 zmxooo5
-  server: 202.146.222.93
-  port: 443
-  udp: true
-  type: hysteria2
-  password: qQe1z5kU8kN6SlKnDt9Ru3Qp
-  up: 20 Mbps
-  down: 100 Mbps
-  skip-cert-verify: true
-  sni: https://t.me/zmxooo
-- name: 🇭🇰香港 zmxooo6
-  server: 202.146.222.16
-  port: 443
-  udp: true
-  type: hysteria2
-  password: qQe1z5kU8kN6SlKnDt9Ru3Qp
-  up: 20 Mbps
-  down: 100 Mbps
-  skip-cert-verify: true
-  sni: https://t.me/zmxooo
-- name: 🇭🇰香港 zmxooo7
-  server: 202.146.222.13
-  port: 443
-  udp: true
-  type: hysteria2
-  password: qQe1z5kU8kN6SlKnDt9Ru3Qp
-  up: 20 Mbps
-  down: 100 Mbps
-  skip-cert-verify: true
-  sni: https://t.me/zmxooo
-- name: 🇭🇰香港 zmxooo8
+- name: 🇭🇰香港 zmxooo2
   server: 202.146.222.45
   port: 443
   udp: true
@@ -463,7 +403,17 @@ proxies:
   down: 100 Mbps
   skip-cert-verify: true
   sni: https://t.me/zmxooo
-- name: 🇭🇰香港 zmxooo9
+- name: 🇭🇰香港 zmxooo3
+  server: 202.146.222.13
+  port: 443
+  udp: true
+  type: hysteria2
+  password: qQe1z5kU8kN6SlKnDt9Ru3Qp
+  up: 20 Mbps
+  down: 100 Mbps
+  skip-cert-verify: true
+  sni: https://t.me/zmxooo
+- name: 🇭🇰香港 zmxooo4
   server: 202.146.222.41
   port: 443
   udp: true
@@ -473,18 +423,88 @@ proxies:
   down: 100 Mbps
   skip-cert-verify: true
   sni: https://t.me/zmxooo
+- name: 🇭🇰香港 zmxooo5
+  server: 202.146.222.16
+  port: 443
+  udp: true
+  type: hysteria2
+  password: qQe1z5kU8kN6SlKnDt9Ru3Qp
+  up: 20 Mbps
+  down: 100 Mbps
+  skip-cert-verify: true
+  sni: https://t.me/zmxooo
+- name: 🇭🇰香港 zmxooo6
+  server: 202.146.222.93
+  port: 443
+  udp: true
+  type: hysteria2
+  password: qQe1z5kU8kN6SlKnDt9Ru3Qp
+  up: 20 Mbps
+  down: 100 Mbps
+  skip-cert-verify: true
+  sni: https://t.me/zmxooo
+- name: 🇭🇰香港 zmxooo7
+  server: 202.146.222.29
+  port: 443
+  udp: true
+  type: hysteria2
+  password: qQe1z5kU8kN6SlKnDt9Ru3Qp
+  up: 20 Mbps
+  down: 100 Mbps
+  skip-cert-verify: true
+  sni: https://t.me/zmxooo
+- name: 🇭🇰香港 zmxooo8
+  server: 202.146.222.11
+  port: 443
+  udp: true
+  type: hysteria2
+  password: qQe1z5kU8kN6SlKnDt9Ru3Qp
+  up: 20 Mbps
+  down: 100 Mbps
+  skip-cert-verify: true
+  sni: https://t.me/zmxooo
+- name: 🇭🇰香港 zmxooo9
+  server: 202.146.222.89
+  port: 443
+  udp: true
+  type: hysteria2
+  password: qQe1z5kU8kN6SlKnDt9Ru3Qp
+  up: 20 Mbps
+  down: 100 Mbps
+  skip-cert-verify: true
+  sni: https://t.me/zmxooo
 proxy-groups:
+- name: 🛑 广告拦截
+  type: select
+  proxies:
+  - REJECT
+  - DIRECT
+  - 🚀 节点选择
 - name: 🚀 节点选择
   type: select
   proxies:
   - ♻️ 自动选择
   - DIRECT
+  - ⚡ 其它自动
+  - ⚡ 台湾自动
+  - ⚡ 德国自动
+  - ⚡ 日本自动
+  - ⚡ 美国自动
+  - ⚡ 英国自动
+  - ⚡ 越南自动
+  - ⚡ 韩国自动
+  - ⚡ 香港自动
+  - 🌍其它 zmxooo2
+  - 🌍其它 zmxooo3
+  - 🌍其它 zmxooo4
+  - 🌍其它 zmxooo5
+  - 🌍其它 zmxooo6
   - 🇹🇼台湾 zmxooo1
   - 🇹🇼台湾 zmxooo2
   - 🇹🇼台湾 zmxooo3
   - 🇹🇼台湾 zmxooo4
-  - 🇩🇪德国 zmxooo1
   - 🇩🇪德国 zmxooo2
+  - 🇩🇪德国 zmxooo3
   - 🇩🇪德国 zmxooo4
   - 🇩🇪德国 zmxooo5
   - 🇯🇵日本 zmxooo2
@@ -497,10 +517,6 @@ proxy-groups:
   - 🇺🇸美国 zmxooo8
   - 🇺🇸美国 zmxooo9
   - 🇺🇸美国 zmxooo10
-  - 🇺🇸美国 zmxooo11
-  - 🇺🇸美国 zmxooo12
-  - 🇺🇸美国 zmxooo13
-  - 🇺🇸美国 zmxooo14
   - 🇬🇧英国 zmxooo1
   - 🇬🇧英国 zmxooo2
   - 🇬🇧英国 zmxooo3
@@ -519,7 +535,6 @@ proxy-groups:
   - 🇻🇳越南 zmxooo3
   - 🇻🇳越南 zmxooo4
   - 🇻🇳越南 zmxooo5
-  - 🇻🇳越南 zmxooo6
   - 🇰🇷韩国 zmxooo1
   - 🇭🇰香港 zmxooo1
   - 🇭🇰香港 zmxooo2
@@ -532,15 +547,21 @@ proxy-groups:
   - 🇭🇰香港 zmxooo9
 - name: ♻️ 自动选择
   type: url-test
-  url: http://www.gstatic.com/generate_204
+  url: http://gstatic.com
   interval: 300
+  tolerance: 50
   proxies:
+  - 🌍其它 zmxooo2
+  - 🌍其它 zmxooo3
+  - 🌍其它 zmxooo4
+  - 🌍其它 zmxooo5
+  - 🌍其它 zmxooo6
   - 🇹🇼台湾 zmxooo1
   - 🇹🇼台湾 zmxooo2
   - 🇹🇼台湾 zmxooo3
   - 🇹🇼台湾 zmxooo4
-  - 🇩🇪德国 zmxooo1
   - 🇩🇪德国 zmxooo2
+  - 🇩🇪德国 zmxooo3
   - 🇩🇪德国 zmxooo4
   - 🇩🇪德国 zmxooo5
   - 🇯🇵日本 zmxooo2
@@ -553,10 +574,6 @@ proxy-groups:
   - 🇺🇸美国 zmxooo8
   - 🇺🇸美国 zmxooo9
   - 🇺🇸美国 zmxooo10
-  - 🇺🇸美国 zmxooo11
-  - 🇺🇸美国 zmxooo12
-  - 🇺🇸美国 zmxooo13
-  - 🇺🇸美国 zmxooo14
   - 🇬🇧英国 zmxooo1
   - 🇬🇧英国 zmxooo2
   - 🇬🇧英国 zmxooo3
@@ -575,7 +592,6 @@ proxy-groups:
   - 🇻🇳越南 zmxooo3
   - 🇻🇳越南 zmxooo4
   - 🇻🇳越南 zmxooo5
-  - 🇻🇳越南 zmxooo6
   - 🇰🇷韩国 zmxooo1
   - 🇭🇰香港 zmxooo1
   - 🇭🇰香港 zmxooo2
@@ -586,5 +602,264 @@ proxy-groups:
   - 🇭🇰香港 zmxooo7
   - 🇭🇰香港 zmxooo8
   - 🇭🇰香港 zmxooo9
+- name: 📢 谷歌服务
+  type: select
+  proxies:
+  - 🚀 节点选择
+  - ♻️ 自动选择
+  - DIRECT
+  - ⚡ 其它自动
+  - ⚡ 台湾自动
+  - ⚡ 德国自动
+  - ⚡ 日本自动
+  - ⚡ 美国自动
+  - ⚡ 英国自动
+  - ⚡ 越南自动
+  - ⚡ 韩国自动
+  - ⚡ 香港自动
+- name: 🎬 国际媒体
+  type: select
+  proxies:
+  - 🚀 节点选择
+  - ♻️ 自动选择
+  - ⚡ 其它自动
+  - ⚡ 台湾自动
+  - ⚡ 德国自动
+  - ⚡ 日本自动
+  - ⚡ 美国自动
+  - ⚡ 英国自动
+  - ⚡ 越南自动
+  - ⚡ 韩国自动
+  - ⚡ 香港自动
+- name: 🎥 奈飞视频
+  type: select
+  proxies:
+  - 🚀 节点选择
+  - 🎬 国际媒体
+  - ⚡ 台湾自动
+  - ⚡ 日本自动
+  - ⚡ 香港自动
+- name: 📱 电报消息
+  type: select
+  proxies:
+  - 🚀 节点选择
+  - ♻️ 自动选择
+  - ⚡ 其它自动
+  - ⚡ 台湾自动
+  - ⚡ 德国自动
+  - ⚡ 日本自动
+  - ⚡ 美国自动
+  - ⚡ 英国自动
+  - ⚡ 越南自动
+  - ⚡ 韩国自动
+  - ⚡ 香港自动
+- name: 🤖 人工智能
+  type: select
+  proxies:
+  - 🚀 节点选择
+  - ⚡ 日本自动
+  - ⚡ 美国自动
+- name: 🍎 苹果服务
+  type: select
+  proxies:
+  - DIRECT
+  - 🚀 节点选择
+  - ♻️ 自动选择
+- name: 🎯 台湾媒体
+  type: select
+  proxies:
+  - ⚡ 台湾自动
+  - 🚀 节点选择
+  - DIRECT
+- name: 🐼 国内媒体
+  type: select
+  proxies:
+  - DIRECT
+  - 🚀 节点选择
+- name: ⚓ 直连域名
+  type: select
+  proxies:
+  - DIRECT
+  - 🚀 节点选择
+- name: 🌍 漏网之鱼
+  type: select
+  proxies:
+  - 🚀 节点选择
+  - ♻️ 自动选择
+  - DIRECT
+- name: ⚡ 其它自动
+  type: url-test
+  url: http://gstatic.com
+  interval: 300
+  tolerance: 50
+  proxies:
+  - 🌍其它 zmxooo2
+  - 🌍其它 zmxooo3
+  - 🌍其它 zmxooo4
+  - 🌍其它 zmxooo5
+  - 🌍其它 zmxooo6
+- name: ⚡ 台湾自动
+  type: url-test
+  url: http://gstatic.com
+  interval: 300
+  tolerance: 50
+  proxies:
+  - 🇹🇼台湾 zmxooo1
+  - 🇹🇼台湾 zmxooo2
+  - 🇹🇼台湾 zmxooo3
+  - 🇹🇼台湾 zmxooo4
+- name: ⚡ 德国自动
+  type: url-test
+  url: http://gstatic.com
+  interval: 300
+  tolerance: 50
+  proxies:
+  - 🇩🇪德国 zmxooo2
+  - 🇩🇪德国 zmxooo3
+  - 🇩🇪德国 zmxooo4
+  - 🇩🇪德国 zmxooo5
+- name: ⚡ 日本自动
+  type: url-test
+  url: http://gstatic.com
+  interval: 300
+  tolerance: 50
+  proxies:
+  - 🇯🇵日本 zmxooo2
+- name: ⚡ 美国自动
+  type: url-test
+  url: http://gstatic.com
+  interval: 300
+  tolerance: 50
+  proxies:
+  - 🇺🇸美国 zmxooo1
+  - 🇺🇸美国 zmxooo2
+  - 🇺🇸美国 zmxooo3
+  - 🇺🇸美国 zmxooo4
+  - 🇺🇸美国 zmxooo5
+  - 🇺🇸美国 zmxooo6
+  - 🇺🇸美国 zmxooo8
+  - 🇺🇸美国 zmxooo9
+  - 🇺🇸美国 zmxooo10
+- name: ⚡ 英国自动
+  type: url-test
+  url: http://gstatic.com
+  interval: 300
+  tolerance: 50
+  proxies:
+  - 🇬🇧英国 zmxooo1
+  - 🇬🇧英国 zmxooo2
+  - 🇬🇧英国 zmxooo3
+  - 🇬🇧英国 zmxooo4
+  - 🇬🇧英国 zmxooo5
+  - 🇬🇧英国 zmxooo6
+  - 🇬🇧英国 zmxooo7
+  - 🇬🇧英国 zmxooo8
+  - 🇬🇧英国 zmxooo9
+  - 🇬🇧英国 zmxooo10
+  - 🇬🇧英国 zmxooo11
+  - 🇬🇧英国 zmxooo12
+  - 🇬🇧英国 zmxooo13
+- name: ⚡ 越南自动
+  type: url-test
+  url: http://gstatic.com
+  interval: 300
+  tolerance: 50
+  proxies:
+  - 🇻🇳越南 zmxooo1
+  - 🇻🇳越南 zmxooo2
+  - 🇻🇳越南 zmxooo3
+  - 🇻🇳越南 zmxooo4
+  - 🇻🇳越南 zmxooo5
+- name: ⚡ 韩国自动
+  type: url-test
+  url: http://gstatic.com
+  interval: 300
+  tolerance: 50
+  proxies:
+  - 🇰🇷韩国 zmxooo1
+- name: ⚡ 香港自动
+  type: url-test
+  url: http://gstatic.com
+  interval: 300
+  tolerance: 50
+  proxies:
+  - 🇭🇰香港 zmxooo1
+  - 🇭🇰香港 zmxooo2
+  - 🇭🇰香港 zmxooo3
+  - 🇭🇰香港 zmxooo4
+  - 🇭🇰香港 zmxooo5
+  - 🇭🇰香港 zmxooo6
+  - 🇭🇰香港 zmxooo7
+  - 🇭🇰香港 zmxooo8
+  - 🇭🇰香港 zmxooo9
+rule-providers:
+  reject:
+    type: http
+    behavior: domain
+    url: https://jsdelivr.net
+    path: ./ruleset/reject.yaml
+    interval: 86400
+  telegram:
+    type: http
+    behavior: classical
+    url: https://jsdelivr.net
+    path: ./ruleset/telegram.yaml
+    interval: 86400
+  netflix:
+    type: http
+    behavior: classical
+    url: https://jsdelivr.net
+    path: ./ruleset/netflix.yaml
+    interval: 86400
+  bilibili:
+    type: http
+    behavior: classical
+    url: https://jsdelivr.net
+    path: ./ruleset/bilibili.yaml
+    interval: 86400
+  proxy:
+    type: http
+    behavior: classical
+    url: https://jsdelivr.net
+    path: ./ruleset/proxy.yaml
+    interval: 86400
+  google:
+    type: http
+    behavior: classical
+    url: https://jsdelivr.net
+    path: ./ruleset/google.yaml
+    interval: 86400
+  apple:
+    type: http
+    behavior: classical
+    url: https://jsdelivr.net
+    path: ./ruleset/apple.yaml
+    interval: 86400
+  direct:
+    type: http
+    behavior: classical
+    url: https://jsdelivr.net
+    path: ./ruleset/direct.yaml
+    interval: 86400
+  gcland:
+    type: http
+    behavior: classical
+    url: https://jsdelivr.net
+    path: ./ruleset/gcland.yaml
+    interval: 86400
 rules:
-- MATCH,🚀 节点选择
+- RULE-SET,reject,🛑 广告拦截
+- RULE-SET,telegram,📱 电报消息
+- RULE-SET,netflix,🎥 奈飞视频
+- RULE-SET,bilibili,🐼 国内媒体
+- DOMAIN-KEYWORD,openai,🤖 人工智能
+- DOMAIN-KEYWORD,anthropic,🤖 人工智能
+- DOMAIN-KEYWORD,chatgpt,🤖 人工智能
+- DOMAIN-SUFFIX,tw,🎯 台湾媒体
+- RULE-SET,google,📢 谷歌服务
+- RULE-SET,apple,🍎 苹果服务
+- RULE-SET,proxy,🎬 国际媒体
+- RULE-SET,direct,⚓ 直连域名
+- RULE-SET,gcland,⚓ 直连域名
+- GEOIP,CN,DIRECT
+- MATCH,🌍 漏网之鱼
