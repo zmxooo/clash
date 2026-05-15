@@ -510,7 +510,7 @@ proxies:
   password: 10550754-cf62-3d3b-ba6a-50be27a275d7
   sni: s516.okgfw.top
   skip-cert-verify: true
-  name: 🇦🇪 阿联酋 01 @zmxooo
+  name: 🌍 其它地区 05 @zmxooo
 - type: vmess
   server: 82.198.246.214
   port: 180
@@ -536,7 +536,6 @@ proxy-groups:
   - 🌍 其它地区
   - 🇩🇪 德国
   - 🇱🇹 立陶宛
-  - 🇦🇪 阿联酋
   - DIRECT
 - name: 🎬 自动选择
   type: url-test
@@ -604,7 +603,7 @@ proxy-groups:
   - 🌍 其它地区 04 @zmxooo
   - 🇰🇷 韩国 07 @zmxooo
   - 🇺🇸 美国 11 @zmxooo
-  - 🇦🇪 阿联酋 01 @zmxooo
+  - 🌍 其它地区 05 @zmxooo
   - 🇺🇸 美国 12 @zmxooo
 - name: 🇭🇰 香港
   type: url-test
@@ -701,6 +700,7 @@ proxy-groups:
   - 🌍 其它地区 02 @zmxooo
   - 🌍 其它地区 03 @zmxooo
   - 🌍 其它地区 04 @zmxooo
+  - 🌍 其它地区 05 @zmxooo
 - name: 🇩🇪 德国
   type: url-test
   url: http://gstatic.com
@@ -718,11 +718,5 @@ proxy-groups:
   interval: 300
   proxies:
   - 🇱🇹 立陶宛 01 @zmxooo
-- name: 🇦🇪 阿联酋
-  type: url-test
-  url: http://gstatic.com
-  interval: 300
-  proxies:
-  - 🇦🇪 阿联酋 01 @zmxooo
 rules:
 - MATCH,🚀 节点选择
