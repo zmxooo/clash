@@ -1,562 +1,184 @@
-port: 7890
-socks-port: 7891
-allow-lan: true
-mode: rule
-log-level: info
-external-controller: 127.0.0.1:9090
 proxies:
 - name: 🇭🇰香港 zmxooo01
   server: 202.146.222.41
-  type: hysteria2
-  port: 443
-  password: qQe1z5kU8kN6SlKnDt9Ru3Qp
-  sni: zmxooo
-  skip-cert-verify: true
+  type: ss
 - name: 🇭🇰香港 zmxooo02
   server: 202.146.222.13
-  type: hysteria2
-  port: 443
-  password: qQe1z5kU8kN6SlKnDt9Ru3Qp
-  sni: zmxooo
-  skip-cert-verify: true
+  type: ss
 - name: 🇭🇰香港 zmxooo03
   server: 202.146.222.93
-  type: hysteria2
-  port: 443
-  password: qQe1z5kU8kN6SlKnDt9Ru3Qp
-  sni: zmxooo
-  skip-cert-verify: true
+  type: ss
 - name: 🇭🇰香港 zmxooo04
   server: 202.146.222.89
-  type: hysteria2
-  port: 443
-  password: qQe1z5kU8kN6SlKnDt9Ru3Qp
-  sni: zmxooo
-  skip-cert-verify: true
+  type: ss
 - name: 🇭🇰香港 zmxooo05
   server: 202.146.222.11
-  type: hysteria2
-  port: 443
-  password: qQe1z5kU8kN6SlKnDt9Ru3Qp
-  sni: zmxooo
-  skip-cert-verify: true
+  type: ss
 - name: 🇭🇰香港 zmxooo06
   server: 202.146.222.45
-  type: hysteria2
-  port: 443
-  password: qQe1z5kU8kN6SlKnDt9Ru3Qp
-  sni: zmxooo
-  skip-cert-verify: true
+  type: ss
 - name: 🇭🇰香港 zmxooo07
   server: 202.146.222.5
-  type: hysteria2
-  port: 443
-  password: qQe1z5kU8kN6SlKnDt9Ru3Qp
-  sni: zmxooo
-  skip-cert-verify: true
+  type: ss
 - name: 🇭🇰香港 zmxooo08
   server: 202.146.222.1
-  type: hysteria2
-  port: 443
-  password: qQe1z5kU8kN6SlKnDt9Ru3Qp
-  sni: zmxooo
-  skip-cert-verify: true
+  type: ss
 - name: 🇭🇰香港 zmxooo09
   server: 202.146.222.15
-  type: hysteria2
-  port: 443
-  password: qQe1z5kU8kN6SlKnDt9Ru3Qp
-  sni: zmxooo
-  skip-cert-verify: true
+  type: ss
 - name: 🇹🇼台湾 zmxooo01
   server: 45.132.226.177
-  type: hysteria2
-  port: 443
-  password: qQe1z5kU8kN6SlKnDt9Ru3Qp
-  sni: zmxooo
-  skip-cert-verify: true
+  type: ss
 - name: 🇹🇼台湾 zmxooo02
   server: 45.132.226.161
-  type: hysteria2
-  port: 443
-  password: qQe1z5kU8kN6SlKnDt9Ru3Qp
-  sni: zmxooo
-  skip-cert-verify: true
+  type: ss
 - name: 🇹🇼台湾 zmxooo03
   server: 45.132.226.153
-  type: hysteria2
-  port: 443
-  password: qQe1z5kU8kN6SlKnDt9Ru3Qp
-  sni: zmxooo
-  skip-cert-verify: true
+  type: ss
 - name: 🇺🇸美国 zmxooo01
   server: 152.67.203.35
-  type: vmess
-  port: 22222
-  uuid: 61d9e20f-9680-4e9d-ae4b-ac46efcc01ef
-  alterId: 0
-  cipher: auto
-  udp: true
-  tls: false
-  network: tcp
+  type: ss
 - name: 🇺🇸美国 zmxooo02
   server: 140.238.23.31
-  type: vmess
-  port: 443
-  uuid: 94137a98-98e0-44c1-92b0-96a7336f2a22
-  alterId: 0
-  cipher: auto
-  udp: true
-  tls: false
-  network: tcp
+  type: ss
 - name: 🇺🇸美国 zmxooo03
   server: 129.153.159.228
-  type: vmess
-  port: 443
-  uuid: 616d291c-093e-4fc1-b86d-7e7d8e2ef5f5
-  alterId: 0
-  cipher: auto
-  udp: true
-  tls: false
-  network: tcp
+  type: ss
 - name: 🇺🇸美国 zmxooo04
   server: 43.130.93.140
-  type: vmess
-  port: 46822
-  uuid: 00e8d456-d8d9-4e38-a26f-b5f36a99e1dd
-  alterId: 0
-  cipher: auto
-  udp: true
-  tls: false
-  network: tcp
+  type: ss
 - name: 🇺🇸美国 zmxooo05
   server: 129.153.159.228
-  type: vmess
-  port: 443
-  uuid: 616d291c-093e-4fc1-b86d-7e7d8e2ef5f5
-  alterId: 0
-  cipher: auto
-  udp: true
-  tls: false
-  network: tcp
+  type: ss
 - name: 🇺🇸美国 zmxooo06
   server: 45.76.109.237
-  type: vmess
-  port: 80
-  uuid: c3512366-bb97-476a-a16e-dc72d22b09b1
-  alterId: 0
-  cipher: auto
-  udp: true
-  tls: false
-  network: tcp
+  type: ss
 - name: 🇺🇸美国 zmxooo07
   server: 152.67.203.35
-  type: vmess
-  port: 22222
-  uuid: 61d9e20f-9680-4e9d-ae4b-ac46efcc01ef
-  alterId: 0
-  cipher: auto
-  udp: true
-  tls: false
-  network: tcp
+  type: ss
 - name: 🇺🇸美国 zmxooo08
   server: 129.153.159.228
-  type: vmess
-  port: 443
-  uuid: 616d291c-093e-4fc1-b86d-7e7d8e2ef5f5
-  alterId: 0
-  cipher: auto
-  udp: true
-  tls: false
-  network: tcp
+  type: ss
 - name: 🇺🇸美国 zmxooo09
   server: 43.130.93.140
-  type: vmess
-  port: 46822
-  uuid: 00e8d456-d8d9-4e38-a26f-b5f36a99e1dd
-  alterId: 0
-  cipher: auto
-  udp: true
-  tls: false
-  network: tcp
+  type: ss
 - name: 🇺🇸美国 zmxooo10
   server: 45.76.109.237
-  type: vmess
-  port: 80
-  uuid: c3512366-bb97-476a-a16e-dc72d22b09b1
-  alterId: 0
-  cipher: auto
-  udp: true
-  tls: false
-  network: tcp
+  type: ss
 - name: 🇺🇸美国 zmxooo11
   server: 152.67.203.35
-  type: vmess
-  port: 22222
-  uuid: 61d9e20f-9680-4e9d-ae4b-ac46efcc01ef
-  alterId: 0
-  cipher: auto
-  udp: true
-  tls: false
-  network: tcp
+  type: ss
 - name: 🇺🇸美国 zmxooo12
   server: 129.153.159.228
-  type: vmess
-  port: 443
-  uuid: 616d291c-093e-4fc1-b86d-7e7d8e2ef5f5
-  alterId: 0
-  cipher: auto
-  udp: true
-  tls: false
-  network: tcp
+  type: ss
 - name: 🇺🇸美国 zmxooo13
   server: 43.130.93.140
-  type: vmess
-  port: 46822
-  uuid: 00e8d456-d8d9-4e38-a26f-b5f36a99e1dd
-  alterId: 0
-  cipher: auto
-  udp: true
-  tls: false
-  network: tcp
+  type: ss
 - name: 🇭🇰香港 zmxooo10
   server: 202.146.222.11
   type: ss
-  port: 43918
-  cipher: aes-256-gcm
-  password: YWVzLTI1Ni1nY206cUtlMXo1a1U4a042U2xLbkR0OVJ1M1Fw
 - name: 🇭🇰香港 zmxooo11
   server: 202.146.222.5
   type: ss
-  port: 43918
-  cipher: aes-256-gcm
-  password: YWVzLTI1Ni1nY206cUtlMXo1a1U4a042U2xLbkR0OVJ1M1Fw
 - name: 🇭🇰香港 zmxooo12
   server: 202.146.222.1
   type: ss
-  port: 43918
-  cipher: aes-256-gcm
-  password: YWVzLTI1Ni1nY206cUtlMXo1a1U4a042U2xLbkR0OVJ1M1Fw
 - name: 🇭🇰香港 zmxooo13
   server: 202.146.222.15
   type: ss
-  port: 43918
-  cipher: aes-256-gcm
-  password: YWVzLTI1Ni1nY206cUtlMXo1a1U4a042U2xLbkR0OVJ1M1Fw
 - name: 🇭🇰香港 zmxooo14
   server: 202.146.222.13
   type: ss
-  port: 43918
-  cipher: aes-256-gcm
-  password: YWVzLTI1Ni1nY206cUtlMXo1a1U4a042U2xLbkR0OVJ1M1Fw
 - name: 🇭🇰香港 zmxooo15
   server: 202.146.222.93
   type: ss
-  port: 43918
-  cipher: aes-256-gcm
-  password: YWVzLTI1Ni1nY206cUtlMXo1a1U4a042U2xLbkR0OVJ1M1Fw
 - name: 🇭🇰香港 zmxooo16
   server: 202.146.222.89
   type: ss
-  port: 43918
-  cipher: aes-256-gcm
-  password: YWVzLTI1Ni1nY206cUtlMXo1a1U4a042U2xLbkR0OVJ1M1Fw
 - name: 🇭🇰香港 zmxooo17
   server: 202.146.222.45
   type: ss
-  port: 43918
-  cipher: aes-256-gcm
-  password: YWVzLTI1Ni1nY206cUtlMXo1a1U4a042U2xLbkR0OVJ1M1Fw
 - name: 🇹🇼台湾 zmxooo04
   server: 45.132.226.137
-  type: hysteria2
-  port: 443
-  password: qQe1z5kU8kN6SlKnDt9Ru3Qp
-  sni: zmxooo
-  skip-cert-verify: true
+  type: ss
+- name: 🇹🇼台湾 zmxooo05
+  server: 45.132.226.137
+  type: ss
 - name: 🇹🇼台湾 zmxooo06
   server: 45.132.226.169
-  type: hysteria2
-  port: 443
-  password: qQe1z5kU8kN6SlKnDt9Ru3Qp
-  sni: zmxooo
-  skip-cert-verify: true
-- name: 🌍其它 zmxooo01
+  type: ss
+- name: 🇩🇪德国 zmxooo01
   server: 194.48.118.142
-  type: vmess
-  port: 443
-  uuid: 784f2db3-89b0-4e93-9241-b522d0084f2b
-  alterId: 0
-  cipher: auto
-  udp: true
-  tls: false
-  network: tcp
-- name: 🌍其它 zmxooo02
+  type: ss
+- name: 🇩🇪德国 zmxooo02
   server: 194.48.118.180
-  type: vmess
-  port: 443
-  uuid: 784f2db3-89b0-4e93-9241-b522d0084f2b
-  alterId: 0
-  cipher: auto
-  udp: true
-  tls: false
-  network: tcp
-- name: 🌍其它 zmxooo03
+  type: ss
+- name: 🇩🇪德国 zmxooo03
   server: 194.48.118.56
-  type: vmess
-  port: 443
-  uuid: 784f2db3-89b0-4e93-9241-b522d0084f2b
-  alterId: 0
-  cipher: auto
-  udp: true
-  tls: false
-  network: tcp
-- name: 🌍其它 zmxooo04
+  type: ss
+- name: 🇩🇪德国 zmxooo04
   server: 194.48.118.58
-  type: vmess
-  port: 443
-  uuid: 784f2db3-89b0-4e93-9241-b522d0084f2b
-  alterId: 0
-  cipher: auto
-  udp: true
-  tls: false
-  network: tcp
+  type: ss
 - name: 🇹🇼台湾 zmxooo07
   server: 45.132.226.137
   type: ss
-  port: 43918
-  cipher: aes-256-gcm
-  password: YWVzLTI1Ni1nY206cUtlMXo1a1U4a042U2xLbkR0OVJ1M1Fw
-- name: 🌍其它 zmxooo05
+- name: 🇬🇧英国 zmxooo01
+  server: 193.187.118.66
+  type: ss
+- name: 🇬🇧英国 zmxooo02
+  server: 193.187.118.172
+  type: ss
+- name: 🇬🇧英国 zmxooo03
+  server: 193.187.118.42
+  type: ss
+- name: 🇬🇧英国 zmxooo04
+  server: 193.187.118.157
+  type: ss
+- name: 🇬🇧英国 zmxooo05
+  server: 193.187.118.125
+  type: ss
+- name: 🇬🇧英国 zmxooo06
+  server: 193.187.118.151
+  type: ss
+- name: 🌍其它 zmxooo01
   server: 82.198.246.93
-  type: vmess
-  port: 180
-  uuid: d13fc2f5-3e05-4795-81eb-44143a09e552
-  alterId: 0
-  cipher: auto
-  udp: true
-  tls: false
-  network: tcp
-- name: 🌍其它 zmxooo06
+  type: ss
+- name: 🌍其它 zmxooo02
   server: 82.198.246.93
-  type: vmess
-  port: 180
-  uuid: d13fc2f5-3e05-4795-81eb-44143a09e552
-  alterId: 0
-  cipher: auto
-  udp: true
-  tls: false
-  network: tcp
-- name: 🌍其它 zmxooo07
+  type: ss
+- name: 🌍其它 zmxooo03
   server: 82.198.246.37
-  type: vmess
-  port: 180
-  uuid: d13fc2f5-3e05-4795-81eb-44143a09e552
-  alterId: 0
-  cipher: auto
-  udp: true
-  tls: false
-  network: tcp
-- name: 🌍其它 zmxooo08
+  type: ss
+- name: 🌍其它 zmxooo04
   server: 82.198.246.9
-  type: vmess
-  port: 180
-  uuid: d13fc2f5-3e05-4795-81eb-44143a09e552
-  alterId: 0
-  cipher: auto
-  udp: true
-  tls: false
-  network: tcp
+  type: ss
 - name: 🇹🇼台湾 zmxooo08
   server: 45.132.226.177
   type: ss
-  port: 43918
-  cipher: aes-256-gcm
-  password: YWVzLTI1Ni1nY206cUtlMXo1a1U4a042U2xLbkR0OVJ1M1Fw
 - name: 🇹🇼台湾 zmxooo09
   server: 45.132.226.161
   type: ss
-  port: 43918
-  cipher: aes-256-gcm
-  password: YWVzLTI1Ni1nY206cUtlMXo1a1U4a042U2xLbkR0OVJ1M1Fw
 - name: 🇹🇼台湾 zmxooo10
   server: 45.132.226.153
   type: ss
-  port: 43918
-  cipher: aes-256-gcm
-  password: YWVzLTI1Ni1nY206cUtlMXo1a1U4a042U2xLbkR0OVJ1M1Fw
-- name: 🌍其它 zmxooo09
+- name: 🇬🇧英国 zmxooo07
+  server: 193.187.118.66
+  type: ss
+- name: 🌍其它 zmxooo05
   server: 82.198.246.93
-  type: vmess
-  port: 180
-  uuid: d13fc2f5-3e05-4795-81eb-44143a09e552
-  alterId: 0
-  cipher: auto
-  udp: true
-  tls: false
-  network: tcp
-- name: 🌍其它 zmxooo10
+  type: ss
+- name: 🌍其它 zmxooo06
   server: 82.198.246.9
-  type: vmess
-  port: 180
-  uuid: d13fc2f5-3e05-4795-81eb-44143a09e552
-  alterId: 0
-  cipher: auto
-  udp: true
-  tls: false
-  network: tcp
-- name: 🌍其它 zmxooo11
+  type: ss
+- name: 🌍其它 zmxooo07
   server: 82.198.246.37
-  type: vmess
-  port: 180
-  uuid: d13fc2f5-3e05-4795-81eb-44143a09e552
-  alterId: 0
-  cipher: auto
-  udp: true
-  tls: false
-  network: tcp
-- name: 🌍其它 zmxooo12
+  type: ss
+- name: 🌍其它 zmxooo08
   server: 82.198.246.9
-  type: vmess
-  port: 180
-  uuid: d13fc2f5-3e05-4795-81eb-44143a09e552
-  alterId: 0
-  cipher: auto
-  udp: true
-  tls: false
-  network: tcp
-- name: 🌍其它 zmxooo13
+  type: ss
+- name: 🌍其它 zmxooo09
   server: 82.198.246.37
-  type: vmess
-  port: 180
-  uuid: d13fc2f5-3e05-4795-81eb-44143a09e552
-  alterId: 0
-  cipher: auto
-  udp: true
-  tls: false
-  network: tcp
+  type: ss
 - name: 🇹🇼台湾 zmxooo11
   server: 45.132.226.169
   type: ss
-  port: 43918
-  cipher: aes-256-gcm
-  password: YWVzLTI1Ni1nY206cUtlMXo1a1U4a042U2xLbkR0OVJ1M1Fw
-proxy-groups:
-- name: 🚀 节点选择
-  type: select
-  proxies:
-  - 自动选择
-  - 🇭🇰香港 zmxooo01
-  - 🇭🇰香港 zmxooo02
-  - 🇭🇰香港 zmxooo03
-  - 🇭🇰香港 zmxooo04
-  - 🇭🇰香港 zmxooo05
-  - 🇭🇰香港 zmxooo06
-  - 🇭🇰香港 zmxooo07
-  - 🇭🇰香港 zmxooo08
-  - 🇭🇰香港 zmxooo09
-  - 🇹🇼台湾 zmxooo01
-  - 🇹🇼台湾 zmxooo02
-  - 🇹🇼台湾 zmxooo03
-  - 🇺🇸美国 zmxooo01
-  - 🇺🇸美国 zmxooo02
-  - 🇺🇸美国 zmxooo03
-  - 🇺🇸美国 zmxooo04
-  - 🇺🇸美国 zmxooo05
-  - 🇺🇸美国 zmxooo06
-  - 🇺🇸美国 zmxooo07
-  - 🇺🇸美国 zmxooo08
-  - 🇺🇸美国 zmxooo09
-  - 🇺🇸美国 zmxooo10
-  - 🇺🇸美国 zmxooo11
-  - 🇺🇸美国 zmxooo12
-  - 🇺🇸美国 zmxooo13
-  - 🇭🇰香港 zmxooo10
-  - 🇭🇰香港 zmxooo11
-  - 🇭🇰香港 zmxooo12
-  - 🇭🇰香港 zmxooo13
-  - 🇭🇰香港 zmxooo14
-  - 🇭🇰香港 zmxooo15
-  - 🇭🇰香港 zmxooo16
-  - 🇭🇰香港 zmxooo17
-  - 🇹🇼台湾 zmxooo04
-  - 🇹🇼台湾 zmxooo06
-  - 🌍其它 zmxooo01
-  - 🌍其它 zmxooo02
-  - 🌍其它 zmxooo03
-  - 🌍其它 zmxooo04
-  - 🇹🇼台湾 zmxooo07
-  - 🌍其它 zmxooo05
-  - 🌍其它 zmxooo06
-  - 🌍其它 zmxooo07
-  - 🌍其它 zmxooo08
-  - 🇹🇼台湾 zmxooo08
-  - 🇹🇼台湾 zmxooo09
-  - 🇹🇼台湾 zmxooo10
-  - 🌍其它 zmxooo09
-  - 🌍其它 zmxooo10
-  - 🌍其它 zmxooo11
-  - 🌍其它 zmxooo12
-  - 🌍其它 zmxooo13
-  - 🇹🇼台湾 zmxooo11
-- name: 自动选择
-  type: url-test
-  url: http://gstatic.com
-  interval: 300
-  tolerance: 50
-  proxies:
-  - 🇭🇰香港 zmxooo01
-  - 🇭🇰香港 zmxooo02
-  - 🇭🇰香港 zmxooo03
-  - 🇭🇰香港 zmxooo04
-  - 🇭🇰香港 zmxooo05
-  - 🇭🇰香港 zmxooo06
-  - 🇭🇰香港 zmxooo07
-  - 🇭🇰香港 zmxooo08
-  - 🇭🇰香港 zmxooo09
-  - 🇹🇼台湾 zmxooo01
-  - 🇹🇼台湾 zmxooo02
-  - 🇹🇼台湾 zmxooo03
-  - 🇺🇸美国 zmxooo01
-  - 🇺🇸美国 zmxooo02
-  - 🇺🇸美国 zmxooo03
-  - 🇺🇸美国 zmxooo04
-  - 🇺🇸美国 zmxooo05
-  - 🇺🇸美国 zmxooo06
-  - 🇺🇸美国 zmxooo07
-  - 🇺🇸美国 zmxooo08
-  - 🇺🇸美国 zmxooo09
-  - 🇺🇸美国 zmxooo10
-  - 🇺🇸美国 zmxooo11
-  - 🇺🇸美国 zmxooo12
-  - 🇺🇸美国 zmxooo13
-  - 🇭🇰香港 zmxooo10
-  - 🇭🇰香港 zmxooo11
-  - 🇭🇰香港 zmxooo12
-  - 🇭🇰香港 zmxooo13
-  - 🇭🇰香港 zmxooo14
-  - 🇭🇰香港 zmxooo15
-  - 🇭🇰香港 zmxooo16
-  - 🇭🇰香港 zmxooo17
-  - 🇹🇼台湾 zmxooo04
-  - 🇹🇼台湾 zmxooo06
-  - 🌍其它 zmxooo01
-  - 🌍其它 zmxooo02
-  - 🌍其它 zmxooo03
-  - 🌍其它 zmxooo04
-  - 🇹🇼台湾 zmxooo07
-  - 🌍其它 zmxooo05
-  - 🌍其它 zmxooo06
-  - 🌍其它 zmxooo07
-  - 🌍其它 zmxooo08
-  - 🇹🇼台湾 zmxooo08
-  - 🇹🇼台湾 zmxooo09
-  - 🇹🇼台湾 zmxooo10
-  - 🌍其它 zmxooo09
-  - 🌍其它 zmxooo10
-  - 🌍其它 zmxooo11
-  - 🌍其它 zmxooo12
-  - 🌍其它 zmxooo13
-  - 🇹🇼台湾 zmxooo11
-rules:
-- MATCH,🚀 节点选择
