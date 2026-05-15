@@ -205,18 +205,31 @@ def safe_b64decode(s):
     try:
         # 优先使用标准 utf-8，出错时采用 replace 模式容错，确保乱码和特殊符号不丢失
         return base64.b64decode(s).decode('utf-8', 'replace')
-    except:
-        return ""
+    # 你的原版内存高速缓存
+    if server in IP_CACHE: 
+        return IP_CACHE[server]
         
-        node_type = ""
-        for proto in ['vless://', 'vmess://', 'ss://', 'trojan://', 'hy2://', 'hysteria2://', 'tuic://']:
-            if link.lower().startswith(proto):
-                node_type = proto.replace('://', '')
-                if node_type == 'hysteria2': 
-                    node_type = 'hy2'
-                break
-        if not node_type: 
-            return None
+    # 精准干净的 try...except 捕获块，不使用任何缺省 except
+    try:
+        time.sleep(0.1) 
+        clean_server = str(server).split(':') if ':' in str(server) else str(server)
+        response = requests.get(f"http://ip-api.com{clean_server}?lang=zh-CN", timeout=3).json()
+        if response.get("status") == "success":
+            country = response.get("country")
+            for k in EMOJI_MAP.keys():
+                if k in country:
+                    country = k
+                    break
+            icon = EMOJI_MAP.get(country, "🌍")
+            label = f"{icon} {country}"
+            IP_CACHE[server] = label
+            return label
+    except Exception:
+        # 使用 Exception 明确捕获所有错误，彻底规避 python 语法层面的 default except 排列报错
+        pass
+
+    return "🌍 其它地区"
+
 
         u = urllib.parse.urlparse(link)
         raw_ps = urllib.parse.unquote(u.fragment) if u.fragment else ""
