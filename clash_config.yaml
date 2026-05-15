@@ -280,13 +280,21 @@ proxies:
   password: qQe1z5kU8kN6SlKnDt9Ru3Qp
   sni: 45.132.226.137
 - name: 🇹🇼台湾 zmxooo05
+  server: 45.132.226.137
+  port: 54391
+  skip-cert-verify: true
+  type: http
+  username: ''
+  password: ''
+  tls: true
+- name: 🇹🇼台湾 zmxooo06
   server: 45.132.226.169
   port: 443
   skip-cert-verify: true
   type: hysteria2
   password: qQe1z5kU8kN6SlKnDt9Ru3Qp
   sni: 45.132.226.169
-- name: 🌍奥地利 zmxooo01
+- name: 🧿其它地区 zmxooo01
   type: vmess
   server: 194.48.118.142
   port: 443
@@ -296,7 +304,7 @@ proxies:
   tls: false
   network: tcp
   skip-cert-verify: true
-- name: 🌍奥地利 zmxooo02
+- name: 🧿其它地区 zmxooo02
   type: vmess
   server: 194.48.118.180
   port: 443
@@ -306,7 +314,7 @@ proxies:
   tls: false
   network: tcp
   skip-cert-verify: true
-- name: 🌍奥地利 zmxooo03
+- name: 🧿其它地区 zmxooo03
   type: vmess
   server: 194.48.118.56
   port: 443
@@ -316,7 +324,7 @@ proxies:
   tls: false
   network: tcp
   skip-cert-verify: true
-- name: 🌍奥地利 zmxooo04
+- name: 🧿其它地区 zmxooo04
   type: vmess
   server: 194.48.118.58
   port: 443
@@ -326,56 +334,56 @@ proxies:
   tls: false
   network: tcp
   skip-cert-verify: true
-- name: 🇹🇼台湾 zmxooo06
+- name: 🇹🇼台湾 zmxooo07
   server: 45.132.226.137
   port: 43918
   skip-cert-verify: true
   type: ss
   cipher: aes-256-gcm
   password: YWVzLTI1Ni1nY206cUtlMXo1a1U4a042U2xLbkR0OVJ1M1Fw
-- name: 🌍澳大利亞 zmxooo01
+- name: 🧿其它地区 zmxooo05
   server: 193.187.118.66
   port: 443
   skip-cert-verify: true
   type: trojan
   password: qQe1z5kU8kN6SlKnDt9Ru3Qp
   sni: 193.187.118.66
-- name: 🌍澳大利亞 zmxooo02
+- name: 🧿其它地区 zmxooo06
   server: 193.187.118.172
   port: 443
   skip-cert-verify: true
   type: trojan
   password: qQe1z5kU8kN6SlKnDt9Ru3Qp
   sni: 193.187.118.172
-- name: 🌍澳大利亞 zmxooo03
+- name: 🧿其它地区 zmxooo07
   server: 193.187.118.42
   port: 443
   skip-cert-verify: true
   type: trojan
   password: qQe1z5kU8kN6SlKnDt9Ru3Qp
   sni: 193.187.118.42
-- name: 🌍澳大利亞 zmxooo04
+- name: 🧿其它地区 zmxooo08
   server: 193.187.118.157
   port: 443
   skip-cert-verify: true
   type: trojan
   password: qQe1z5kU8kN6SlKnDt9Ru3Qp
   sni: 193.187.118.157
-- name: 🌍澳大利亞 zmxooo05
+- name: 🧿其它地区 zmxooo09
   server: 193.187.118.125
   port: 443
   skip-cert-verify: true
   type: trojan
   password: qQe1z5kU8kN6SlKnDt9Ru3Qp
   sni: 193.187.118.125
-- name: 🌍澳大利亞 zmxooo06
+- name: 🧿其它地区 zmxooo10
   server: 193.187.118.151
   port: 443
   skip-cert-verify: true
   type: trojan
   password: qQe1z5kU8kN6SlKnDt9Ru3Qp
   sni: 193.187.118.151
-- name: 🇺🇸美国 zmxooo14
+- name: 🧿其它地区 zmxooo11
   type: vmess
   server: 82.198.246.93
   port: 180
@@ -385,7 +393,7 @@ proxies:
   tls: false
   network: tcp
   skip-cert-verify: true
-- name: 🇺🇸美国 zmxooo15
+- name: 🧿其它地区 zmxooo12
   type: vmess
   server: 82.198.246.93
   port: 180
@@ -395,7 +403,7 @@ proxies:
   tls: false
   network: tcp
   skip-cert-verify: true
-- name: 🇺🇸美国 zmxooo16
+- name: 🧿其它地区 zmxooo13
   type: vmess
   server: 82.198.246.37
   port: 180
@@ -405,7 +413,7 @@ proxies:
   tls: false
   network: tcp
   skip-cert-verify: true
-- name: 🇺🇸美国 zmxooo17
+- name: 🧿其它地区 zmxooo14
   type: vmess
   server: 82.198.246.9
   port: 180
@@ -415,35 +423,35 @@ proxies:
   tls: false
   network: tcp
   skip-cert-verify: true
-- name: 🇹🇼台湾 zmxooo07
+- name: 🇹🇼台湾 zmxooo08
   server: 45.132.226.177
   port: 43918
   skip-cert-verify: true
   type: ss
   cipher: aes-256-gcm
   password: YWVzLTI1Ni1nY206cUtlMXo1a1U4a042U2xLbkR0OVJ1M1Fw
-- name: 🇹🇼台湾 zmxooo08
+- name: 🇹🇼台湾 zmxooo09
   server: 45.132.226.161
   port: 43918
   skip-cert-verify: true
   type: ss
   cipher: aes-256-gcm
   password: YWVzLTI1Ni1nY206cUtlMXo1a1U4a042U2xLbkR0OVJ1M1Fw
-- name: 🇹🇼台湾 zmxooo09
+- name: 🇹🇼台湾 zmxooo10
   server: 45.132.226.153
   port: 43918
   skip-cert-verify: true
   type: ss
   cipher: aes-256-gcm
   password: YWVzLTI1Ni1nY206cUtlMXo1a1U4a042U2xLbkR0OVJ1M1Fw
-- name: 🌍澳大利亞 zmxooo07
+- name: 🧿其它地区 zmxooo15
   server: 193.187.118.66
   port: 443
   skip-cert-verify: true
   type: trojan
   password: qQe1z5kU8kN6SlKnDt9Ru3Qp
   sni: 193.187.118.66
-- name: 🇺🇸美国 zmxooo18
+- name: 🧿其它地区 zmxooo16
   type: vmess
   server: 82.198.246.93
   port: 180
@@ -453,7 +461,7 @@ proxies:
   tls: false
   network: tcp
   skip-cert-verify: true
-- name: 🇺🇸美国 zmxooo19
+- name: 🧿其它地区 zmxooo17
   type: vmess
   server: 82.198.246.9
   port: 180
@@ -463,7 +471,7 @@ proxies:
   tls: false
   network: tcp
   skip-cert-verify: true
-- name: 🇺🇸美国 zmxooo20
+- name: 🧿其它地区 zmxooo18
   type: vmess
   server: 82.198.246.37
   port: 180
@@ -473,7 +481,7 @@ proxies:
   tls: false
   network: tcp
   skip-cert-verify: true
-- name: 🇺🇸美国 zmxooo21
+- name: 🧿其它地区 zmxooo19
   type: vmess
   server: 82.198.246.9
   port: 180
@@ -483,7 +491,7 @@ proxies:
   tls: false
   network: tcp
   skip-cert-verify: true
-- name: 🇺🇸美国 zmxooo22
+- name: 🧿其它地区 zmxooo20
   type: vmess
   server: 82.198.246.37
   port: 180
@@ -493,7 +501,7 @@ proxies:
   tls: false
   network: tcp
   skip-cert-verify: true
-- name: 🇹🇼台湾 zmxooo10
+- name: 🇹🇼台湾 zmxooo11
   server: 45.132.226.169
   port: 43918
   skip-cert-verify: true
@@ -508,8 +516,7 @@ proxy-groups:
   - 🇭🇰香港
   - 🇹🇼台湾
   - 🇺🇸美国
-  - 🌍奥地利
-  - 🌍澳大利亞
+  - 🧿其它地区
   - DIRECT
 - name: 🎬自动选择
   type: url-test
@@ -551,31 +558,32 @@ proxy-groups:
   - 🇭🇰香港 zmxooo17
   - 🇹🇼台湾 zmxooo04
   - 🇹🇼台湾 zmxooo05
-  - 🌍奥地利 zmxooo01
-  - 🌍奥地利 zmxooo02
-  - 🌍奥地利 zmxooo03
-  - 🌍奥地利 zmxooo04
   - 🇹🇼台湾 zmxooo06
-  - 🌍澳大利亞 zmxooo01
-  - 🌍澳大利亞 zmxooo02
-  - 🌍澳大利亞 zmxooo03
-  - 🌍澳大利亞 zmxooo04
-  - 🌍澳大利亞 zmxooo05
-  - 🌍澳大利亞 zmxooo06
-  - 🇺🇸美国 zmxooo14
-  - 🇺🇸美国 zmxooo15
-  - 🇺🇸美国 zmxooo16
-  - 🇺🇸美国 zmxooo17
+  - 🧿其它地区 zmxooo01
+  - 🧿其它地区 zmxooo02
+  - 🧿其它地区 zmxooo03
+  - 🧿其它地区 zmxooo04
   - 🇹🇼台湾 zmxooo07
+  - 🧿其它地区 zmxooo05
+  - 🧿其它地区 zmxooo06
+  - 🧿其它地区 zmxooo07
+  - 🧿其它地区 zmxooo08
+  - 🧿其它地区 zmxooo09
+  - 🧿其它地区 zmxooo10
+  - 🧿其它地区 zmxooo11
+  - 🧿其它地区 zmxooo12
+  - 🧿其它地区 zmxooo13
+  - 🧿其它地区 zmxooo14
   - 🇹🇼台湾 zmxooo08
   - 🇹🇼台湾 zmxooo09
-  - 🌍澳大利亞 zmxooo07
-  - 🇺🇸美国 zmxooo18
-  - 🇺🇸美国 zmxooo19
-  - 🇺🇸美国 zmxooo20
-  - 🇺🇸美国 zmxooo21
-  - 🇺🇸美国 zmxooo22
   - 🇹🇼台湾 zmxooo10
+  - 🧿其它地区 zmxooo15
+  - 🧿其它地区 zmxooo16
+  - 🧿其它地区 zmxooo17
+  - 🧿其它地区 zmxooo18
+  - 🧿其它地区 zmxooo19
+  - 🧿其它地区 zmxooo20
+  - 🇹🇼台湾 zmxooo11
 - name: 🇭🇰香港
   type: url-test
   url: http://gstatic.com
@@ -613,6 +621,7 @@ proxy-groups:
   - 🇹🇼台湾 zmxooo08
   - 🇹🇼台湾 zmxooo09
   - 🇹🇼台湾 zmxooo10
+  - 🇹🇼台湾 zmxooo11
 - name: 🇺🇸美国
   type: url-test
   url: http://gstatic.com
@@ -631,35 +640,30 @@ proxy-groups:
   - 🇺🇸美国 zmxooo11
   - 🇺🇸美国 zmxooo12
   - 🇺🇸美国 zmxooo13
-  - 🇺🇸美国 zmxooo14
-  - 🇺🇸美国 zmxooo15
-  - 🇺🇸美国 zmxooo16
-  - 🇺🇸美国 zmxooo17
-  - 🇺🇸美国 zmxooo18
-  - 🇺🇸美国 zmxooo19
-  - 🇺🇸美国 zmxooo20
-  - 🇺🇸美国 zmxooo21
-  - 🇺🇸美国 zmxooo22
-- name: 🌍奥地利
+- name: 🧿其它地区
   type: url-test
   url: http://gstatic.com
   interval: 300
   proxies:
-  - 🌍奥地利 zmxooo01
-  - 🌍奥地利 zmxooo02
-  - 🌍奥地利 zmxooo03
-  - 🌍奥地利 zmxooo04
-- name: 🌍澳大利亞
-  type: url-test
-  url: http://gstatic.com
-  interval: 300
-  proxies:
-  - 🌍澳大利亞 zmxooo01
-  - 🌍澳大利亞 zmxooo02
-  - 🌍澳大利亞 zmxooo03
-  - 🌍澳大利亞 zmxooo04
-  - 🌍澳大利亞 zmxooo05
-  - 🌍澳大利亞 zmxooo06
-  - 🌍澳大利亞 zmxooo07
+  - 🧿其它地区 zmxooo01
+  - 🧿其它地区 zmxooo02
+  - 🧿其它地区 zmxooo03
+  - 🧿其它地区 zmxooo04
+  - 🧿其它地区 zmxooo05
+  - 🧿其它地区 zmxooo06
+  - 🧿其它地区 zmxooo07
+  - 🧿其它地区 zmxooo08
+  - 🧿其它地区 zmxooo09
+  - 🧿其它地区 zmxooo10
+  - 🧿其它地区 zmxooo11
+  - 🧿其它地区 zmxooo12
+  - 🧿其它地区 zmxooo13
+  - 🧿其它地区 zmxooo14
+  - 🧿其它地区 zmxooo15
+  - 🧿其它地区 zmxooo16
+  - 🧿其它地区 zmxooo17
+  - 🧿其它地区 zmxooo18
+  - 🧿其它地区 zmxooo19
+  - 🧿其它地区 zmxooo20
 rules:
 - MATCH,🚀节点选择
