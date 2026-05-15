@@ -15,26 +15,35 @@ EMOJI_MAP = {
 
 def get_final_label(server, remarks):
     text = urllib.parse.unquote(str(remarks)).lower().strip()
+    
     meta = [
-        ("香港", r"hk|香港|hongkong"), ("台湾", r"tw|台湾|台灣|taiwan"), 
-        ("美国", r"us|美国|美國|united states"), ("日本", r"jp|日本|japan"),
-        ("新加坡", r"sg|新加坡|singapore"), ("韩国", r"kr|韩国|韓國|korea")
+        ("香港", r"hk|香港|hongkong"), 
+        ("台湾", r"tw|台湾|台灣|taiwan"), 
+        ("美国", r"us|美国|美國|united states|america"), 
+        ("日本", r"jp|日本|japan"),
+        ("新加坡", r"sg|新加坡|singapore"), 
+        ("韩国", r"kr|韩国|韓國|korea")
     ]
     for name, pattern in meta:
         if re.search(pattern, text): 
             return f"{EMOJI_MAP.get(name, '🌍')}{name}"
     
-    if server in IP_CACHE: return IP_CACHE[server]
-    if server and ("." in server):
+    if server in IP_CACHE: 
+        return IP_CACHE[server]
+        
+    if server and ("." in server) and not re.match(r"^\d{1,3}(\.\d{1,3}){3}$", server):
         try:
-            time.sleep(0.5) 
-            resp = requests.get(f"http://ip-api.com/json/{server}?lang=zh-CN", timeout=5).json()
+            time.sleep(0.3) 
+            resp = requests.get(f"http://ip-api.com{server}?lang=zh-CN", timeout=3).json()
             if resp.get("status") == "success":
                 country = resp.get("country")
-                label = f"{EMOJI_MAP.get(country, '🌍')}{country}"
-                IP_CACHE[server] = label
-                return label
-        except: pass
+                if country:
+                    label = f"{EMOJI_MAP.get(country, '🌍')}{country}"
+                    IP_CACHE[server] = label
+                    return label
+        except: 
+            pass
+            
     return "🧿其它地区"
 
 def fix_base64(s):
@@ -45,8 +54,15 @@ def rebuild_node(link, new_name):
     try:
         if link.startswith('vmess://'):
             b64_part = link[8:].split('#')[0]
-            d = json.loads(base64.b64decode(fix_base64(b64_part)).decode('utf-8', 'ignore'))
-            label = get_final_label(d.get("add"), d.get("ps", ""))
+            # 捕获因节点截断导致的 Base64 解密或 JSON 解析失败
+            try:
+                d = json.loads(base64.b64decode(fix_base64(b64_part)).decode('utf-8', 'ignore'))
+            except:
+                return None, None, None
+                
+            raw_ps = d.get("ps", "")
+            label = get_final_label(d.get("add"), raw_ps)
+            
             std_vmess = {
                 "v": "2", "ps": new_name, "add": str(d.get("add")).strip(),
                 "port": str(d.get("port")), "id": str(d.get("id")), "aid": str(d.get("aid", "0")),
@@ -66,7 +82,7 @@ def rebuild_node(link, new_name):
         u = urllib.parse.urlparse(link)
         scheme = u.scheme.lower()
         label = get_final_label(u.hostname, u.fragment)
-        proxy = {"name": new_name, "server": u.hostname, "port": u.port, "skip-cert-verify": True}
+        proxy = {"name": new_name, "server": u.hostname, "port": u.port if u.port else 443, "skip-cert-verify": True}
 
         if scheme == "ss":
             user_info = u.username if u.username else base64.b64decode(fix_base64(u.netloc.split('@')[0])).decode()
@@ -85,10 +101,18 @@ def rebuild_node(link, new_name):
                 proxy.update({"reality-opts": {"public-key": params.get("pbk", ""), "short-id": params.get("sid", "")}})
         elif scheme in ["hysteria2", "hy2"]:
             proxy.update({"type": "hysteria2", "password": u.username, "sni": u.hostname})
-        else: return None, None, None
+        elif scheme in ["http", "https"]:
+            # 兼容标准 HTTP/HTTPS 代理协议
+            user_info = u.userinfo if hasattr(u, 'userinfo') else u.netloc.split('@')[0] if '@' in u.netloc else ''
+            user, pwd = user_info.split(':') if ':' in user_info else ('', '')
+            proxy.update({"type": "http", "username": user, "password": pwd, "tls": True if scheme == "https" else False})
+        else: 
+            return None, None, None
 
+        # 核心修复：添加 [0] 确保获取的是切片后的字符串，而不是整个 List 列表
         return label, proxy, f"{link.split('#')[0]}#{urllib.parse.quote(new_name)}"
-    except: return None, None, None
+    except: 
+        return None, None, None
 
 def main():
     if not os.path.exists('nodes.txt'): return
@@ -99,13 +123,15 @@ def main():
     clash_proxies, rocket_links = [], []
     
     for l in raw_links:
-        lbl, _, _ = rebuild_node(l, "TEMP")
-        if not lbl: continue
+        lbl, _, _ = rebuild_node(l, "TEMP_PLACEHOLDER")
+        if not lbl: 
+            continue
+            
         idx = len(region_map[lbl]) + 1
-        # 格式：🇭🇰香港 zmxooo01
         new_name = f"{lbl} {CHANNEL_MARK}{idx:02d}"
+        
         label, proxy, r_link = rebuild_node(l, new_name)
-        if proxy:
+        if proxy and r_link:
             region_map[label].append(new_name)
             clash_proxies.append(proxy)
             rocket_links.append(r_link)
