@@ -4,13 +4,14 @@ on:
   push:
     branches: [ main ]
     paths:
-      - 'nodes.txt'
-  workflow_dispatch:
+      - 'nodes.txt'      # 只有当 nodes.txt 更新时才触发
+  workflow_dispatch:      # 允许手动在 Actions 页面点击按钮运行
 
 jobs:
   convert:
     runs-on: ubuntu-latest
-    # 必须显式声明写权限
+    
+    # 核心修正：显式授予 Actions 写入仓库的权限
     permissions:
       contents: write
       
@@ -23,7 +24,7 @@ jobs:
         with:
           python-version: '3.10'
 
-      - name: 安装依赖
+      - name: 安装必要依赖
         run: pip install pyyaml requests
 
       - name: 运行转换脚本
@@ -34,13 +35,14 @@ jobs:
           git config --local user.email "actions@github.com"
           git config --local user.name "GitHub Action"
           
-          # 关键点：一定要和 convert.py 里的文件名对齐
+          # 关键点：同时添加 clash_config.yaml 和 index.html
+          # 如果之前有 config.yaml，运行此脚本后建议手动删除旧的
           git add clash_config.yaml index.html
           
-          # 只有在有变动时才提交，防止 workflow 报错
+          # 检查是否有变动，避免因为没有内容更新而导致的提交报错
           if git diff --staged --quiet; then
-            echo "No changes to commit"
+            echo "没有发现内容变动，跳过本次提交。"
           else
-            git commit -m "Auto Update Nodes [$(date '+%Y-%m-%d %H:%M')]"
+            git commit -m "自动更新订阅文件 [$(date '+%Y-%m-%d %H:%M')]"
             git push
           fi
