@@ -149,6 +149,101 @@ proxies:
   tls: false
   skip-cert-verify: true
   network: tcp
+- name: 🇬🇧 英国 12 | @zmxooo
+  server: 82.38.31.155
+  port: 8080
+  udp: true
+  type: ss
+  cipher: chacha20-ietf-poly1305
+  password: oZIoA69Q8yhcQV8ka3Pa3A
+- name: 🇬🇧 英国 13 | @zmxooo
+  server: 82.38.31.35
+  port: 8080
+  udp: true
+  type: ss
+  cipher: chacha20-ietf-poly1305
+  password: oZIoA69Q8yhcQV8ka3Pa3A
+- name: 🇭🇰 香港 01 | @zmxooo
+  server: 202.146.222.41
+  port: 443
+  udp: true
+  type: hysteria2
+  password: qQe1z5kU8kN6SlKnDt9Ru3Qp
+  up: 15
+  down: 50
+  skip-cert-verify: true
+- name: 🇭🇰 香港 02 | @zmxooo
+  server: 202.146.222.13
+  port: 443
+  udp: true
+  type: hysteria2
+  password: qQe1z5kU8kN6SlKnDt9Ru3Qp
+  up: 15
+  down: 50
+  skip-cert-verify: true
+- name: 🇭🇰 香港 03 | @zmxooo
+  server: 202.146.222.93
+  port: 443
+  udp: true
+  type: hysteria2
+  password: qQe1z5kU8kN6SlKnDt9Ru3Qp
+  up: 15
+  down: 50
+  skip-cert-verify: true
+- name: 🇭🇰 香港 04 | @zmxooo
+  server: 202.146.222.89
+  port: 443
+  udp: true
+  type: hysteria2
+  password: qQe1z5kU8kN6SlKnDt9Ru3Qp
+  up: 15
+  down: 50
+  skip-cert-verify: true
+- name: 🇭🇰 香港 05 | @zmxooo
+  server: 202.146.222.11
+  port: 443
+  udp: true
+  type: hysteria2
+  password: qQe1z5kU8kN6SlKnDt9Ru3Qp
+  up: 15
+  down: 50
+  skip-cert-verify: true
+- name: 🇭🇰 香港 06 | @zmxooo
+  server: 202.146.222.29
+  port: 443
+  udp: true
+  type: hysteria2
+  password: qQe1z5kU8kN6SlKnDt9Ru3Qp
+  up: 15
+  down: 50
+  skip-cert-verify: true
+- name: 🇭🇰 香港 07 | @zmxooo
+  server: 202.146.222.16
+  port: 443
+  udp: true
+  type: hysteria2
+  password: qQe1z5kU8kN6SlKnDt9Ru3Qp
+  up: 15
+  down: 50
+  skip-cert-verify: true
+- name: 🇭🇰 香港 08 | @zmxooo
+  server: 202.146.222.85
+  port: 443
+  udp: true
+  type: hysteria2
+  password: qQe1z5kU8kN6SlKnDt9Ru3Qp
+  up: 15
+  down: 50
+  skip-cert-verify: true
+- name: 🇭🇰 香港 09 | @zmxooo
+  server: 202.146.222.45
+  port: 443
+  udp: true
+  type: hysteria2
+  password: qQe1z5kU8kN6SlKnDt9Ru3Qp
+  up: 15
+  down: 50
+  skip-cert-verify: true
 - name: 🇯🇵 日本 02 | @zmxooo
   type: vmess
   server: 103.127.243.55
@@ -159,6 +254,33 @@ proxies:
   tls: false
   skip-cert-verify: true
   network: tcp
+- name: 🇰🇷 韩国 01 | @zmxooo
+  server: vpn-kr-003.fastervpn.world
+  port: 443
+  udp: true
+  type: hysteria2
+  password: qQe1z5kU8kN6SlKnDt9Ru3Qp
+  up: 15
+  down: 50
+  skip-cert-verify: true
+- name: 🇹🇼 台湾 01 | @zmxooo
+  server: 160.187.100.109
+  port: 443
+  udp: true
+  type: hysteria2
+  password: qQe1z5kU8kN6SlKnDt9Ru3Qp
+  up: 15
+  down: 50
+  skip-cert-verify: true
+- name: 🇹🇼 台湾 02 | @zmxooo
+  server: 43.200.123.45
+  port: 443
+  udp: true
+  type: hysteria2
+  password: qQe1z5kU8kN6SlKnDt9Ru3Qp
+  up: 15
+  down: 50
+  skip-cert-verify: true
 - name: 🇹🇼 台湾 03 | @zmxooo
   type: vmess
   server: v13.zgtfqs.click
@@ -179,6 +301,15 @@ proxies:
   tls: false
   skip-cert-verify: true
   network: tcp
+- name: 🇺🇸 美国 01 | @zmxooo
+  server: 23.144.12.162
+  port: 443
+  udp: true
+  type: hysteria2
+  password: qQe1z5kU8kN6SlKnDt9Ru3Qp
+  up: 15
+  down: 50
+  skip-cert-verify: true
 - name: 🇺🇸 美国 02 | @zmxooo
   type: vmess
   server: 82.198.246.214
@@ -219,6 +350,27 @@ proxies:
   tls: false
   skip-cert-verify: true
   network: tcp
+- name: 🇺🇸 美国 06 | @zmxooo
+  server: 34.229.121.217
+  port: 80
+  udp: true
+  type: ss
+  cipher: aes-256-gcm
+  password: dada1203
+- name: 🇺🇸 美国 07 | @zmxooo
+  server: 3.137.174.85
+  port: 443
+  udp: true
+  type: ss
+  cipher: aes-256-cfb
+  password: amazonskr05
+- name: 🇺🇸 美国 08 | @zmxooo
+  server: 3.144.123.157
+  port: 443
+  udp: true
+  type: ss
+  cipher: aes-256-cfb
+  password: amazonskr05
 - name: 🇺🇸 美国 10 | @zmxooo
   type: vmess
   server: 82.198.246.214
@@ -259,6 +411,55 @@ proxies:
   tls: false
   skip-cert-verify: true
   network: tcp
+- name: 🇺🇸 美国 14 | @zmxooo
+  server: 3.137.174.85
+  port: 443
+  udp: true
+  type: ss
+  cipher: aes-256-cfb
+  password: amazonskr05
+- name: 🇻🇳 越南 01 | @zmxooo
+  server: 103.186.155.79
+  port: 38388
+  udp: true
+  type: ss
+  cipher: aes-256-cfb
+  password: Xn8jKdmDM00IeO%#$#fJAMtsEAEUOpH/YWYtYqDFnT0SV
+- name: 🇻🇳 越南 02 | @zmxooo
+  server: 103.186.155.75
+  port: 38388
+  udp: true
+  type: ss
+  cipher: aes-256-cfb
+  password: Xn8jKdmDM00IeO%#$#fJAMtsEAEUOpH/YWYtYqDFnT0SV
+- name: 🇻🇳 越南 03 | @zmxooo
+  server: 103.186.155.109
+  port: 38388
+  udp: true
+  type: ss
+  cipher: aes-256-cfb
+  password: Xn8jKdmDM00IeO%#$#fJAMtsEAEUOpH/YWYtYqDFnT0SV
+- name: 🇻🇳 越南 04 | @zmxooo
+  server: 103.186.155.8
+  port: 38388
+  udp: true
+  type: ss
+  cipher: aes-256-cfb
+  password: Xn8jKdmDM00IeO%#$#fJAMtsEAEUOpH/YWYtYqDFnT0SV
+- name: 🇻🇳 越南 05 | @zmxooo
+  server: 103.186.155.49
+  port: 38388
+  udp: true
+  type: ss
+  cipher: aes-256-cfb
+  password: Xn8jKdmDM00IeO%#$#fJAMtsEAEUOpH/YWYtYqDFnT0SV
+- name: 🇻🇳 越南 06 | @zmxooo
+  server: 103.186.155.75
+  port: 38388
+  udp: true
+  type: ss
+  cipher: aes-256-cfb
+  password: Xn8jKdmDM00IeO%#$#fJAMtsEAEUOpH/YWYtYqDFnT0SV
 proxy-groups:
 - name: 🚀 节点选择
   type: select
@@ -280,17 +481,42 @@ proxy-groups:
   - 🇬🇧 英国 09 | @zmxooo
   - 🇬🇧 英国 10 | @zmxooo
   - 🇬🇧 英国 11 | @zmxooo
+  - 🇬🇧 英国 12 | @zmxooo
+  - 🇬🇧 英国 13 | @zmxooo
+  - 🇭🇰 香港 01 | @zmxooo
+  - 🇭🇰 香港 02 | @zmxooo
+  - 🇭🇰 香港 03 | @zmxooo
+  - 🇭🇰 香港 04 | @zmxooo
+  - 🇭🇰 香港 05 | @zmxooo
+  - 🇭🇰 香港 06 | @zmxooo
+  - 🇭🇰 香港 07 | @zmxooo
+  - 🇭🇰 香港 08 | @zmxooo
+  - 🇭🇰 香港 09 | @zmxooo
   - 🇯🇵 日本 02 | @zmxooo
+  - 🇰🇷 韩国 01 | @zmxooo
+  - 🇹🇼 台湾 01 | @zmxooo
+  - 🇹🇼 台湾 02 | @zmxooo
   - 🇹🇼 台湾 03 | @zmxooo
   - 🇹🇼 台湾 04 | @zmxooo
+  - 🇺🇸 美国 01 | @zmxooo
   - 🇺🇸 美国 02 | @zmxooo
   - 🇺🇸 美国 03 | @zmxooo
   - 🇺🇸 美国 04 | @zmxooo
   - 🇺🇸 美国 05 | @zmxooo
+  - 🇺🇸 美国 06 | @zmxooo
+  - 🇺🇸 美国 07 | @zmxooo
+  - 🇺🇸 美国 08 | @zmxooo
   - 🇺🇸 美国 10 | @zmxooo
   - 🇺🇸 美国 11 | @zmxooo
   - 🇺🇸 美国 12 | @zmxooo
   - 🇺🇸 美国 13 | @zmxooo
+  - 🇺🇸 美国 14 | @zmxooo
+  - 🇻🇳 越南 01 | @zmxooo
+  - 🇻🇳 越南 02 | @zmxooo
+  - 🇻🇳 越南 03 | @zmxooo
+  - 🇻🇳 越南 04 | @zmxooo
+  - 🇻🇳 越南 05 | @zmxooo
+  - 🇻🇳 越南 06 | @zmxooo
 - name: ♻️ 自动选择
   type: url-test
   url: http://www.gstatic.com/generate_204
@@ -311,16 +537,41 @@ proxy-groups:
   - 🇬🇧 英国 09 | @zmxooo
   - 🇬🇧 英国 10 | @zmxooo
   - 🇬🇧 英国 11 | @zmxooo
+  - 🇬🇧 英国 12 | @zmxooo
+  - 🇬🇧 英国 13 | @zmxooo
+  - 🇭🇰 香港 01 | @zmxooo
+  - 🇭🇰 香港 02 | @zmxooo
+  - 🇭🇰 香港 03 | @zmxooo
+  - 🇭🇰 香港 04 | @zmxooo
+  - 🇭🇰 香港 05 | @zmxooo
+  - 🇭🇰 香港 06 | @zmxooo
+  - 🇭🇰 香港 07 | @zmxooo
+  - 🇭🇰 香港 08 | @zmxooo
+  - 🇭🇰 香港 09 | @zmxooo
   - 🇯🇵 日本 02 | @zmxooo
+  - 🇰🇷 韩国 01 | @zmxooo
+  - 🇹🇼 台湾 01 | @zmxooo
+  - 🇹🇼 台湾 02 | @zmxooo
   - 🇹🇼 台湾 03 | @zmxooo
   - 🇹🇼 台湾 04 | @zmxooo
+  - 🇺🇸 美国 01 | @zmxooo
   - 🇺🇸 美国 02 | @zmxooo
   - 🇺🇸 美国 03 | @zmxooo
   - 🇺🇸 美国 04 | @zmxooo
   - 🇺🇸 美国 05 | @zmxooo
+  - 🇺🇸 美国 06 | @zmxooo
+  - 🇺🇸 美国 07 | @zmxooo
+  - 🇺🇸 美国 08 | @zmxooo
   - 🇺🇸 美国 10 | @zmxooo
   - 🇺🇸 美国 11 | @zmxooo
   - 🇺🇸 美国 12 | @zmxooo
   - 🇺🇸 美国 13 | @zmxooo
+  - 🇺🇸 美国 14 | @zmxooo
+  - 🇻🇳 越南 01 | @zmxooo
+  - 🇻🇳 越南 02 | @zmxooo
+  - 🇻🇳 越南 03 | @zmxooo
+  - 🇻🇳 越南 04 | @zmxooo
+  - 🇻🇳 越南 05 | @zmxooo
+  - 🇻🇳 越南 06 | @zmxooo
 rules:
 - MATCH,🚀 节点选择
