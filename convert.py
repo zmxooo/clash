@@ -18,7 +18,7 @@ MAX_WORKERS = 10  # 并发线程数
 INDEX_FILE = "index.html"
 CONFIG_FILE = "config.yaml"
 
-# 测速配置（保持通用兼容性）
+# 统一测速参数
 TEST_URL = "http://gstatic.com"
 TEST_INTERVAL = 300
 
@@ -41,7 +41,6 @@ EMOJI_MAP = {
     "美国": "🇺🇸", "英国": "🇬🇧", "德国": "🇩🇪", "俄罗斯": "🇷🇺", "越南": "🇻🇳", "泰国": "🇹🇭", "其它": "🌍"
 }
 
-# 加载持久化 IP 缓存
 if os.path.exists(IP_CACHE_FILE):
     try:
         with open(IP_CACHE_FILE, 'r', encoding='utf-8') as f:
@@ -75,7 +74,7 @@ def fetch_ip_api(server):
         return server, "其它"
 
     try:
-        time.sleep(1.3) # 强控频，规避 API 限流
+        time.sleep(1.3)
         url = f"http://ip-api.com{server}?lang=zh-CN"
         r = requests.get(url, timeout=4).json()
         if r.get("status") == "success":
@@ -147,7 +146,7 @@ def main():
         classified_nodes[region].append(link)
 
     final_links, clash_proxies = [], []
-    all_proxy_names = []  # 存放所有新生成的节点名字
+    all_proxy_names = []  
     sorted_regions = sorted(classified_nodes.keys())
     
     for reg in sorted_regions:
@@ -226,13 +225,11 @@ def main():
             except:
                 pass
 
-    # 1. 覆盖同步 index.html
     if final_links:
         with open(INDEX_FILE, 'w', encoding='utf-8') as f:
             f.write("\n".join(final_links))
-        print(f"成功同步更新：{INDEX_FILE}")
 
-    # 2. 覆盖同步 config.yaml 
+    # 2. 覆盖同步 config.yaml 并强制纠正代理组
     if clash_proxies:
         try:
             if os.path.exists(CONFIG_FILE):
@@ -241,31 +238,50 @@ def main():
             else:
                 base_config = {}
                 
-            # 仅仅覆盖写入最新的底层核心节点列表
             base_config["proxies"] = clash_proxies
             
-            # --- 核心数据对齐：安全地清洗你原本就手写好的策略组内部节点名单 ---
+            # --- 终极防御逻辑：全自动扫描校验你的原始手写策略组 ---
             if "proxy-groups" in base_config and isinstance(base_config["proxy-groups"], list):
                 for group in base_config["proxy-groups"]:
                     if "proxies" in group and isinstance(group["proxies"], list):
                         old_list = group["proxies"]
                         cleaned_list = []
                         
-                        # 过滤掉带有特定后缀、在这一次已经被判定为过期的旧动态节点名字
+                        # 遍历你手写的每个节点或子分组引用
                         for item in old_list:
-                            if FIXED_SUFFIX in str(item):
-                                continue  # 移除旧的动态残留节点，彻底解决 not found
-                            cleaned_list.append(item)
+                            item_str = str(item)
+                            
+                            # 情况 A：如果该项属于动态生成的节点（带有 zmxooo 后缀）
+                            if FIXED_SUFFIX in item_str:
+                                # 检查本次运行到底有没有真正生成这个节点
+                                if item_str in all_proxy_names:
+                                    cleaned_list.append(item_str)  # 生成了，保留
+                                else:
+                                    # 没生成（比如这次机场没有台湾节点）
+                                    # 智能寻找本次生成的同国家其他节点替代，如果没有，用全局第一个节点兜底！
+                                    country_prefix = item_str.split(FIXED_SUFFIX)[0].strip()
+                                    matched_backups = [n for n in all_proxy_names if country_prefix in n]
+                                    if matched_backups:
+                                        cleaned_list.append(matched_backups[0])
+                                    elif all_proxy_names:
+                                        cleaned_list.append(all_proxy_names[0]) # 极限制止 not found 报错
+                            else:
+                                # 情况 B：属于 DIRECT 或其他子分组名称，保持原样
+                                cleaned_list.append(item)
                         
-                        # 把这批最新扫描、排序、且真实产生的所有新节点名字，安全地追加注入进你的旧策略组中
-                        # 这样你的旧策略组既不会散架，里边的节点也全都是绝对真实存在的
-                        group["proxies"] = cleaned_list + all_proxy_names
+                        # 如果是“自动选择”等主控测速组，将其转换为 url-test，直接透传当前最快节点到代理看板首页
+                        if group.get("name") in ["♻️ 自动选择", "自动选择"] or "自动" in group.get("name", ""):
+                            group["type"] = "url-test"
+                            group["url"] = TEST_URL
+                            group["interval"] = TEST_INTERVAL
+                            
+                        group["proxies"] = cleaned_list
             
             with open(CONFIG_FILE, 'w', encoding='utf-8') as f:
                 yaml.dump(base_config, f, allow_unicode=True, sort_keys=False)
-            print(f"成功同步更新：{CONFIG_FILE} (已完美融合你原本的手写配置结构)")
+            print(f"同步已彻底修复成功：{CONFIG_FILE}")
         except Exception as e:
-            print(f"同步更新 {CONFIG_FILE} 失败，错误原因: {e}")
+            print(f"同步失败: {e}")
 
 if __name__ == '__main__':
     main()
