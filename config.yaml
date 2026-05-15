@@ -1,81 +1,5 @@
 proxies:
-- name: 🌍其它 zmxooo2
-  server: 103.186.155.75
-  port: 38388
-  udp: true
-  type: ss
-  cipher: aes-256-cfb
-  password: Xn8jKdmDM00IeO%#$#fJAMtsEAEUOpH/YWYtYqDFnT0SV
-- name: 🌍其它 zmxooo3
-  type: vmess
-  server: 82.198.246.9
-  port: 180
-  uuid: d13fc2f5-3e05-4795-81eb-44143a09e552
-  alterId: 0
-  cipher: auto
-  tls: false
-  network: tcp
-  skip-cert-verify: true
-- name: 🌍其它 zmxooo4
-  type: vmess
-  server: 82.198.246.214
-  port: 180
-  uuid: d13fc2f5-3e05-4795-81eb-44143a09e552
-  alterId: 0
-  cipher: auto
-  tls: false
-  network: tcp
-  skip-cert-verify: true
-- name: 🌍其它 zmxooo5
-  type: vmess
-  server: 82.198.246.37
-  port: 180
-  uuid: d13fc2f5-3e05-4795-81eb-44143a09e552
-  alterId: 0
-  cipher: auto
-  tls: false
-  network: tcp
-  skip-cert-verify: true
-- name: 🌍其它 zmxooo6
-  type: vmess
-  server: 82.198.246.233
-  port: 180
-  uuid: d13fc2f5-3e05-4795-81eb-44143a09e552
-  alterId: 0
-  cipher: auto
-  tls: false
-  network: tcp
-  skip-cert-verify: true
-- name: 🌍其它 zmxooo7
-  server: lt-sin.ltdns.top
-  port: 37043
-  udp: true
-  type: trojan
-  password: abb011d5-2749-4fba-9a66-0eb7b1b14d1e
-  sni: ithome.com
-  skip-cert-verify: true
-  tls: true
 - name: 🇹🇼台湾 zmxooo1
-  server: 160.187.100.109
-  port: 443
-  udp: true
-  type: hysteria2
-  password: qQe1z5kU8kN6SlKnDt9Ru3Qp
-  up: 20 Mbps
-  down: 100 Mbps
-  skip-cert-verify: true
-  sni: https://t.me/zmxooo
-- name: 🇹🇼台湾 zmxooo2
-  server: 43.200.123.45
-  port: 443
-  udp: true
-  type: hysteria2
-  password: qQe1z5kU8kN6SlKnDt9Ru3Qp
-  up: 20 Mbps
-  down: 100 Mbps
-  skip-cert-verify: true
-  sni: https://t.me/zmxooo
-- name: 🇹🇼台湾 zmxooo3
   type: vmess
   server: v13.zgtfqs.click
   port: 30813
@@ -85,7 +9,7 @@ proxies:
   tls: false
   network: tcp
   skip-cert-verify: true
-- name: 🇹🇼台湾 zmxooo4
+- name: 🇹🇼台湾 zmxooo2
   type: vmess
   server: v11.zgtfqs.click
   port: 30811
@@ -95,16 +19,26 @@ proxies:
   tls: false
   network: tcp
   skip-cert-verify: true
-- name: 🇩🇪德国 zmxooo1
-  type: vmess
-  server: 82.198.246.233
-  port: 180
-  uuid: d13fc2f5-3e05-4795-81eb-44143a09e552
-  alterId: 0
-  cipher: auto
-  tls: false
-  network: tcp
+- name: 🇹🇼台湾 zmxooo3
+  server: 160.187.100.109
+  port: 443
+  udp: true
+  type: hysteria2
+  password: qQe1z5kU8kN6SlKnDt9Ru3Qp
+  up: 20 Mbps
+  down: 100 Mbps
   skip-cert-verify: true
+  sni: https://t.me/zmxooo
+- name: 🇹🇼台湾 zmxooo4
+  server: 43.200.123.45
+  port: 443
+  udp: true
+  type: hysteria2
+  password: qQe1z5kU8kN6SlKnDt9Ru3Qp
+  up: 20 Mbps
+  down: 100 Mbps
+  skip-cert-verify: true
+  sni: https://t.me/zmxooo
 - name: 🇩🇪德国 zmxooo2
   type: vmess
   server: 82.198.246.233
@@ -117,7 +51,7 @@ proxies:
   skip-cert-verify: true
 - name: 🇩🇪德国 zmxooo3
   type: vmess
-  server: 82.198.246.9
+  server: 82.198.246.233
   port: 180
   uuid: d13fc2f5-3e05-4795-81eb-44143a09e552
   alterId: 0
@@ -127,6 +61,16 @@ proxies:
   skip-cert-verify: true
 - name: 🇩🇪德国 zmxooo4
   type: vmess
+  server: 82.198.246.9
+  port: 180
+  uuid: d13fc2f5-3e05-4795-81eb-44143a09e552
+  alterId: 0
+  cipher: auto
+  tls: false
+  network: tcp
+  skip-cert-verify: true
+- name: 🇩🇪德国 zmxooo5
+  type: vmess
   server: 82.198.246.37
   port: 180
   uuid: d13fc2f5-3e05-4795-81eb-44143a09e552
@@ -135,7 +79,7 @@ proxies:
   tls: false
   network: tcp
   skip-cert-verify: true
-- name: 🇯🇵日本 zmxooo1
+- name: 🇯🇵日本 zmxooo2
   type: vmess
   server: 103.127.243.55
   port: 58051
@@ -147,7 +91,7 @@ proxies:
   skip-cert-verify: true
 - name: 🇺🇸美国 zmxooo1
   type: vmess
-  server: 82.198.246.9
+  server: 82.198.246.214
   port: 180
   uuid: d13fc2f5-3e05-4795-81eb-44143a09e552
   alterId: 0
@@ -163,15 +107,12 @@ proxies:
   cipher: aes-256-cfb
   password: amazonskr05
 - name: 🇺🇸美国 zmxooo3
-  type: vmess
-  server: 82.198.246.214
-  port: 180
-  uuid: d13fc2f5-3e05-4795-81eb-44143a09e552
-  alterId: 0
-  cipher: auto
-  tls: false
-  network: tcp
-  skip-cert-verify: true
+  server: 3.137.174.85
+  port: 443
+  udp: true
+  type: ss
+  cipher: aes-256-cfb
+  password: amazonskr05
 - name: 🇺🇸美国 zmxooo4
   type: vmess
   server: 82.198.246.233
@@ -183,13 +124,6 @@ proxies:
   network: tcp
   skip-cert-verify: true
 - name: 🇺🇸美国 zmxooo5
-  server: 3.137.174.85
-  port: 443
-  udp: true
-  type: ss
-  cipher: aes-256-cfb
-  password: amazonskr05
-- name: 🇺🇸美国 zmxooo6
   server: 23.144.12.162
   port: 443
   udp: true
@@ -199,14 +133,17 @@ proxies:
   down: 100 Mbps
   skip-cert-verify: true
   sni: https://t.me/zmxooo
+- name: 🇺🇸美国 zmxooo6
+  type: vmess
+  server: 82.198.246.9
+  port: 180
+  uuid: d13fc2f5-3e05-4795-81eb-44143a09e552
+  alterId: 0
+  cipher: auto
+  tls: false
+  network: tcp
+  skip-cert-verify: true
 - name: 🇺🇸美国 zmxooo7
-  server: 34.229.121.217
-  port: 80
-  udp: true
-  type: ss
-  cipher: aes-256-gcm
-  password: dada1203
-- name: 🇺🇸美国 zmxooo8
   type: vmess
   server: 82.198.246.37
   port: 180
@@ -217,27 +154,23 @@ proxies:
   network: tcp
   skip-cert-verify: true
 - name: 🇺🇸美国 zmxooo9
-  server: 172.66.44.230
-  port: 8443
-  udp: true
-  type: trojan
-  password: 8r%3C%5B9%27l6hAO%238ZQi
-  sni: Koma-YT.PAGeS.Dev
-  skip-cert-verify: true
-  tls: true
-  network: ws
-  ws-opts:
-    path: /tro8sFW1S91B6sZrM1?ed=2560
-    headers:
-      Host: Koma-YT.PAGeS.Dev
-- name: 🇺🇸美国 zmxooo10
-  server: 3.137.174.85
-  port: 443
+  server: 34.229.121.217
+  port: 80
   udp: true
   type: ss
-  cipher: aes-256-cfb
-  password: amazonskr05
-- name: 🇬🇧英国 zmxooo1
+  cipher: aes-256-gcm
+  password: dada1203
+- name: 🇺🇸美国 zmxooo10
+  type: vmess
+  server: 82.198.246.9
+  port: 180
+  uuid: d13fc2f5-3e05-4795-81eb-44143a09e552
+  alterId: 0
+  cipher: auto
+  tls: false
+  network: tcp
+  skip-cert-verify: true
+- name: 🇺🇸美国 zmxooo11
   type: vmess
   server: 82.198.246.214
   port: 180
@@ -247,9 +180,46 @@ proxies:
   tls: false
   network: tcp
   skip-cert-verify: true
+- name: 🇺🇸美国 zmxooo12
+  type: vmess
+  server: 82.198.246.37
+  port: 180
+  uuid: d13fc2f5-3e05-4795-81eb-44143a09e552
+  alterId: 0
+  cipher: auto
+  tls: false
+  network: tcp
+  skip-cert-verify: true
+- name: 🇺🇸美国 zmxooo13
+  type: vmess
+  server: 82.198.246.233
+  port: 180
+  uuid: d13fc2f5-3e05-4795-81eb-44143a09e552
+  alterId: 0
+  cipher: auto
+  tls: false
+  network: tcp
+  skip-cert-verify: true
+- name: 🇺🇸美国 zmxooo14
+  server: 3.137.174.85
+  port: 443
+  udp: true
+  type: ss
+  cipher: aes-256-cfb
+  password: amazonskr05
+- name: 🇬🇧英国 zmxooo1
+  type: vmess
+  server: 82.198.246.233
+  port: 180
+  uuid: d13fc2f5-3e05-4795-81eb-44143a09e552
+  alterId: 0
+  cipher: auto
+  tls: false
+  network: tcp
+  skip-cert-verify: true
 - name: 🇬🇧英国 zmxooo2
   type: vmess
-  server: 82.198.246.9
+  server: 82.198.246.233
   port: 180
   uuid: d13fc2f5-3e05-4795-81eb-44143a09e552
   alterId: 0
@@ -269,7 +239,7 @@ proxies:
   skip-cert-verify: true
 - name: 🇬🇧英国 zmxooo4
   type: vmess
-  server: 82.198.246.233
+  server: 82.198.246.9
   port: 180
   uuid: d13fc2f5-3e05-4795-81eb-44143a09e552
   alterId: 0
@@ -279,7 +249,7 @@ proxies:
   skip-cert-verify: true
 - name: 🇬🇧英国 zmxooo5
   type: vmess
-  server: 82.198.246.37
+  server: 82.198.246.9
   port: 180
   uuid: d13fc2f5-3e05-4795-81eb-44143a09e552
   alterId: 0
@@ -289,7 +259,7 @@ proxies:
   skip-cert-verify: true
 - name: 🇬🇧英国 zmxooo6
   type: vmess
-  server: 82.198.246.9
+  server: 82.198.246.214
   port: 180
   uuid: d13fc2f5-3e05-4795-81eb-44143a09e552
   alterId: 0
@@ -299,7 +269,7 @@ proxies:
   skip-cert-verify: true
 - name: 🇬🇧英国 zmxooo7
   type: vmess
-  server: 82.198.246.233
+  server: 82.198.246.214
   port: 180
   uuid: d13fc2f5-3e05-4795-81eb-44143a09e552
   alterId: 0
@@ -309,7 +279,7 @@ proxies:
   skip-cert-verify: true
 - name: 🇬🇧英国 zmxooo8
   type: vmess
-  server: 82.198.246.9
+  server: 82.198.246.233
   port: 180
   uuid: d13fc2f5-3e05-4795-81eb-44143a09e552
   alterId: 0
@@ -329,7 +299,7 @@ proxies:
   skip-cert-verify: true
 - name: 🇬🇧英国 zmxooo10
   type: vmess
-  server: 82.198.246.233
+  server: 82.198.246.37
   port: 180
   uuid: d13fc2f5-3e05-4795-81eb-44143a09e552
   alterId: 0
@@ -339,7 +309,7 @@ proxies:
   skip-cert-verify: true
 - name: 🇬🇧英国 zmxooo11
   type: vmess
-  server: 82.198.246.214
+  server: 82.198.246.9
   port: 180
   uuid: d13fc2f5-3e05-4795-81eb-44143a09e552
   alterId: 0
@@ -362,14 +332,14 @@ proxies:
   cipher: chacha20-ietf-poly1305
   password: oZIoA69Q8yhcQV8ka3Pa3A
 - name: 🇻🇳越南 zmxooo1
-  server: 103.186.155.49
+  server: 103.186.155.109
   port: 38388
   udp: true
   type: ss
   cipher: aes-256-cfb
   password: Xn8jKdmDM00IeO%#$#fJAMtsEAEUOpH/YWYtYqDFnT0SV
 - name: 🇻🇳越南 zmxooo2
-  server: 103.186.155.109
+  server: 103.186.155.75
   port: 38388
   udp: true
   type: ss
@@ -383,76 +353,27 @@ proxies:
   cipher: aes-256-cfb
   password: Xn8jKdmDM00IeO%#$#fJAMtsEAEUOpH/YWYtYqDFnT0SV
 - name: 🇻🇳越南 zmxooo4
-  server: 103.186.155.8
-  port: 38388
-  udp: true
-  type: ss
-  cipher: aes-256-cfb
-  password: Xn8jKdmDM00IeO%#$#fJAMtsEAEUOpH/YWYtYqDFnT0SV
-- name: 🇻🇳越南 zmxooo5
   server: 103.186.155.79
   port: 38388
   udp: true
   type: ss
   cipher: aes-256-cfb
   password: Xn8jKdmDM00IeO%#$#fJAMtsEAEUOpH/YWYtYqDFnT0SV
+- name: 🇻🇳越南 zmxooo5
+  server: 103.186.155.8
+  port: 38388
+  udp: true
+  type: ss
+  cipher: aes-256-cfb
+  password: Xn8jKdmDM00IeO%#$#fJAMtsEAEUOpH/YWYtYqDFnT0SV
+- name: 🇻🇳越南 zmxooo6
+  server: 103.186.155.49
+  port: 38388
+  udp: true
+  type: ss
+  cipher: aes-256-cfb
+  password: Xn8jKdmDM00IeO%#$#fJAMtsEAEUOpH/YWYtYqDFnT0SV
 - name: 🇰🇷韩国 zmxooo1
-  server: 59.12.232.18
-  port: 12345
-  udp: true
-  type: trojan
-  password: 8r%3C%5B9%27l6hAO%238ZQi
-  sni: Koma-YT.PAGeS.Dev
-  skip-cert-verify: true
-  tls: true
-  network: ws
-  ws-opts:
-    path: /trTelegram🇨🇳 @WangCai2
-    headers:
-      Host: Koma-YT.PAGeS.Dev
-- name: 🇰🇷韩国 zmxooo2
-  server: 220.118.248.123
-  port: 18001
-  udp: true
-  type: trojan
-  password: 8r%3C%5B9%27l6hAO%238ZQi
-  sni: Koma-YT.PAGeS.Dev
-  skip-cert-verify: true
-  tls: true
-  network: ws
-  ws-opts:
-    path: /trTelegram🇨🇳 @WangCai2
-    headers:
-      Host: Koma-YT.PAGeS.Dev
-- name: 🇰🇷韩国 zmxooo3
-  server: 183.107.78.213
-  port: 20880
-  udp: true
-  type: trojan
-  password: 8r%3C%5B9%27l6hAO%238ZQi
-  sni: Koma-YT.PAGeS.Dev
-  skip-cert-verify: true
-  tls: true
-  network: ws
-  ws-opts:
-    path: /trTelegram🇨🇳 @WangCai2
-    headers:
-      Host: Koma-YT.PAGeS.Dev
-- name: 🇰🇷韩国 zmxooo4
-  server: 59.0.95.106
-  port: 32773
-  udp: true
-  type: trojan
-  password: 8r%3C%5B9%27l6hAO%238ZQi
-  sni: Koma-YT.PAGeS.Dev
-  skip-cert-verify: true
-  tls: true
-  network: ws
-  ws-opts:
-    path: /trTelegram🇨🇳 @WangCai2
-    headers:
-      Host: Koma-YT.PAGeS.Dev
-- name: 🇰🇷韩国 zmxooo5
   server: vpn-kr-003.fastervpn.world
   port: 443
   udp: true
@@ -462,71 +383,7 @@ proxies:
   down: 100 Mbps
   skip-cert-verify: true
   sni: vpn-kr-003.fastervpn.world
-- name: 🇰🇷韩国 zmxooo6
-  server: 59.16.228.103
-  port: 18469
-  udp: true
-  type: trojan
-  password: 8r%3C%5B9%27l6hAO%238ZQi
-  sni: Koma-YT.PAGeS.Dev
-  skip-cert-verify: true
-  tls: true
-  network: ws
-  ws-opts:
-    path: /trTelegram🇨🇳 @WangCai2
-    headers:
-      Host: Koma-YT.PAGeS.Dev
 - name: 🇭🇰香港 zmxooo1
-  server: 202.146.222.41
-  port: 443
-  udp: true
-  type: hysteria2
-  password: qQe1z5kU8kN6SlKnDt9Ru3Qp
-  up: 20 Mbps
-  down: 100 Mbps
-  skip-cert-verify: true
-  sni: https://t.me/zmxooo
-- name: 🇭🇰香港 zmxooo2
-  server: 202.146.222.29
-  port: 443
-  udp: true
-  type: hysteria2
-  password: qQe1z5kU8kN6SlKnDt9Ru3Qp
-  up: 20 Mbps
-  down: 100 Mbps
-  skip-cert-verify: true
-  sni: https://t.me/zmxooo
-- name: 🇭🇰香港 zmxooo3
-  server: 202.146.222.93
-  port: 443
-  udp: true
-  type: hysteria2
-  password: qQe1z5kU8kN6SlKnDt9Ru3Qp
-  up: 20 Mbps
-  down: 100 Mbps
-  skip-cert-verify: true
-  sni: https://t.me/zmxooo
-- name: 🇭🇰香港 zmxooo4
-  server: 202.146.222.45
-  port: 443
-  udp: true
-  type: hysteria2
-  password: qQe1z5kU8kN6SlKnDt9Ru3Qp
-  up: 20 Mbps
-  down: 100 Mbps
-  skip-cert-verify: true
-  sni: https://t.me/zmxooo
-- name: 🇭🇰香港 zmxooo5
-  server: 202.146.222.85
-  port: 443
-  udp: true
-  type: hysteria2
-  password: qQe1z5kU8kN6SlKnDt9Ru3Qp
-  up: 20 Mbps
-  down: 100 Mbps
-  skip-cert-verify: true
-  sni: https://t.me/zmxooo
-- name: 🇭🇰香港 zmxooo6
   server: 202.146.222.11
   port: 443
   udp: true
@@ -536,7 +393,7 @@ proxies:
   down: 100 Mbps
   skip-cert-verify: true
   sni: https://t.me/zmxooo
-- name: 🇭🇰香港 zmxooo7
+- name: 🇭🇰香港 zmxooo2
   server: 202.146.222.89
   port: 443
   udp: true
@@ -546,7 +403,47 @@ proxies:
   down: 100 Mbps
   skip-cert-verify: true
   sni: https://t.me/zmxooo
-- name: 🇭🇰香港 zmxooo8
+- name: 🇭🇰香港 zmxooo3
+  server: 202.146.222.29
+  port: 443
+  udp: true
+  type: hysteria2
+  password: qQe1z5kU8kN6SlKnDt9Ru3Qp
+  up: 20 Mbps
+  down: 100 Mbps
+  skip-cert-verify: true
+  sni: https://t.me/zmxooo
+- name: 🇭🇰香港 zmxooo4
+  server: 202.146.222.85
+  port: 443
+  udp: true
+  type: hysteria2
+  password: qQe1z5kU8kN6SlKnDt9Ru3Qp
+  up: 20 Mbps
+  down: 100 Mbps
+  skip-cert-verify: true
+  sni: https://t.me/zmxooo
+- name: 🇭🇰香港 zmxooo5
+  server: 202.146.222.93
+  port: 443
+  udp: true
+  type: hysteria2
+  password: qQe1z5kU8kN6SlKnDt9Ru3Qp
+  up: 20 Mbps
+  down: 100 Mbps
+  skip-cert-verify: true
+  sni: https://t.me/zmxooo
+- name: 🇭🇰香港 zmxooo6
+  server: 202.146.222.16
+  port: 443
+  udp: true
+  type: hysteria2
+  password: qQe1z5kU8kN6SlKnDt9Ru3Qp
+  up: 20 Mbps
+  down: 100 Mbps
+  skip-cert-verify: true
+  sni: https://t.me/zmxooo
+- name: 🇭🇰香港 zmxooo7
   server: 202.146.222.13
   port: 443
   udp: true
@@ -556,8 +453,18 @@ proxies:
   down: 100 Mbps
   skip-cert-verify: true
   sni: https://t.me/zmxooo
+- name: 🇭🇰香港 zmxooo8
+  server: 202.146.222.45
+  port: 443
+  udp: true
+  type: hysteria2
+  password: qQe1z5kU8kN6SlKnDt9Ru3Qp
+  up: 20 Mbps
+  down: 100 Mbps
+  skip-cert-verify: true
+  sni: https://t.me/zmxooo
 - name: 🇭🇰香港 zmxooo9
-  server: 202.146.222.16
+  server: 202.146.222.41
   port: 443
   udp: true
   type: hysteria2
@@ -572,21 +479,15 @@ proxy-groups:
   proxies:
   - ♻️ 自动选择
   - DIRECT
-  - 🌍其它 zmxooo2
-  - 🌍其它 zmxooo3
-  - 🌍其它 zmxooo4
-  - 🌍其它 zmxooo5
-  - 🌍其它 zmxooo6
-  - 🌍其它 zmxooo7
   - 🇹🇼台湾 zmxooo1
   - 🇹🇼台湾 zmxooo2
   - 🇹🇼台湾 zmxooo3
   - 🇹🇼台湾 zmxooo4
-  - 🇩🇪德国 zmxooo1
   - 🇩🇪德国 zmxooo2
   - 🇩🇪德国 zmxooo3
   - 🇩🇪德国 zmxooo4
-  - 🇯🇵日本 zmxooo1
+  - 🇩🇪德国 zmxooo5
+  - 🇯🇵日本 zmxooo2
   - 🇺🇸美国 zmxooo1
   - 🇺🇸美国 zmxooo2
   - 🇺🇸美国 zmxooo3
@@ -594,9 +495,12 @@ proxy-groups:
   - 🇺🇸美国 zmxooo5
   - 🇺🇸美国 zmxooo6
   - 🇺🇸美国 zmxooo7
-  - 🇺🇸美国 zmxooo8
   - 🇺🇸美国 zmxooo9
   - 🇺🇸美国 zmxooo10
+  - 🇺🇸美国 zmxooo11
+  - 🇺🇸美国 zmxooo12
+  - 🇺🇸美国 zmxooo13
+  - 🇺🇸美国 zmxooo14
   - 🇬🇧英国 zmxooo1
   - 🇬🇧英国 zmxooo2
   - 🇬🇧英国 zmxooo3
@@ -615,12 +519,8 @@ proxy-groups:
   - 🇻🇳越南 zmxooo3
   - 🇻🇳越南 zmxooo4
   - 🇻🇳越南 zmxooo5
+  - 🇻🇳越南 zmxooo6
   - 🇰🇷韩国 zmxooo1
-  - 🇰🇷韩国 zmxooo2
-  - 🇰🇷韩国 zmxooo3
-  - 🇰🇷韩国 zmxooo4
-  - 🇰🇷韩国 zmxooo5
-  - 🇰🇷韩国 zmxooo6
   - 🇭🇰香港 zmxooo1
   - 🇭🇰香港 zmxooo2
   - 🇭🇰香港 zmxooo3
@@ -632,24 +532,18 @@ proxy-groups:
   - 🇭🇰香港 zmxooo9
 - name: ♻️ 自动选择
   type: url-test
-  url: http://gstatic.com
+  url: http://www.gstatic.com/generate_204
   interval: 300
   proxies:
-  - 🌍其它 zmxooo2
-  - 🌍其它 zmxooo3
-  - 🌍其它 zmxooo4
-  - 🌍其它 zmxooo5
-  - 🌍其它 zmxooo6
-  - 🌍其它 zmxooo7
   - 🇹🇼台湾 zmxooo1
   - 🇹🇼台湾 zmxooo2
   - 🇹🇼台湾 zmxooo3
   - 🇹🇼台湾 zmxooo4
-  - 🇩🇪德国 zmxooo1
   - 🇩🇪德国 zmxooo2
   - 🇩🇪德国 zmxooo3
   - 🇩🇪德国 zmxooo4
-  - 🇯🇵日本 zmxooo1
+  - 🇩🇪德国 zmxooo5
+  - 🇯🇵日本 zmxooo2
   - 🇺🇸美国 zmxooo1
   - 🇺🇸美国 zmxooo2
   - 🇺🇸美国 zmxooo3
@@ -657,9 +551,12 @@ proxy-groups:
   - 🇺🇸美国 zmxooo5
   - 🇺🇸美国 zmxooo6
   - 🇺🇸美国 zmxooo7
-  - 🇺🇸美国 zmxooo8
   - 🇺🇸美国 zmxooo9
   - 🇺🇸美国 zmxooo10
+  - 🇺🇸美国 zmxooo11
+  - 🇺🇸美国 zmxooo12
+  - 🇺🇸美国 zmxooo13
+  - 🇺🇸美国 zmxooo14
   - 🇬🇧英国 zmxooo1
   - 🇬🇧英国 zmxooo2
   - 🇬🇧英国 zmxooo3
@@ -678,12 +575,8 @@ proxy-groups:
   - 🇻🇳越南 zmxooo3
   - 🇻🇳越南 zmxooo4
   - 🇻🇳越南 zmxooo5
+  - 🇻🇳越南 zmxooo6
   - 🇰🇷韩国 zmxooo1
-  - 🇰🇷韩国 zmxooo2
-  - 🇰🇷韩国 zmxooo3
-  - 🇰🇷韩国 zmxooo4
-  - 🇰🇷韩国 zmxooo5
-  - 🇰🇷韩国 zmxooo6
   - 🇭🇰香港 zmxooo1
   - 🇭🇰香港 zmxooo2
   - 🇭🇰香港 zmxooo3
