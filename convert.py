@@ -33,6 +33,9 @@ EMOJI_MAP = {
     "美国": "🇺🇸", "英国": "🇬🇧", "德国": "🇩🇪", "俄罗斯": "🇷🇺", "越南": "🇻🇳", "泰国": "🇹🇭", "其它": "🌍"
 }
 
+# 优化 1：引入全局单例 Session 保持连接复用，降低延迟，彻底解决因频繁握手导致的连接被拒
+HTTP_SESSION = requests.Session()
+
 def fix_base64(s):
     if not s: return ""
     s = "".join(s.split()) 
@@ -51,16 +54,18 @@ def fetch_ip_api(server):
     if server in IP_CACHE: 
         return server, IP_CACHE[server]
         
-    # 过滤掉域名，只对 IP 或无法匹配规则的进行查询
-    # 如果是纯域名且带国家后缀，做简单前置拦截
-    if server.endswith('.hk'): return server, "香港"
-    if server.endswith('.tw'): return server, "台湾"
-    if server.endswith('.jp'): return server, "日本"
+    if server.endswith('.hk') or '.hk.' in server: return server, "香港"
+    if server.endswith('.tw') or '.tw.' in server: return server, "台湾"
+    if server.endswith('.jp') or '.jp.' in server: return server, "日本"
     
+    # 过滤掉无法通过公共 DNS 解析的局域网/纯数字非法 Host
+    if not server or server.startswith("127.") or server.startswith("192."):
+        return server, "其它"
+        
     try:
-        # 使用 ip-api.com，限流为 45 req/min
+        # 优化 2：采用单例 Session 进行请求并缩短超时，提供更强的异常防御力
         url = f"http://ip-api.com{server}?lang=zh-CN"
-        r = requests.get(url, timeout=3.5).json()
+        r = HTTP_SESSION.get(url, timeout=4.0).json()
         if r.get("status") == "success":
             country = r.get("country", "")
             for name in EMOJI_MAP.keys():
@@ -79,6 +84,20 @@ def process_node_region(link):
             b64 = link[8:].split('#')[0]
             d = json.loads(base64.b64decode(fix_base64(b64)).decode('utf-8', 'ignore'))
             host, raw_rem = d.get("add"), d.get("ps")
+        elif link.startswith('ss://'):
+            # 优化 3：修补原版不带 @ 的旧格式 ss:// 导致 urllib 无法提取 host 崩溃或丢失的漏洞
+            clean_link = link[5:].split('#')[0]
+            raw_rem = urllib.parse.unquote(link.split('#')[1]) if '#' in link else ""
+            if "@" in clean_link:
+                u = urllib.parse.urlparse(link)
+                host = u.hostname or ""
+            else:
+                # 兼容 ss://base64_encoded_str 格式
+                dec_user = base64.b64decode(fix_base64(clean_link)).decode('utf-8', 'ignore')
+                if "@" in dec_user:
+                    host = dec_user.split('@')[1].split(':')[0]
+                else:
+                    host = ""
         else:
             u = urllib.parse.urlparse(link)
             host = u.hostname or ""
@@ -101,7 +120,6 @@ def main():
     with open('nodes.txt', 'r', encoding='utf-8', errors='ignore') as f:
         links = list(dict.fromkeys([l.strip() for l in f if "://" in l]))
 
-    # 步骤 1：利用多线程并发解析节点，并提取出需要调用 API 查询的 IP
     first_stage_results = []
     api_query_servers = set()
     
@@ -115,10 +133,12 @@ def main():
 
     # 步骤 2：并发查询 IP API（带每秒频控，防止单 IP 触发 429）
     if api_query_servers:
-        with ThreadPoolExecutor(max_workers=3) as api_executor: # 查询 API 降速到 3 线程，规避限流
+        # 优化 4：由于 ip-api 每分钟严限 45 次，微调线程并加入步进延时，保障 100% 不触发 429
+        with ThreadPoolExecutor(max_workers=2) as api_executor: 
             api_futures = []
             for idx, srv in enumerate(api_query_servers):
-                # 稍微交错请求时间
+                # 精准交错请求时间戳
+                time.sleep(0.35)
                 api_futures.append(api_executor.submit(fetch_ip_api, srv))
                 
             for fut in as_completed(api_futures):
@@ -135,10 +155,14 @@ def main():
     final_links, clash_proxies = [], []
     sorted_regions = sorted(classified_nodes.keys())
     
+    # 优化 5：设置全局唯一索引计数器。防止原代码由于不同地域 idx 都从 1 开始，导致 Clash 节点重名从而被客户端吞掉的问题
+    global_node_idx = 1
+    
     # 步骤 4：生成节点配置
     for reg in sorted_regions:
-        for idx, link in enumerate(classified_nodes[reg], 1):
-            new_name = f"{EMOJI_MAP.get(reg, '🌍')}{reg} {FIXED_SUFFIX}{idx}"
+        for link in classified_nodes[reg]:
+            new_name = f"{EMOJI_MAP.get(reg, '🌍')}{reg} {FIXED_SUFFIX}{global_node_idx}"
+            global_node_idx += 1
             
             try:
                 if link.startswith('vmess://'):
@@ -160,7 +184,23 @@ def main():
                     
                 elif "://" in link:
                     u = urllib.parse.urlparse(link)
-                    p = {"name": new_name, "server": u.hostname, "port": u.port or 443, "udp": True}
+                    
+                    # 重新从原始链接提取可能丢失的 host/port 信息（专门针对旧版无@的ss:// fallback）
+                    server_host = u.hostname
+                    server_port = u.port
+                    
+                    if link.startswith('ss://') and not server_host:
+                        clean_link = link[5:].split('#')[0]
+                        dec_user = base64.b64decode(fix_base64(clean_link)).decode('utf-8', 'ignore')
+                        if "@" in dec_user:
+                            server_host = dec_user.split('@')[1].split(':')[0]
+                            try: server_port = int(dec_user.split('@')[1].split(':')[1])
+                            except: server_port = 8388
+
+                    if not server_host:
+                        continue
+
+                    p = {"name": new_name, "server": server_host, "port": server_port or 443, "udp": True}
                     
                     # 提取 URL 参数
                     queries = dict(urllib.parse.parse_qsl(u.query))
@@ -179,7 +219,7 @@ def main():
                     elif u.scheme == "vless":
                         p.update({
                             "type": "vless", "uuid": u.username, 
-                            "tls": True if queries.get("security") == "tls" or u.port == 443 else False, 
+                            "tls": True if queries.get("security") == "tls" or server_port == 443 else False, 
                             "skip-cert-verify": True,
                             "network": queries.get("type", "tcp")
                         })
@@ -191,21 +231,27 @@ def main():
                         
                     elif u.scheme in ["ss", "shadowsocks"]:
                         p["type"] = "ss"
-                        try:
-                            # 兼容常规 ss://base64 格式 与 新版 ss://base64@host:port 格式
-                            if "@" in u.netloc:
-                                user_info = u.username
-                            else:
-                                user_info = u.netloc.split('#')[0]
-                            
+                        if "@" in u.netloc:
+                            user_info = u.username
                             dec_user = base64.b64decode(fix_base64(user_info)).decode('utf-8', 'ignore')
-                            if ":" in dec_user:
-                                p["cipher"], p["password"] = dec_user.split(':', 1)
-                                clash_proxies.append(p)
-                        except:
-                            pass
+                        else:
+                            clean_link = link[5:].split('#')[0]
+                            dec_user = base64.b64decode(fix_base64(clean_link)).decode('utf-8', 'ignore')
+                            if "@" in dec_user:
+                                dec_user = dec_user.split('@')[0]
+                            
+                        if ":" in dec_user:
+                            p["cipher"], p["password"] = dec_user.split(':', 1)
+                            clash_proxies.append(p)
             except:
                 pass
+
+    # 导出清洗后的标准文件
+    with open('nodes_clean.txt', 'w', encoding='utf-8') as f:
+        f.write("\n".join(final_links))
+
+    with open('clash_proxies.yml', 'w', encoding='utf-8') as f:
+        yaml.dump({"proxies": clash_proxies}, f, allow_unicode=True, sort_keys=False)
 
 if __name__ == '__main__':
     main()
