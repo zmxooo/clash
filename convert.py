@@ -22,32 +22,61 @@ EMOJI_MAP = {
 def get_final_label(server, remarks):
     if not server: 
         return "🌍 其它地区"
-    text = urllib.parse.unquote(str(remarks)).lower().strip()
+        
+    # 保留原始备注用于 Emoji 匹配
+    raw_text = urllib.parse.unquote(str(remarks)).strip()
+    text_lower = raw_text.lower()
+    
+    # 1. Emoji 优先（最重要）
+    if "🇫🇷" in raw_text:
+        return "🇫🇷 法国"
+    if "🇭🇰" in raw_text: return "🇭🇰 香港"
+    if "🇹🇼" in raw_text: return "🇹🇼 台湾"
+    if "🇺🇸" in raw_text: return "🇺🇸 美国"
+    if "🇯🇵" in raw_text: return "🇯🇵 日本"
+
+    # 2. 文本 + IP 特征强匹配（重点加强法国节点）
     meta = [
-        ("香港", r"hk|香港|hongkong"), ("台湾", r"tw|台湾|台灣|taiwan"), 
-        ("美国", r"us|美国|美國|united states"), ("英国", r"gb|uk|英国|英國"), 
-        ("韩国", r"kr|韩国|韓國|korea"), ("日本", r"jp|日本|japan"),
-        ("新加坡", r"sg|新加坡|singapore"), ("越南", r"vn|越南|vietnam"), 
-        ("科威特", r"kw|科威特|kuwait"), ("德国", r"de|德国|germany"),
-        ("立陶宛", r"lt|立陶宛|lithuania")
+        ("香港", r"hk|香港|hongkong"), 
+        ("台湾", r"tw|台湾|台灣|taiwan"), 
+        ("美国", r"us|美国|美國"), 
+        ("英国", r"gb|uk|英国|英國"), 
+        ("韩国", r"kr|韩国|韓國"), 
+        ("日本", r"jp|日本|japan"),
+        ("新加坡", r"sg|新加坡|singapore"), 
+        ("法国", r"fr|france|🇫🇷|planb\.mojcn|82\.198\.246|82\.198"),  # 加强
+        ("德国", r"de|德国|germany"),
     ]
+    
     for name, pattern in meta:
-        if re.search(pattern, text): 
+        if re.search(pattern, text_lower): 
             return f"{EMOJI_MAP.get(name, '🌍')} {name}"
     
+    # 3. 缓存
     if server in IP_CACHE: 
         return IP_CACHE[server]
+
+    # 4. IP 查询（使用更稳定的接口 + 降级处理）
     try:
-        time.sleep(0.1) 
-        response = requests.get(f"http://ip-api.com{server}?lang=zh-CN", timeout=3).json()
-        if response.get("status") == "success":
-            country = response.get("country")
-            icon = EMOJI_MAP.get(country, "🌍")
-            label = f"{icon} {country}"
+        clean_server = str(server).split(':')[0]
+        # 使用 ipapi.co（相对更稳定）
+        response = requests.get(f"https://ipapi.co/{clean_server}/json/", timeout=2.5).json()
+        if response.get("country_name") or response.get("country"):
+            country = response.get("country_name") or response.get("country")
+            # 映射
+            if "France" in country or "法国" in country:
+                label = "🇫🇷 法国"
+            elif "Germany" in country or "德国" in country:
+                label = "🇩🇪 德国"
+            elif "United States" in country or "美国" in country:
+                label = "🇺🇸 美国"
+            else:
+                label = f"🌍 {country}"
             IP_CACHE[server] = label
             return label
     except:
         pass
+
     return "🌍 其它地区"
 
 def safe_b64decode(s):
