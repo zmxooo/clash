@@ -1,65 +1,5 @@
 proxies:
-- name: 🌍其它 zmxooo19
-  server: vpn-kr-003.fastervpn.world
-  port: 443
-  udp: true
-  type: hysteria2
-  password: qQe1z5kU8kN6SlKnDt9Ru3Qp
-  up: 20 Mbps
-  down: 100 Mbps
-  skip-cert-verify: true
-  sni: vpn-kr-003.fastervpn.world
-- name: 🌍其它 zmxooo22
-  server: 202.146.222.89
-  port: 443
-  udp: true
-  type: hysteria2
-  password: qQe1z5kU8kN6SlKnDt9Ru3Qp
-  up: 20 Mbps
-  down: 100 Mbps
-  skip-cert-verify: true
-  sni: https://t.me/zmxooo
-- name: 🌍其它 zmxooo24
-  server: 202.146.222.93
-  port: 443
-  udp: true
-  type: hysteria2
-  password: qQe1z5kU8kN6SlKnDt9Ru3Qp
-  up: 20 Mbps
-  down: 100 Mbps
-  skip-cert-verify: true
-  sni: https://t.me/zmxooo
-- name: 🌍其它 zmxooo27
-  server: 202.146.222.41
-  port: 443
-  udp: true
-  type: hysteria2
-  password: qQe1z5kU8kN6SlKnDt9Ru3Qp
-  up: 20 Mbps
-  down: 100 Mbps
-  skip-cert-verify: true
-  sni: https://t.me/zmxooo
-- name: 🌍其它 zmxooo29
-  server: 43.200.123.45
-  port: 443
-  udp: true
-  type: hysteria2
-  password: qQe1z5kU8kN6SlKnDt9Ru3Qp
-  up: 20 Mbps
-  down: 100 Mbps
-  skip-cert-verify: true
-  sni: https://t.me/zmxooo
-- name: 🌍其它 zmxooo31
-  server: 202.146.222.16
-  port: 443
-  udp: true
-  type: hysteria2
-  password: qQe1z5kU8kN6SlKnDt9Ru3Qp
-  up: 20 Mbps
-  down: 100 Mbps
-  skip-cert-verify: true
-  sni: https://t.me/zmxooo
-- name: 🌍其它 zmxooo32
+- name: 🌍其它 zmxooo15
   server: 202.146.222.85
   port: 443
   udp: true
@@ -69,8 +9,8 @@ proxies:
   down: 100 Mbps
   skip-cert-verify: true
   sni: https://t.me/zmxooo
-- name: 🌍其它 zmxooo33
-  server: 202.146.222.29
+- name: 🌍其它 zmxooo17
+  server: 202.146.222.93
   port: 443
   udp: true
   type: hysteria2
@@ -79,7 +19,7 @@ proxies:
   down: 100 Mbps
   skip-cert-verify: true
   sni: https://t.me/zmxooo
-- name: 🌍其它 zmxooo40
+- name: 🌍其它 zmxooo19
   server: 202.146.222.45
   port: 443
   udp: true
@@ -89,7 +29,7 @@ proxies:
   down: 100 Mbps
   skip-cert-verify: true
   sni: https://t.me/zmxooo
-- name: 🌍其它 zmxooo44
+- name: 🌍其它 zmxooo20
   server: 23.144.12.162
   port: 443
   udp: true
@@ -99,8 +39,8 @@ proxies:
   down: 100 Mbps
   skip-cert-verify: true
   sni: https://t.me/zmxooo
-- name: 🌍其它 zmxooo47
-  server: 160.187.100.109
+- name: 🌍其它 zmxooo21
+  server: 202.146.222.89
   port: 443
   udp: true
   type: hysteria2
@@ -109,7 +49,17 @@ proxies:
   down: 100 Mbps
   skip-cert-verify: true
   sni: https://t.me/zmxooo
-- name: 🌍其它 zmxooo53
+- name: 🌍其它 zmxooo22
+  server: vpn-kr-003.fastervpn.world
+  port: 443
+  udp: true
+  type: hysteria2
+  password: qQe1z5kU8kN6SlKnDt9Ru3Qp
+  up: 20 Mbps
+  down: 100 Mbps
+  skip-cert-verify: true
+  sni: vpn-kr-003.fastervpn.world
+- name: 🌍其它 zmxooo27
   server: 202.146.222.11
   port: 443
   udp: true
@@ -119,8 +69,58 @@ proxies:
   down: 100 Mbps
   skip-cert-verify: true
   sni: https://t.me/zmxooo
-- name: 🌍其它 zmxooo55
+- name: 🌍其它 zmxooo31
+  server: 202.146.222.29
+  port: 443
+  udp: true
+  type: hysteria2
+  password: qQe1z5kU8kN6SlKnDt9Ru3Qp
+  up: 20 Mbps
+  down: 100 Mbps
+  skip-cert-verify: true
+  sni: https://t.me/zmxooo
+- name: 🌍其它 zmxooo34
+  server: 202.146.222.16
+  port: 443
+  udp: true
+  type: hysteria2
+  password: qQe1z5kU8kN6SlKnDt9Ru3Qp
+  up: 20 Mbps
+  down: 100 Mbps
+  skip-cert-verify: true
+  sni: https://t.me/zmxooo
+- name: 🌍其它 zmxooo35
   server: 202.146.222.13
+  port: 443
+  udp: true
+  type: hysteria2
+  password: qQe1z5kU8kN6SlKnDt9Ru3Qp
+  up: 20 Mbps
+  down: 100 Mbps
+  skip-cert-verify: true
+  sni: https://t.me/zmxooo
+- name: 🌍其它 zmxooo38
+  server: 202.146.222.41
+  port: 443
+  udp: true
+  type: hysteria2
+  password: qQe1z5kU8kN6SlKnDt9Ru3Qp
+  up: 20 Mbps
+  down: 100 Mbps
+  skip-cert-verify: true
+  sni: https://t.me/zmxooo
+- name: 🌍其它 zmxooo49
+  server: 43.200.123.45
+  port: 443
+  udp: true
+  type: hysteria2
+  password: qQe1z5kU8kN6SlKnDt9Ru3Qp
+  up: 20 Mbps
+  down: 100 Mbps
+  skip-cert-verify: true
+  sni: https://t.me/zmxooo
+- name: 🌍其它 zmxooo51
+  server: 160.187.100.109
   port: 443
   udp: true
   type: hysteria2
@@ -138,17 +138,17 @@ proxy-groups:
   - DIRECT
   - 🌍其它 zmxooo19
   - 🌍其它 zmxooo22
-  - 🌍其它 zmxooo24
+  - 🌍其它 zmxooo15
   - 🌍其它 zmxooo27
-  - 🌍其它 zmxooo29
+  - 🌍其它 zmxooo15
   - 🌍其它 zmxooo31
-  - 🌍其它 zmxooo32
-  - 🌍其它 zmxooo33
-  - 🌍其它 zmxooo40
-  - 🌍其它 zmxooo44
-  - 🌍其它 zmxooo47
-  - 🌍其它 zmxooo53
-  - 🌍其它 zmxooo55
+  - 🌍其它 zmxooo15
+  - 🌍其它 zmxooo15
+  - 🌍其它 zmxooo15
+  - 🌍其它 zmxooo15
+  - 🌍其它 zmxooo15
+  - 🌍其它 zmxooo15
+  - 🌍其它 zmxooo15
 - name: 🌍 其它自动测速
   type: url-test
   url: http://gstatic.com
@@ -156,17 +156,17 @@ proxy-groups:
   proxies:
   - 🌍其它 zmxooo19
   - 🌍其它 zmxooo22
-  - 🌍其它 zmxooo24
+  - 🌍其它 zmxooo15
   - 🌍其它 zmxooo27
-  - 🌍其它 zmxooo29
+  - 🌍其它 zmxooo15
   - 🌍其它 zmxooo31
-  - 🌍其它 zmxooo32
-  - 🌍其它 zmxooo33
-  - 🌍其它 zmxooo40
-  - 🌍其它 zmxooo44
-  - 🌍其它 zmxooo47
-  - 🌍其它 zmxooo53
-  - 🌍其它 zmxooo55
+  - 🌍其它 zmxooo15
+  - 🌍其它 zmxooo15
+  - 🌍其它 zmxooo15
+  - 🌍其它 zmxooo15
+  - 🌍其它 zmxooo15
+  - 🌍其它 zmxooo15
+  - 🌍其它 zmxooo15
 - name: ♻️ 全局自动测速
   type: url-test
   url: http://gstatic.com
@@ -174,17 +174,17 @@ proxy-groups:
   proxies:
   - 🌍其它 zmxooo19
   - 🌍其它 zmxooo22
-  - 🌍其它 zmxooo24
+  - 🌍其它 zmxooo15
   - 🌍其它 zmxooo27
-  - 🌍其它 zmxooo29
+  - 🌍其它 zmxooo15
   - 🌍其它 zmxooo31
-  - 🌍其它 zmxooo32
-  - 🌍其它 zmxooo33
-  - 🌍其它 zmxooo40
-  - 🌍其它 zmxooo44
-  - 🌍其它 zmxooo47
-  - 🌍其它 zmxooo53
-  - 🌍其它 zmxooo55
+  - 🌍其它 zmxooo15
+  - 🌍其它 zmxooo15
+  - 🌍其它 zmxooo15
+  - 🌍其它 zmxooo15
+  - 🌍其它 zmxooo15
+  - 🌍其它 zmxooo15
+  - 🌍其它 zmxooo15
 - name: 🚀 节点选择
   type: select
   proxies:
@@ -192,34 +192,34 @@ proxy-groups:
   - DIRECT
   - 🌍其它 zmxooo19
   - 🌍其它 zmxooo22
-  - 🌍其它 zmxooo24
+  - 🌍其它 zmxooo15
   - 🌍其它 zmxooo27
-  - 🌍其它 zmxooo29
+  - 🌍其它 zmxooo15
   - 🌍其它 zmxooo31
-  - 🌍其它 zmxooo32
-  - 🌍其它 zmxooo33
-  - 🌍其它 zmxooo40
-  - 🌍其它 zmxooo44
-  - 🌍其它 zmxooo47
-  - 🌍其它 zmxooo53
-  - 🌍其它 zmxooo55
+  - 🌍其它 zmxooo15
+  - 🌍其它 zmxooo15
+  - 🌍其它 zmxooo15
+  - 🌍其它 zmxooo15
+  - 🌍其它 zmxooo15
+  - 🌍其它 zmxooo15
+  - 🌍其它 zmxooo15
 - name: ♻️ 自动选择
   type: url-test
-  url: http://www.gstatic.com/generate_204
+  url: http://gstatic.com
   interval: 300
   proxies:
   - 🌍其它 zmxooo19
   - 🌍其它 zmxooo22
-  - 🌍其它 zmxooo24
+  - 🌍其它 zmxooo15
   - 🌍其它 zmxooo27
-  - 🌍其它 zmxooo29
+  - 🌍其它 zmxooo15
   - 🌍其它 zmxooo31
-  - 🌍其它 zmxooo32
-  - 🌍其它 zmxooo33
-  - 🌍其它 zmxooo40
-  - 🌍其它 zmxooo44
-  - 🌍其它 zmxooo47
-  - 🌍其它 zmxooo53
-  - 🌍其它 zmxooo55
+  - 🌍其它 zmxooo15
+  - 🌍其它 zmxooo15
+  - 🌍其它 zmxooo15
+  - 🌍其它 zmxooo15
+  - 🌍其它 zmxooo15
+  - 🌍其它 zmxooo15
+  - 🌍其它 zmxooo15
 rules:
 - MATCH,🚀 节点选择
