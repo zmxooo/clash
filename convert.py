@@ -33,8 +33,6 @@ EMOJI_MAP = {
     "美国": "🇺🇸", "英国": "🇬🇧", "德国": "🇩🇪", "俄罗斯": "🇷🇺", "越南": "🇻🇳", "泰国": "🇹🇭", "其它": "🌍"
 }
 
-HTTP_SESSION = requests.Session()
-
 def fix_base64(s):
     if not s: return ""
     s = "".join(s.split()) 
@@ -53,16 +51,13 @@ def fetch_ip_api(server):
     if server in IP_CACHE: 
         return server, IP_CACHE[server]
         
-    if server.endswith('.hk') or '.hk.' in server: return server, "香港"
-    if server.endswith('.tw') or '.tw.' in server: return server, "台湾"
-    if server.endswith('.jp') or '.jp.' in server: return server, "日本"
+    if server.endswith('.hk'): return server, "香港"
+    if server.endswith('.tw'): return server, "台湾"
+    if server.endswith('.jp'): return server, "日本"
     
-    if not server or server.startswith("127.") or server.startswith("192."):
-        return server, "其它"
-        
     try:
         url = f"http://ip-api.com{server}?lang=zh-CN"
-        r = HTTP_SESSION.get(url, timeout=4.0).json()
+        r = requests.get(url, timeout=3.5).json()
         if r.get("status") == "success":
             country = r.get("country", "")
             for name in EMOJI_MAP.keys():
@@ -81,32 +76,18 @@ def process_node_region(link):
             b64 = link[8:].split('#')[0]
             d = json.loads(base64.b64decode(fix_base64(b64)).decode('utf-8', 'ignore'))
             host, raw_rem = d.get("add"), d.get("ps")
-        elif link.startswith('ss://'):
-            clean_link = link[5:].split('#')[0]
-            raw_rem = urllib.parse.unquote(link.split('#')[1]) if '#' in link else ""
-            if "@" in clean_link:
-                u = urllib.parse.urlparse(link)
-                host = u.hostname or ""
-            else:
-                dec_user = base64.b64decode(fix_base64(clean_link)).decode('utf-8', 'ignore')
-                if "@" in dec_user: 
-                    host = dec_user.split('@')[1].split(':')[0]
-                else: 
-                    host = ""
         else:
             u = urllib.parse.urlparse(link)
             host = u.hostname or ""
             raw_rem = urllib.parse.unquote(link.split('#')[1]) if '#' in link else ""
         
-        # 1. 优先正则匹配
         region = get_region_from_rules(raw_rem, host)
-        if region: 
+        if region:
             return link, region, host, raw_rem
             
-        # 2. 正则未命中，返回标记，后续批量交由 API 识别
         return link, "NEED_API", host, raw_rem
     except:
-        return link, "其它", "", ""
+        return link, "Miami", "", ""
 
 def main():
     if not os.path.exists('nodes.txt'):
@@ -126,19 +107,16 @@ def main():
             if res[1] == "NEED_API" and res[2]:
                 api_query_servers.add(res[2])
 
-    # 步骤 2：并发查询 IP API（带每秒频控，防止单 IP 触发 429）
     if api_query_servers:
-        with ThreadPoolExecutor(max_workers=2) as api_executor: 
+        with ThreadPoolExecutor(max_workers=3) as api_executor: 
             api_futures = []
             for idx, srv in enumerate(api_query_servers):
-                time.sleep(0.35)
                 api_futures.append(api_executor.submit(fetch_ip_api, srv))
                 
             for fut in as_completed(api_futures):
                 srv, reg = fut.result()
                 IP_CACHE[srv] = reg
 
-    # 步骤 3：根据最终分类结果归类节点
     classified_nodes = defaultdict(list)
     for link, region, host, raw_rem in first_stage_results:
         if region == "NEED_API":
@@ -147,15 +125,12 @@ def main():
 
     final_links, clash_proxies = [], []
     sorted_regions = sorted(classified_nodes.keys())
-    
-    global_node_idx = 1
     region_to_proxy_names = defaultdict(list)
     
-    # 步骤 4：生成节点配置与重命名
+    # 步骤 4：生成节点配置
     for reg in sorted_regions:
-        for link in classified_nodes[reg]:
-            new_name = f"{EMOJI_MAP.get(reg, '🌍')}{reg} {FIXED_SUFFIX}{global_node_idx}"
-            global_node_idx += 1
+        for idx, link in enumerate(classified_nodes[reg], 1):
+            new_name = f"{EMOJI_MAP.get(reg, '🌍')}{reg} {FIXED_SUFFIX}{idx}"
             
             try:
                 if link.startswith('vmess://'):
@@ -177,72 +152,105 @@ def main():
                     region_to_proxy_names[reg].append(new_name)
                     
                 elif "://" in link:
-                    u = urllib.parse.urlparse(link)
-                    server_host = u.hostname
-                    server_port = u.port
-                    
-                    if link.startswith('ss://') and not server_host:
-                        clean_link = link[5:].split('#')[0]
-                        dec_user = base64.b64decode(fix_base64(clean_link)).decode('utf-8', 'ignore')
-                        if "@" in dec_user:
-                            server_host = dec_user.split('@')[1].split(':')[0]
-                            try: 
-                                server_port = int(dec_user.split('@')[1].split(':')[1])
-                            except: 
-                                server_port = 8388
-
-                    if not server_host: 
-                        continue
-                    p = {"name": new_name, "server": server_host, "port": server_port or 443, "udp": True}
+                    # 协议层优化：清洗链接中多余的空格或隐性异常字符
+                    clean_link = link.strip()
+                    u = urllib.parse.urlparse(clean_link)
                     queries = dict(urllib.parse.parse_qsl(u.query))
                     
+                    # 优先提取核心通用属性
+                    server_host = u.hostname or ""
+                    server_port = u.port
+                    
                     if u.scheme in ["hy2", "hysteria2"]:
-                        p.update({
-                            "type": "hysteria2", "password": u.username, 
+                        p = {
+                            "name": new_name, "type": "hysteria2", "server": server_host, "port": server_port or 443,
+                            "password": u.username or u.netloc.split('@')[0], 
                             "up": queries.get("up", "20 Mbps"), "down": queries.get("down", "100 Mbps"), 
-                            "skip-cert-verify": True
-                        })
+                            "skip-cert-verify": True, "udp": True
+                        }
                         if "sni" in queries: p["sni"] = queries["sni"]
+                        # 增加 Hysteria2 混淆协议支持
+                        if "obfs" in queries:
+                            p["obfs"] = queries["obfs"]
+                            if "obfs-password" in queries: p["obfs-password"] = queries["obfs-password"]
                         clash_proxies.append(p)
                         region_to_proxy_names[reg].append(new_name)
                         
                     elif u.scheme == "vless":
-                        p.update({
-                            "type": "vless", "uuid": u.username, 
-                            "tls": True if queries.get("security") == "tls" or server_port == 443 else False, 
+                        p = {
+                            "name": new_name, "type": "vless", "server": server_host, "port": server_port or 443,
+                            "uuid": u.username or u.netloc.split('@')[0], "udp": True,
+                            "tls": True if queries.get("security") in ["tls", "reality"] or server_port == 443 else False, 
                             "skip-cert-verify": True, "network": queries.get("type", "tcp")
-                        })
+                        }
                         if "flow" in queries: p["flow"] = queries["flow"]
                         if "sni" in queries: p["sni"] = queries["sni"]
+                        
+                        # 增加 VLESS Reality 高级安全扩展映射
+                        if queries.get("security") == "reality":
+                            p["servername"] = queries.get("sni", "")
+                            if "pbk" in queries: p["reality-opts"] = {"public-key": queries["pbk"]}
+                            if "sid" in queries: p["reality-opts"]["short-id"] = queries["sid"]
+                            
                         if queries.get("type") == "ws":
                             p["ws-opts"] = {"path": queries.get("path", "/"), "headers": {"Host": queries.get("host", p["server"])}}
+                        elif queries.get("type") == "grpc":
+                            p["grpc-opts"] = {"grpc-service-name": queries.get("serviceName", "")}
+                            
                         clash_proxies.append(p)
                         region_to_proxy_names[reg].append(new_name)
                         
                     elif u.scheme in ["ss", "shadowsocks"]:
-                        p["type"] = "ss"
-                        if "@" in u.netloc:
-                            user_info = u.username
-                            dec_user = base64.b64decode(fix_base64(user_info)).decode('utf-8', 'ignore')
-                        else:
-                            clean_link = link[5:].split('#')[0]
-                            dec_user = base64.b64decode(fix_base64(clean_link)).decode('utf-8', 'ignore')
-                            if "@" in dec_user: 
-                                dec_user = dec_user.split('@')[0]
-                            
-                        if ":" in dec_user:
-                            p["cipher"], p["password"] = dec_user.split(':', 1)
-                            clash_proxies.append(p)
-                            region_to_proxy_names[reg].append(new_name)
+                        p = {"name": new_name, "type": "ss", "udp": True}
+                        try:
+                            # 协议层优化：双重逻辑兼容新旧及标准/非标准 Base64 复合型 Shadowsocks 链接
+                            if "@" in u.netloc:
+                                p["server"] = server_host
+                                p["port"] = server_port or 8388
+                                user_info = u.username or u.netloc.split('@')[0]
+                            else:
+                                raw_payload = clean_link.split('://')[1].split('#')[0]
+                                if "@" in raw_payload:
+                                    b64_part, host_part = raw_payload.split('@', 1)
+                                    user_info = base64.b64decode(fix_base64(b64_part)).decode('utf-8', 'ignore')
+                                    if ":" in host_part:
+                                        p["server"] = host_part.split(':')[0]
+                                        p["port"] = int(host_part.split(':')[1])
+                                    else:
+                                        p["server"] = host_part
+                                        p["port"] = 8388
+                                else:
+                                    # 纯全密格式 ss://BASE64
+                                    user_info = base64.b64decode(fix_base64(raw_payload)).decode('utf-8', 'ignore')
+                                    
+                            if ":" in user_info:
+                                parts = user_info.split(':', 1)
+                                # 区分标准格式 cipher:password 与 host:port 兼容
+                                if not p.get("server") and len(parts) > 1 and parts[1].isdigit():
+                                    p["server"] = parts[0]
+                                    p["port"] = int(parts[1])
+                                else:
+                                    p["cipher"], p["password"] = parts[0], parts[1]
+                                    
+                            if "@" in user_info and not p.get("cipher"):
+                                c_p, s_p = user_info.split('@', 1)
+                                if ":" in c_p: p["cipher"], p["password"] = c_p.split(':', 1)
+                                if ":" in s_p: p["server"], p["port"] = s_p.split(':')[0], int(s_p.split(':')[1])
+                                
+                            if p.get("server") and p.get("cipher"):
+                                clash_proxies.append(p)
+                                region_to_proxy_names[reg].append(new_name)
+                        except:
+                            pass
             except:
                 pass
 
-    # --- 构建动态策略组 ---
+    # --- 保持原汁原味的动态国家 URL-Test 自动测速策略组组装 ---
     clash_groups = []
     country_auto_group_names = []
     
     for reg, p_names in region_to_proxy_names.items():
-        if not p_names: 
+        if not p_names:
             continue
         group_name = f"{EMOJI_MAP.get(reg, '🌍')} {reg}-自动选择"
         country_auto_group_names.append(group_name)
@@ -263,10 +271,6 @@ def main():
         "proxies": ["DIRECT"] + country_auto_group_names + all_individual_proxies
     }
     clash_groups.insert(0, main_group)
-
-    # 导出文件
-    with open('nodes_clean.txt', 'w', encoding='utf-8') as f:
-        f.write("\n".join(final_links))
 
     clash_config = {
         "proxies": clash_proxies,
