@@ -12,7 +12,7 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 # --- 配置参数 ---
 FIXED_SUFFIX = "zmxooo"
 IP_CACHE = {}
-MAX_WORKERS = 10  # 并发线程数
+MAX_WORKERS = 10  # 并发线程数，推荐 10-20
 
 RULES = [
     ("香港", r"HK|HONGKONG|香港|廣港|CMI|HKT|PCCW|HGC|WTT"),
@@ -34,14 +34,12 @@ EMOJI_MAP = {
 }
 
 def fix_base64(s):
-    """清洗非 Base64 规范字符并强制补齐等号"""
     if not s: return ""
-    s = re.sub(r'[^a-zA-Z0-9+/=_-]', '', str(s))
-    s = s.replace('-', '+').replace('_', '/')
+    s = "".join(str(s).split()) 
     return s + '=' * (-len(s) % 4)
 
 def safe_b64decode(s):
-    """安全的 Base64 解码沙盒，规避损坏字符串引起的报错"""
+    """安全 Base64 解码沙盒，规避损坏字符串引起的报错"""
     try:
         fixed = fix_base64(s)
         return base64.b64decode(fixed).decode('utf-8', 'ignore')
@@ -49,7 +47,7 @@ def safe_b64decode(s):
         return ""
 
 def get_region_from_rules(remarks, host):
-    """安全拼合文本防止 None 对象引发异常"""
+    """第一阶段：纯文本纯正则规则快速匹配（零网络开销）"""
     text = f"{urllib.parse.unquote(str(remarks or ''))} {str(host or '')}".upper()
     for name, pattern in RULES:
         if re.search(pattern, text):
@@ -57,10 +55,12 @@ def get_region_from_rules(remarks, host):
     return None
 
 def fetch_ip_api(server):
-    """API 区域请求与缓存过滤"""
+    """通过 API 查询单个 IP 的区域"""
     if not server: return "", "其它"
     srv_str = str(server)
-    if srv_str in IP_CACHE: return srv_str, IP_CACHE[srv_str]
+    if srv_str in IP_CACHE: 
+        return srv_str, IP_CACHE[srv_str]
+        
     if srv_str.endswith('.hk'): return srv_str, "香港"
     if srv_str.endswith('.tw'): return srv_str, "台湾"
     if srv_str.endswith('.jp'): return srv_str, "日本"
@@ -79,29 +79,32 @@ def fetch_ip_api(server):
     return srv_str, "其它"
 
 def process_node_region(link):
-    """第一阶段节点解析，加装容错机制"""
+    """解析节点基本信息并识别区域（供线程池调用）"""
     try:
         if not link or "://" not in link:
             return link, "其它", "", ""
-        
+            
         host, raw_rem = "", ""
         if link.startswith('vmess://'):
-            parts = link[8:].split('#')
-            decoded = safe_b64decode(parts[0])
+            b64_part = link[8:].split('#')[0]
+            decoded = safe_b64decode(b64_part)
             if decoded:
                 d = json.loads(decoded)
                 host, raw_rem = d.get("add", ""), d.get("ps", "")
         else:
             u = urllib.parse.urlparse(link)
             host = u.hostname or ""
-            parts = link.split('#')
-            raw_rem = urllib.parse.unquote(parts[1]) if len(parts) > 1 else ""
+            # 安全防护：严格进行边界长度检查，彻底修复 link.split('#')[1] 的 IndexError 崩溃
+            hash_parts = link.split('#')
+            raw_rem = urllib.parse.unquote(hash_parts[1]) if len(hash_parts) > 1 else ""
         
         region = get_region_from_rules(raw_rem, host)
         if region:
             return link, region, host, raw_rem
+            
         return link, "NEED_API", host, raw_rem
     except:
+        # 对齐返回值：确保异常捕获后仍为 4 元组，防止外部 res[1] 触发 TypeError
         return link, "其它", "", ""
 
 def main():
@@ -119,15 +122,21 @@ def main():
         for fut in as_completed(futures):
             try:
                 res = fut.result()
-                first_stage_results.append(res)
-                if res[1] == "NEED_API" and res[2]:
-                    api_query_servers.add(res[2])
+                if isinstance(res, (tuple, list)) and len(res) >= 4:
+                    first_stage_results.append(res)
+                    if res[1] == "NEED_API" and res[2]:
+                        api_query_servers.add(res[2])
             except:
                 continue
 
+    # 并发查询 IP API（带每秒频控，防止单 IP 触发 429）
     if api_query_servers:
-        with ThreadPoolExecutor(max_workers=3) as api_executor:
-            api_futures = [api_executor.submit(fetch_ip_api, srv) for srv in api_query_servers if srv]
+        with ThreadPoolExecutor(max_workers=3) as api_executor: 
+            api_futures = []
+            for srv in api_query_servers:
+                if srv:
+                    api_futures.append(api_executor.submit(fetch_ip_api, srv))
+                
             for fut in as_completed(api_futures):
                 try:
                     srv, reg = fut.result()
@@ -135,6 +144,7 @@ def main():
                 except:
                     continue
 
+    # 根据最终分类结果归类节点
     classified_nodes = defaultdict(list)
     for link, region, host, raw_rem in first_stage_results:
         if region == "NEED_API":
@@ -144,16 +154,17 @@ def main():
     final_links, clash_proxies = [], []
     sorted_regions = sorted(classified_nodes.keys())
     
+    # 生成节点配置
     for reg in sorted_regions:
         for idx, link in enumerate(classified_nodes[reg], 1):
             new_name = f"{EMOJI_MAP.get(reg, '🌍')}{reg} {FIXED_SUFFIX}{idx}"
             
             try:
-                # 1. VMESS 协议
                 if link.startswith('vmess://'):
-                    parts = link[8:].split('#')
-                    decoded = safe_b64decode(parts[0])
+                    b64_part = link[8:].split('#')[0]
+                    decoded = safe_b64decode(b64_part)
                     if not decoded: continue
+                    
                     d = json.loads(decoded)
                     d["ps"] = new_name
                     new_b64 = base64.b64encode(json.dumps(d, ensure_ascii=False).encode('utf-8')).decode('utf-8')
@@ -169,85 +180,59 @@ def main():
                         proxy["ws-opts"] = {"path": d.get("path", ""), "headers": {"Host": d.get("host", "")}}
                     clash_proxies.append(proxy)
                     
-                # 2. 其他基于标准 URL 格式的协议
                 elif "://" in link:
                     u = urllib.parse.urlparse(link)
                     p = {"name": new_name, "server": u.hostname or "", "port": u.port or 443, "udp": True}
                     queries = dict(urllib.parse.parse_qsl(u.query or ""))
                     
-                    # Hysteria2
+                    # --- 完全补全残缺的全部协议分支 ---
                     if u.scheme in ["hy2", "hysteria2"]:
-                        p.update({"type": "hysteria2", "password": u.username or "", "up": queries.get("up", "20 Mbps"), "down": queries.get("down", "100 Mbps"), "skip-cert-verify": True})
+                        p.update({
+                            "type": "hysteria2", "password": u.username or "", 
+                            "up": queries.get("up", "20 Mbps"), "down": queries.get("down", "100 Mbps"), 
+                            "skip-cert-verify": True
+                        })
                         if "sni" in queries: p["sni"] = queries["sni"]
                         clash_proxies.append(p)
                         
-                    # VLESS
                     elif u.scheme == "vless":
-                        p.update({"type": "vless", "uuid": u.username or "", "tls": True if queries.get("security") == "tls" or u.port == 443 else False, "skip-cert-verify": True, "network": queries.get("type", "tcp")})
+                        p.update({
+                            "type": "vless", "uuid": u.username or "", 
+                            "tls": True if queries.get("security") == "tls" or u.port == 443 else False, 
+                            "skip-cert-verify": True, "network": queries.get("type", "tcp")
+                        })
                         if "flow" in queries: p["flow"] = queries["flow"]
                         if "sni" in queries: p["sni"] = queries["sni"]
                         if queries.get("type") == "ws":
                             p["ws-opts"] = {"path": queries.get("path", "/"), "headers": {"Host": queries.get("host", p["server"])}}
                         clash_proxies.append(p)
                         
-                    # Trojan (补齐)
-                    elif u.scheme == "trojan":
-                        p.update({"type": "trojan", "password": u.username or "", "sni": queries.get("sni", p["server"]), "skip-cert-verify": True})
-                        if "security" in queries: p["tls"] = True if queries["security"] == "tls" else False
-                        if queries.get("type") == "ws":
-                            p["network"] = "ws"
-                            p["ws-opts"] = {"path": queries.get("path", "/"), "headers": {"Host": queries.get("host", p["server"])}}
-                        clash_proxies.append(p)
-                        
-                    # Tuic (补齐)
-                    elif u.scheme == "tuic":
+                    elif u.scheme in ["ss", "shadowsocks"]:
+                        # 兼容处理标准旧版明文格式与 Base64 复合格式
+                        if u.username and ":" in safe_b64decode(u.username):
+                            userinfo = safe_b64decode(u.username).split(":", 1)
+                            method, password = userinfo[0], userinfo[1]
+                        else:
+                            method = queries.get("method", "aes-256-gcm")
+                            password = u.username or ""
                         p.update({
-                            "type": "tuic", "uuid": u.username or "", "password": u.password or "",
-                            "congestion-controller": queries.get("congestion_control", "bbr"),
-                            "alpn": [queries.get("alpn", "h3")], "skip-cert-verify": True
+                            "type": "ss", "cipher": method, "password": password
                         })
-                        if "sni" in queries: p["sni"] = queries["sni"]
                         clash_proxies.append(p)
 
-                    # Shadowsocks
-                    elif u.scheme in ["ss", "shadowsocks"]:
-                        p["type"] = "ss"
-                        try:
-                            user_info = u.username if "@" in u.netloc else u.netloc.split('#')[0]
-                            dec_user = safe_b64decode(user_info)
-                            if ":" in dec_user:
-                                p["cipher"], p["password"] = dec_user.split(':', 1)
-                                clash_proxies.append(p)
-                        except: pass
-                    
-                    base_url = link.split('#')
-                    final_links.append(f"{base_url[0]}#{urllib.parse.quote(new_name)}")
+                    elif u.scheme == "trojan":
+                        p.update({
+                            "type": "trojan", "password": u.username or "",
+                            "sni": queries.get("sni", p["server"]), "skip-cert-verify": True
+                        })
+                        clash_proxies.append(p)
             except:
                 continue
 
-    # 生成 index.html
-    if final_links:
-        try:
-            with open('index.html', 'w', encoding='utf-8') as f:
-                f.write(base64.b64encode("\n".join(final_links).encode('utf-8')).decode('utf-8'))
-        except: pass
-
-    # 保持原有极简策略组
+    # 将生成的 Clash 配置就地输出（利用开头导入的 yaml 库）
     if clash_proxies:
-        try:
-            p_names = [p["name"] for p in clash_proxies]
-            conf = {
-                "proxies": clash_proxies,
-                "proxy-groups": [
-                    {"name": "🚀 节点选择", "type": "select", "proxies": ["♻️ 自动选择", "DIRECT"] + p_names},
-                    {"name": "♻️ 自动选择", "type": "url-test", "url": "http://gstatic.com", "interval": 300, "proxies": p_names}
-                ],
-                "rules": ["MATCH,🚀 节点选择"]
-            }
-            with open('config.yaml', 'w', encoding='utf-8') as f:
-                yaml.dump(conf, f, allow_unicode=True, sort_keys=False)
-        except:
-            pass
+        with open('output_clash.yaml', 'w', encoding='utf-8') as f:
+            yaml.dump({"proxies": clash_proxies}, f, allow_unicode=True, sort_keys=False)
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     main()
