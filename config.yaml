@@ -138,6 +138,47 @@ proxies:
   sni: tw3.757866.xyz
   skip-cert-verify: true
   name: 🇹🇼 台湾 05 @zmxooo
+- type: vmess
+  server: v13.zgtfqs.click
+  port: 30813
+  uuid: cbb3f877-d1fb-344c-87a9-d153bffd5484
+  alterId: 2
+  cipher: auto
+  tls: false
+  skip-cert-verify: true
+  network: tcp
+  name: 🇯🇵 日本 01 @zmxooo
+- type: vmess
+  server: v11.zgtfqs.click
+  port: 30811
+  uuid: cbb3f877-d1fb-344c-87a9-d153bffd5484
+  alterId: 2
+  cipher: auto
+  tls: false
+  skip-cert-verify: true
+  network: tcp
+  name: 🇯🇵 日本 02 @zmxooo
+- type: hysteria2
+  server: vpn-kr-001.fastervpn.world
+  port: 443
+  password: qQe1z5kU8kN6SlKnDt9Ru3Qp
+  sni: vpn-kr-001.fastervpn.world
+  skip-cert-verify: true
+  name: 🇰🇷 韩国 01 @zmxooo
+- type: trojan
+  server: 59.0.95.106
+  port: 32773
+  password: 8r%3C%5B9%27l6hAO%238ZQi
+  sni: Koma-YT.PAGeS.Dev
+  skip-cert-verify: true
+  name: 🇰🇷 韩国 02 @zmxooo
+- type: hysteria2
+  server: vpn-kr-003.fastervpn.world
+  port: 443
+  password: qQe1z5kU8kN6SlKnDt9Ru3Qp
+  sni: vpn-kr-003.fastervpn.world
+  skip-cert-verify: true
+  name: 🇰🇷 韩国 03 @zmxooo
 - type: ss
   server: 103.186.154.214
   port: 38388
@@ -244,47 +285,6 @@ proxies:
   sni: sg19.453521.xyz
   skip-cert-verify: true
   name: 🇸🇬 新加坡 10 @zmxooo
-- type: vmess
-  server: v13.zgtfqs.click
-  port: 30813
-  uuid: cbb3f877-d1fb-344c-87a9-d153bffd5484
-  alterId: 2
-  cipher: auto
-  tls: false
-  skip-cert-verify: true
-  network: tcp
-  name: 🇯🇵 日本 01 @zmxooo
-- type: vmess
-  server: v11.zgtfqs.click
-  port: 30811
-  uuid: cbb3f877-d1fb-344c-87a9-d153bffd5484
-  alterId: 2
-  cipher: auto
-  tls: false
-  skip-cert-verify: true
-  network: tcp
-  name: 🇯🇵 日本 02 @zmxooo
-- type: hysteria2
-  server: vpn-kr-001.fastervpn.world
-  port: 443
-  password: qQe1z5kU8kN6SlKnDt9Ru3Qp
-  sni: vpn-kr-001.fastervpn.world
-  skip-cert-verify: true
-  name: 🇰🇷 韩国 01 @zmxooo
-- type: trojan
-  server: 59.0.95.106
-  port: 32773
-  password: 8r%3C%5B9%27l6hAO%238ZQi
-  sni: Koma-YT.PAGeS.Dev
-  skip-cert-verify: true
-  name: 🇰🇷 韩国 02 @zmxooo
-- type: hysteria2
-  server: vpn-kr-003.fastervpn.world
-  port: 443
-  password: qQe1z5kU8kN6SlKnDt9Ru3Qp
-  sni: vpn-kr-003.fastervpn.world
-  skip-cert-verify: true
-  name: 🇰🇷 韩国 03 @zmxooo
 - type: trojan
   server: 103.150.8.160
   port: 50888
@@ -350,6 +350,36 @@ proxies:
   sni: Koma-YT.PAGeS.Dev
   skip-cert-verify: true
   name: 🇺🇸 美国 02 @zmxooo
+- type: vmess
+  server: 82.198.246.214
+  port: 180
+  uuid: d13fc2f5-3e05-4795-81eb-44143a09e552
+  alterId: 0
+  cipher: auto
+  tls: false
+  skip-cert-verify: true
+  network: tcp
+  name: 🇻🇳 越南 08 @zmxooo
+- type: vmess
+  server: 82.198.246.233
+  port: 180
+  uuid: d13fc2f5-3e05-4795-81eb-44143a09e552
+  alterId: 0
+  cipher: auto
+  tls: false
+  skip-cert-verify: true
+  network: tcp
+  name: 🇻🇳 越南 09 @zmxooo
+- type: vmess
+  server: 82.198.246.9
+  port: 180
+  uuid: d13fc2f5-3e05-4795-81eb-44143a09e552
+  alterId: 0
+  cipher: auto
+  tls: false
+  skip-cert-verify: true
+  network: tcp
+  name: 🇰🇷 韩国 04 @zmxooo
 proxy-groups:
 - name: 🚀 节点选择
   type: select
@@ -358,10 +388,10 @@ proxy-groups:
   - 🇭🇰 香港
   - 🇩🇪 德国
   - 🇹🇼 台湾
-  - 🇻🇳 越南
-  - 🇸🇬 新加坡
   - 🇯🇵 日本
   - 🇰🇷 韩国
+  - 🇻🇳 越南
+  - 🇸🇬 新加坡
   - 🇺🇸 美国
   - DIRECT
 - name: 🎬 自动选择
@@ -388,6 +418,11 @@ proxy-groups:
   - 🇹🇼 台湾 03 @zmxooo
   - 🇹🇼 台湾 04 @zmxooo
   - 🇹🇼 台湾 05 @zmxooo
+  - 🇯🇵 日本 01 @zmxooo
+  - 🇯🇵 日本 02 @zmxooo
+  - 🇰🇷 韩国 01 @zmxooo
+  - 🇰🇷 韩国 02 @zmxooo
+  - 🇰🇷 韩国 03 @zmxooo
   - 🇻🇳 越南 01 @zmxooo
   - 🇻🇳 越南 02 @zmxooo
   - 🇻🇳 越南 03 @zmxooo
@@ -404,11 +439,6 @@ proxy-groups:
   - 🇸🇬 新加坡 08 @zmxooo
   - 🇸🇬 新加坡 09 @zmxooo
   - 🇸🇬 新加坡 10 @zmxooo
-  - 🇯🇵 日本 01 @zmxooo
-  - 🇯🇵 日本 02 @zmxooo
-  - 🇰🇷 韩国 01 @zmxooo
-  - 🇰🇷 韩国 02 @zmxooo
-  - 🇰🇷 韩国 03 @zmxooo
   - 🇯🇵 日本 03 @zmxooo
   - 🇯🇵 日本 04 @zmxooo
   - 🇯🇵 日本 05 @zmxooo
@@ -417,6 +447,9 @@ proxy-groups:
   - 🇯🇵 日本 07 @zmxooo
   - 🇻🇳 越南 07 @zmxooo
   - 🇺🇸 美国 02 @zmxooo
+  - 🇻🇳 越南 08 @zmxooo
+  - 🇻🇳 越南 09 @zmxooo
+  - 🇰🇷 韩国 04 @zmxooo
 - name: 🇭🇰 香港
   type: url-test
   url: http://gstatic.com
@@ -451,33 +484,6 @@ proxy-groups:
   - 🇹🇼 台湾 03 @zmxooo
   - 🇹🇼 台湾 04 @zmxooo
   - 🇹🇼 台湾 05 @zmxooo
-- name: 🇻🇳 越南
-  type: url-test
-  url: http://gstatic.com
-  interval: 300
-  proxies:
-  - 🇻🇳 越南 01 @zmxooo
-  - 🇻🇳 越南 02 @zmxooo
-  - 🇻🇳 越南 03 @zmxooo
-  - 🇻🇳 越南 04 @zmxooo
-  - 🇻🇳 越南 05 @zmxooo
-  - 🇻🇳 越南 06 @zmxooo
-  - 🇻🇳 越南 07 @zmxooo
-- name: 🇸🇬 新加坡
-  type: url-test
-  url: http://gstatic.com
-  interval: 300
-  proxies:
-  - 🇸🇬 新加坡 01 @zmxooo
-  - 🇸🇬 新加坡 02 @zmxooo
-  - 🇸🇬 新加坡 03 @zmxooo
-  - 🇸🇬 新加坡 04 @zmxooo
-  - 🇸🇬 新加坡 05 @zmxooo
-  - 🇸🇬 新加坡 06 @zmxooo
-  - 🇸🇬 新加坡 07 @zmxooo
-  - 🇸🇬 新加坡 08 @zmxooo
-  - 🇸🇬 新加坡 09 @zmxooo
-  - 🇸🇬 新加坡 10 @zmxooo
 - name: 🇯🇵 日本
   type: url-test
   url: http://gstatic.com
@@ -498,6 +504,36 @@ proxy-groups:
   - 🇰🇷 韩国 01 @zmxooo
   - 🇰🇷 韩国 02 @zmxooo
   - 🇰🇷 韩国 03 @zmxooo
+  - 🇰🇷 韩国 04 @zmxooo
+- name: 🇻🇳 越南
+  type: url-test
+  url: http://gstatic.com
+  interval: 300
+  proxies:
+  - 🇻🇳 越南 01 @zmxooo
+  - 🇻🇳 越南 02 @zmxooo
+  - 🇻🇳 越南 03 @zmxooo
+  - 🇻🇳 越南 04 @zmxooo
+  - 🇻🇳 越南 05 @zmxooo
+  - 🇻🇳 越南 06 @zmxooo
+  - 🇻🇳 越南 07 @zmxooo
+  - 🇻🇳 越南 08 @zmxooo
+  - 🇻🇳 越南 09 @zmxooo
+- name: 🇸🇬 新加坡
+  type: url-test
+  url: http://gstatic.com
+  interval: 300
+  proxies:
+  - 🇸🇬 新加坡 01 @zmxooo
+  - 🇸🇬 新加坡 02 @zmxooo
+  - 🇸🇬 新加坡 03 @zmxooo
+  - 🇸🇬 新加坡 04 @zmxooo
+  - 🇸🇬 新加坡 05 @zmxooo
+  - 🇸🇬 新加坡 06 @zmxooo
+  - 🇸🇬 新加坡 07 @zmxooo
+  - 🇸🇬 新加坡 08 @zmxooo
+  - 🇸🇬 新加坡 09 @zmxooo
+  - 🇸🇬 新加坡 10 @zmxooo
 - name: 🇺🇸 美国
   type: url-test
   url: http://gstatic.com
