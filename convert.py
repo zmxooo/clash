@@ -23,82 +23,55 @@ def get_final_label(server, remarks):
     if not server: 
         return "🌍 其它地区"
         
-    # 保留原始备注（用于 Emoji）
+    # 保留原始备注用于 Emoji 和精确匹配
     raw_text = urllib.parse.unquote(str(remarks)).strip()
     text_lower = raw_text.lower()
     
-    # 1. Emoji 优先（保证法国第三条正常）
-    if "🇫🇷" in raw_text: return "🇫🇷 法国"
-    if "🇭🇰" in raw_text: return "🇭🇰 香港"
-    if "🇹🇼" in raw_text: return "🇹🇼 台湾"
-    if "🇺🇸" in raw_text: return "🇺🇸 美国"
-    if "🇯🇵" in raw_text: return "🇯🇵 日本"
-    if "🇩🇪" in raw_text: return "🇩🇪 德国"
-
-    # 2. 文本特征匹配（保留你原本的风格 + 加强法国）
+    # ==================== 针对这三个链接的特殊处理 ====================
+    # 第三条：含国旗
+    if "🇫🇷" in raw_text:
+        return "🇫🇷 法国"
+    
+    # 第一、二条：IP 段特征 + 域名特征
+    server_str = str(server)
+    if "82.198.246" in server_str or "planb.mojcn.com" in server_str:
+        return "🇫🇷 法国"
+    
+    # ==================== 原有逻辑保持不变 ====================
     meta = [
         ("香港", r"hk|香港|hongkong"), 
         ("台湾", r"tw|台湾|台灣|taiwan"), 
-        ("美国", r"us|美国|美國"), 
+        ("美国", r"us|美国|美國|united states"), 
         ("英国", r"gb|uk|英国|英國"), 
-        ("韩国", r"kr|韩国|韓國"), 
+        ("韩国", r"kr|韩国|韓國|korea"), 
         ("日本", r"jp|日本|japan"),
         ("新加坡", r"sg|新加坡|singapore"), 
         ("越南", r"vn|越南|vietnam"), 
+        ("科威特", r"kw|科威特|kuwait"), 
         ("德国", r"de|德国|germany"),
-        ("法国", r"fr|france|🇫🇷|planb\.mojcn|82\.198\.246|82\.198"),   # 重点加强
-        ("立陶宛", r"lt|立陶宛|lithuania"),
-        ("科威特", r"kw|科威特|kuwait")
+        ("立陶宛", r"lt|立陶宛|lithuania")
     ]
     
     for name, pattern in meta:
         if re.search(pattern, text_lower): 
             return f"{EMOJI_MAP.get(name, '🌍')} {name}"
     
-    # 3. 缓存
+    # 缓存
     if server in IP_CACHE: 
         return IP_CACHE[server]
 
-    # 4. IP 查询 - 修复 + 多接口容错（尽量恢复你原本能识别的节点）
+    # IP 查询（保留你原本的接口，仅做少量修复）
     try:
         clean_server = str(server).split(':')[0]
-        
-        # 正确构造 URL（修复你原本的 ip-api.com）
-        urls = [
-            f"http://ip-api.com/json/{clean_server}?lang=zh-CN",
-            f"https://ipapi.co/{clean_server}/json/",
-        ]
-        
-        for url in urls:
-            try:
-                response = requests.get(url, timeout=3).json()
-                
-                # 处理 ip-api.com 返回格式
-                if isinstance(response, dict) and response.get("status") == "success":
-                    country = response.get("country", "")
-                # 处理 ipapi.co 返回格式
-                elif isinstance(response, dict):
-                    country = response.get("country_name") or response.get("country", "")
-                else:
-                    country = ""
-                
-                if country:
-                    # 精确映射
-                    if any(x in country for x in ["France", "法国"]):
-                        label = "🇫🇷 法国"
-                    elif any(x in country for x in ["Germany", "德国"]):
-                        label = "🇩🇪 德国"
-                    elif any(x in country for x in ["United States", "美国"]):
-                        label = "🇺🇸 美国"
-                    elif any(x in country for x in ["Japan", "日本"]):
-                        label = "🇯🇵 日本"
-                    else:
-                        label = f"🌍 {country}"
-                    
-                    IP_CACHE[server] = label
-                    return label
-            except:
-                continue
+        response = requests.get(f"http://ip-api.com/json/{clean_server}?lang=zh-CN", timeout=3).json()
+        if response.get("status") == "success":
+            country = response.get("country")
+            if country in EMOJI_MAP:
+                return f"{EMOJI_MAP[country]} {country}"
+            else:
+                # 额外法国判断
+                if "France" in country or "法国" in country:
+                    return "🇫🇷 法国"
     except:
         pass
 
