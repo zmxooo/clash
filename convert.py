@@ -135,9 +135,6 @@ def main():
     final_links, clash_proxies = [], []
     sorted_regions = sorted(classified_nodes.keys())
     
-    # 建立国家与对应节点名称的映射，用于生成 URL-Test 自动测速策略组
-    region_to_proxy_names = defaultdict(list)
-    
     # 步骤 4：生成节点配置
     for reg in sorted_regions:
         for idx, link in enumerate(classified_nodes[reg], 1):
@@ -160,7 +157,6 @@ def main():
                     if d.get("net") == "ws":
                         proxy["ws-opts"] = {"path": d.get("path", ""), "headers": {"Host": d.get("host", "")}}
                     clash_proxies.append(proxy)
-                    region_to_proxy_names[reg].append(new_name) # 同步收集节点名
                     
                 elif "://" in link:
                     u = urllib.parse.urlparse(link)
@@ -170,27 +166,19 @@ def main():
                     queries = dict(urllib.parse.parse_qsl(u.query))
                     
                     if u.scheme in ["hy2", "hysteria2"]:
-                        # 协议优化：修复原生代码中直接读 u.username 的截断硬伤，补全节点鉴权密码
-                        p_password = u.username if u.username else (u.netloc.split('@')[0] if '@' in u.netloc else "")
                         p.update({
                             "type": "hysteria2", 
-                            "password": p_password, 
+                            "password": u.username, 
                             "up": queries.get("up", "20 Mbps"), 
                             "down": queries.get("down", "100 Mbps"), 
                             "skip-cert-verify": True
                         })
                         if "sni" in queries: p["sni"] = queries["sni"]
                         clash_proxies.append(p)
-                        region_to_proxy_names[reg].append(new_name) # 同步收集节点名
-                        
-                        # 【同步机制修复】：重命名备注后，同步追加回你的原始格式链接列表
-                        final_links.append(f"{u.scheme}://{u.netloc.split('#')[0]}#{urllib.parse.quote(new_name)}")
                         
                     elif u.scheme == "vless":
-                        # 协议优化：提取 UUID
-                        p_uuid = u.username if u.username else (u.netloc.split('@')[0] if '@' in u.netloc else "")
                         p.update({
-                            "type": "vless", "uuid": p_uuid, 
+                            "type": "vless", "uuid": u.username, 
                             "tls": True if queries.get("security") == "tls" or u.port == 443 else False, 
                             "skip-cert-verify": True,
                             "network": queries.get("type", "tcp")
@@ -200,14 +188,11 @@ def main():
                         if queries.get("type") == "ws":
                             p["ws-opts"] = {"path": queries.get("path", "/"), "headers": {"Host": queries.get("host", p["server"])}}
                         clash_proxies.append(p)
-                        region_to_proxy_names[reg].append(new_name) # 同步收集节点名
-                        
-                        # 【同步机制修复】：重命名备注后，同步追加回你的原始格式链接列表
-                        final_links.append(f"{u.scheme}://{u.netloc.split('#')[0]}#{urllib.parse.quote(new_name)}")
                         
                     elif u.scheme in ["ss", "shadowsocks"]:
                         p["type"] = "ss"
                         try:
+                            # 兼容常规 ss://base64 格式 与 新版 ss://base64@host:port 格式
                             if "@" in u.netloc:
                                 user_info = u.username
                             else:
@@ -217,20 +202,23 @@ def main():
                             if ":" in dec_user:
                                 p["cipher"], p["password"] = dec_user.split(':', 1)
                                 clash_proxies.append(p)
-                                region_to_proxy_names[reg].append(new_name) # 同步收集节点名
-                                
-                                # 【同步机制修复】：重命名备注后，同步追加回你的原始格式链接列表
-                                final_links.append(f"{u.scheme}://{u.netloc.split('#')[0]}#{urllib.parse.quote(new_name)}")
                         except:
                             pass
             except:
                 pass
 
-    # --- 精准追加：构建动态国家 URL-Test 自动选择最快节点策略组 ---
+    # === 【仅在此处追加要求的功能：动态国家分组与自动测速选择（URL-Test）】 ===
     clash_groups = []
     country_auto_group_names = []
     
-    # 动态为当前分类出的每个国家，生成一个专属测速组
+    # 根据安全生成的单个节点名称，动态归类供 url-test 使用
+    region_to_proxy_names = defaultdict(list)
+    for proxy in clash_proxies:
+        for reg in EMOJI_MAP.keys():
+            if reg in proxy["name"]:
+                region_to_proxy_names[reg].append(proxy["name"])
+                break
+
     for reg, p_names in region_to_proxy_names.items():
         if not p_names:
             continue
@@ -246,7 +234,6 @@ def main():
             "proxies": p_names
         })
 
-    # 全局选择控制面板
     all_individual_proxies = [p["name"] for p in clash_proxies]
     main_group = {
         "name": "🚀 节点选择",
@@ -255,7 +242,6 @@ def main():
     }
     clash_groups.insert(0, main_group)
 
-    # 完美保持最初输出：只渲染你的 clash_proxies 结构，绝无私自外溢写入
     clash_config = {
         "proxies": clash_proxies,
         "proxy-groups": clash_groups
