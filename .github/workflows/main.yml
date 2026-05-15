@@ -4,45 +4,43 @@ on:
   push:
     branches: [ main ]
     paths:
-      - 'nodes.txt'      # 只有当 nodes.txt 更新时才触发
-  workflow_dispatch:      # 允许手动在 Actions 页面点击按钮运行
+      - 'nodes.txt'      # 数据变动触发
+      - 'convert.py'     # 脚本逻辑变动触发
+  workflow_dispatch:      # 允许手动触发
 
 jobs:
   convert:
     runs-on: ubuntu-latest
-    
-    # 核心修正：显式授予 Actions 写入仓库的权限
+    # 显式开启写权限，这是防止同步失败的防火墙
     permissions:
       contents: write
       
     steps:
-      - name: 检查仓库代码
+      - name: 检查代码
         uses: actions/checkout@v4
 
-      - name: 设置 Python 环境
+      - name: 设置 Python
         uses: actions/setup-python@v4
         with:
           python-version: '3.10'
 
-      - name: 安装必要依赖
+      - name: 安装依赖
         run: pip install pyyaml requests
 
-      - name: 运行转换脚本
+      - name: 执行转换
         run: python convert.py
 
-      - name: 推送生成的文件到仓库
+      - name: 同步至仓库
         run: |
           git config --local user.email "actions@github.com"
           git config --local user.name "GitHub Action"
           
-          # 关键点：同时添加 clash_config.yaml 和 index.html
-          # 如果之前有 config.yaml，运行此脚本后建议手动删除旧的
+          # 确保这两个关键文件都在监控范围内
           git add clash_config.yaml index.html
           
-          # 检查是否有变动，避免因为没有内容更新而导致的提交报错
           if git diff --staged --quiet; then
-            echo "没有发现内容变动，跳过本次提交。"
+            echo "内容无变动，跳过推送。"
           else
-            git commit -m "自动更新订阅文件 [$(date '+%Y-%m-%d %H:%M')]"
+            git commit -m "Auto Update [$(date '+%Y-%m-%d %H:%M')]"
             git push
           fi
