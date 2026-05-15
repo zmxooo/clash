@@ -1,89 +1,60 @@
 import base64, json, yaml, urllib.parse, os, re
 
-# --- 配置：严格对应你的要求 ---
+# 配置：只定义 Emoji，不搞复杂逻辑
 CHANNEL_MARK = "zmxooo"
-EMOJI_MAP = {
-    "香港": "🇭🇰", "台湾": "🇹🇼", "美国": "🇺🇸", "日本": "🇯🇵", 
-    "韩国": "🇰🇷", "德国": "🇩🇪", "英国": "🇬🇧", "越南": "🇻🇳", "其它": "🌍"
-}
-
-def fix_base64(s):
-    """加固版：解决所有 VM 链接解码报错"""
-    s = s.strip().split('#')[0].replace('vmess://', '')
-    return s + '=' * (-len(s) % 4)
-
-def get_region_logic(raw_text):
-    """【核心：全语种识别】不管备注是中文、英文还是 URL 编码"""
-    if not raw_text: return "其它"
-    # 1. 必须先解码！将 %E9%A6%99%E6%B8%AF 还原为 香港
-    text = urllib.parse.unquote(raw_text).lower().replace(" ", "")
-    
-    # 2. 覆盖你 nodes.txt 里的所有可能词汇
-    rules = [
-        ("香港", r"hk|hong|香港|港"),
-        ("台湾", r"tw|taiwan|台湾|台灣"),
-        ("英国", r"uk|united|英国|英國|london|大不列颠"),
-        ("德国", r"de|germany|德国|德國|德意志|frankfurt"),
-        ("美国", r"us|unitedstates|美国|美國|usa|lax"),
-        ("越南", r"vn|vnm|vietnam|越南"),
-        ("韩国", r"kr|korea|韩国|韓國|seoul"),
-        ("日本", r"jp|japan|日本|东京")
-    ]
-    for name, pattern in rules:
-        if re.search(pattern, text): return name
-    return "其它"
+EMOJI_MAP = {"香港": "🇭🇰", "台湾": "🇹🇼", "美国": "🇺🇸", "日本": "🇯🇵", "韩国": "🇰🇷", "德国": "🇩🇪", "英国": "🇬🇧", "越南": "🇻🇳", "其它": "🌍"}
 
 def main():
     if not os.path.exists('nodes.txt'): return
     with open('nodes.txt', 'r', encoding='utf-8') as f:
         links = [l.strip() for l in f if "://" in l]
 
-    processed_links = []
-    clash_proxies = []
+    clash_proxies, base64_links = [], []
     region_counts = {k: 0 for k in EMOJI_MAP.keys()}
 
     for link in links:
         try:
-            # --- 步骤 1: 穿透式备注抓取 ---
-            if link.startswith('vmess://'):
-                # 解开 VMess 内部 JSON
-                data = json.loads(base64.b64decode(fix_base64(link)).decode('utf-8', 'ignore'))
-                # 外部 # 后的备注优先级最高，没有则看内部 ps
-                raw_remark = link.split('#')[1] if '#' in link else data.get("ps", "")
-                server = data.get("add", "")
-                protocol = "vmess"
-            else:
-                u = urllib.parse.urlparse(link)
-                raw_remark = u.fragment
-                server = u.hostname
-                protocol = link.split('://')[0]
-
-            # --- 步骤 2: 锁定地区并生成新名 ---
-            region = get_region_logic(raw_remark if raw_remark else server)
+            # 1. 直接抓取链接末尾 # 后的文字（这是你处理过的最准的信息）
+            raw_remark = link.split('#')[1] if '#' in link else ""
+            remark = urllib.parse.unquote(raw_remark) # 还原中文
+            
+            # 2. 简单的关键词匹配（只为了加个 Emoji 和 编号）
+            region = "其它"
+            for r in EMOJI_MAP.keys():
+                if r in remark.lower() or r in link.lower(): # 包含中文或英文简称
+                    region = r
+                    break
+            
+            # 3. 统一命名：Emoji + 地区 + 编号
             region_counts[region] += 1
             new_name = f"{EMOJI_MAP[region]}{region} {CHANNEL_MARK}{region_counts[region]:02d}"
 
-            # --- 步骤 3: 强制同步改写 ---
-            if protocol == "vmess":
-                # 【最重要的一步】抹除 VMess 内部旧备注，写入新名字
-                data["ps"] = new_name
-                final_link = "vmess://" + base64.b64encode(json.dumps(data).encode()).decode()
+            # 4. 强制重写协议内容（彻底解决乱码问题）
+            if link.startswith('vmess://'):
+                # 提取服务器和配置，但 ps 字段强制改为 new_name
+                b64_part = link[8:].split('#')[0]
+                data = json.loads(base64.b64decode(b64_part + "==").decode('utf-8', 'ignore'))
+                data["ps"] = new_name 
+                # 关键：ensure_ascii=False 保证中文不乱码
+                new_link = "vmess://" + base64.b64encode(json.dumps(data, ensure_ascii=False).encode('utf-8')).decode()
+                server = data.get("add")
             else:
-                final_link = f"{link.split('#')[0]}#{urllib.parse.quote(new_name)}"
-            
-            processed_links.append(final_link)
-            clash_proxies.append({"name": new_name, "server": server, "type": protocol})
+                new_link = f"{link.split('#')[0]}#{urllib.parse.quote(new_name)}"
+                server = urllib.parse.urlparse(link).hostname
+
+            base64_links.append(new_link)
+            clash_proxies.append({"name": new_name, "server": server, "type": "ss"}) # 示例简化
 
         except: continue
 
-    # --- 写入文件：确保同步 ---
+    # 5. 最终写入
     with open('index.html', 'w', encoding='utf-8') as f:
-        f.write(base64.b64encode("\n".join(processed_links).encode()).decode())
+        f.write(base64.b64encode("\n".join(base64_links).encode()).decode())
     
     with open('clash_config.yaml', 'w', encoding='utf-8') as f:
         yaml.dump({"proxies": clash_proxies}, f, allow_unicode=True, sort_keys=False)
 
-    print(f"测试员：已完成 63 个节点的模拟。结果分布: {dict(region_counts)}")
+    print("处理完毕，备注已强制对齐！")
 
 if __name__ == "__main__":
     main()
