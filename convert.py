@@ -1,114 +1,131 @@
-import base64, json, urllib.parse, re
+import base64, json, yaml, urllib.parse, os, re, requests, time
+from collections import defaultdict
 
-# --- 增强版配置 ---
+# --- 配置区 ---
 CHANNEL_MARK = "zmxooo"
+TEST_URL = "http://gstatic.com"
+IP_CACHE = {}
 
-# 这里的键名要和下面 REGION_KEYWORDS 的第一个元素对应
 EMOJI_MAP = {
     "香港": "🇭🇰", "台湾": "🇹🇼", "美国": "🇺🇸", "日本": "🇯🇵", 
     "新加坡": "🇸🇬", "韩国": "🇰🇷", "德国": "🇩🇪", "英国": "🇬🇧",
-    "越南": "🇻🇳", "其它": "🌍"
+    "俄罗斯": "🇷🇺", "法国": "🇫🇷", "加拿大": "🇨🇦", "荷兰": "🇳🇱",
+    "泰国": "🇹🇭", "越南": "🇻🇳", "印度": "🇮🇳", "澳大利亚": "🇦🇺"
 }
 
-# 优先级：从上往下匹配。将容易误判的放在前面
-REGION_KEYWORDS = [
-    ("香港", r"hk|hongkong|香港|港|hgc|hkbn|pccw"),
-    ("台湾", r"tw|taiwan|台湾|台灣|hinet|cht"),
-    ("英国", r"uk|united kingdom|英国|英國|london"),
-    ("德国", r"de|germany|德国|德國|frankfurt|fra"),
-    ("韩国", r"kr|korea|韩国|韓國|seoul"),
-    ("美国", r"us|united states|美国|美國|usa|lax|sjc"),
-    ("日本", r"jp|japan|日本|東京|东京|tokyo"),
-    ("越南", r"vn|vietnam|越南"),
-]
-
-def get_label_from_text(text):
-    """直接从备注或地址文本中提取国家标签"""
-    if not text: return None
-    text = text.lower()
-    for name, pattern in REGION_KEYWORDS:
-        if re.search(pattern, text):
-            return name
-    return None
-
 def get_final_label(server, remarks):
-    """
-    主要手段：解析备注。
-    如果备注里有'英国'、'UK'等字眼，直接识别为英国。
-    """
-    # 1. 优先尝试从备注提取
-    decoded_remarks = urllib.parse.unquote(str(remarks))
-    label_name = get_label_from_text(decoded_remarks)
+    text = urllib.parse.unquote(str(remarks)).lower().strip()
+    meta = [
+        ("香港", r"hk|香港|hongkong"), ("台湾", r"tw|台湾|台灣|taiwan"), 
+        ("美国", r"us|美国|美國|united states"), ("日本", r"jp|日本|japan"),
+        ("新加坡", r"sg|新加坡|singapore"), ("韩国", r"kr|韩国|韓國|korea")
+    ]
+    for name, pattern in meta:
+        if re.search(pattern, text): 
+            return f"{EMOJI_MAP.get(name, '🌍')}{name}"
     
-    # 2. 如果备注没识别到，尝试从服务器域名提取（例如含有 .hk, .tw）
-    if not label_name:
-        label_name = get_label_from_text(server)
-        
-    # 3. 兜底处理
-    if not label_name:
-        label_name = "其它"
-        
-    return f"{EMOJI_MAP.get(label_name, '🌍')}{label_name}"
+    if server in IP_CACHE: return IP_CACHE[server]
+    if server and ("." in server):
+        try:
+            time.sleep(0.5) 
+            resp = requests.get(f"http://ip-api.com/json/{server}?lang=zh-CN", timeout=5).json()
+            if resp.get("status") == "success":
+                country = resp.get("country")
+                label = f"{EMOJI_MAP.get(country, '🌍')}{country}"
+                IP_CACHE[server] = label
+                return label
+        except: pass
+    return "🧿其它地区"
 
-def rebuild_node(link, region_counts):
+def fix_base64(s):
+    s = "".join(s.split())
+    return s + '=' * (-len(s) % 4)
+
+def rebuild_node(link, new_name):
     try:
-        # --- VMESS 逻辑 ---
         if link.startswith('vmess://'):
-            raw_b64 = link[8:].split('#')[0]
-            # 补齐 base64 并解码
-            missing_padding = len(raw_b64) % 4
-            if missing_padding: raw_b64 += '=' * (4 - missing_padding)
-            data = json.loads(base64.b64decode(raw_b64).decode('utf-8', 'ignore'))
-            
-            # 使用备注作为主要识别依据
-            label = get_final_label(data.get("add", ""), data.get("ps", ""))
-            
-            # 生成新名字
-            region_counts[label] += 1
-            new_name = f"{label} {CHANNEL_MARK}{region_counts[label]:02d}"
-            
-            data["ps"] = new_name
-            new_link = "vmess://" + base64.b64encode(json.dumps(data).encode()).decode()
-            return label, new_link
+            b64_part = link[8:].split('#')[0]
+            d = json.loads(base64.b64decode(fix_base64(b64_part)).decode('utf-8', 'ignore'))
+            label = get_final_label(d.get("add"), d.get("ps", ""))
+            std_vmess = {
+                "v": "2", "ps": new_name, "add": str(d.get("add")).strip(),
+                "port": str(d.get("port")), "id": str(d.get("id")), "aid": str(d.get("aid", "0")),
+                "net": d.get("net", "tcp"), "type": d.get("type", "none"),
+                "host": d.get("host", ""), "path": d.get("path", ""), "tls": d.get("tls", "")
+            }
+            proxy = {
+                "name": new_name, "type": "vmess", "server": std_vmess["add"],
+                "port": int(std_vmess["port"]), "uuid": std_vmess["id"], "alterId": int(std_vmess["aid"]),
+                "cipher": "auto", "tls": True if str(std_vmess["tls"]).lower() in ["tls", "1", "true"] else False,
+                "network": std_vmess["net"], "skip-cert-verify": True
+            }
+            if proxy["network"] == "ws":
+                proxy["ws-opts"] = {"path": std_vmess["path"], "headers": {"Host": std_vmess["host"]}}
+            return label, proxy, f"vmess://{base64.b64encode(json.dumps(std_vmess).encode()).decode()}"
 
-        # --- 其他协议 (Hy2, SS, Trojan, Vless) ---
         u = urllib.parse.urlparse(link)
-        # 获取原始备注（#后面的部分）
-        raw_remarks = u.fragment
-        label = get_final_label(u.hostname, raw_remarks)
-        
-        region_counts[label] += 1
-        new_name = f"{label} {CHANNEL_MARK}{region_counts[label]:02d}"
-        
-        # 重新拼接链接，替换备注部分
-        base_link = link.split('#')[0]
-        new_link = f"{base_link}#{urllib.parse.quote(new_name)}"
-        return label, new_link
+        scheme = u.scheme.lower()
+        label = get_final_label(u.hostname, u.fragment)
+        proxy = {"name": new_name, "server": u.hostname, "port": u.port, "skip-cert-verify": True}
 
-    except Exception:
-        return None, None
+        if scheme == "ss":
+            user_info = u.username if u.username else base64.b64decode(fix_base64(u.netloc.split('@')[0])).decode()
+            method, password = user_info.split(':') if ':' in user_info else ("aes-256-gcm", user_info)
+            proxy.update({"type": "ss", "cipher": method, "password": password})
+        elif scheme == "trojan":
+            proxy.update({"type": "trojan", "password": u.username, "sni": u.hostname})
+        elif scheme == "vless":
+            params = dict(urllib.parse.parse_qsl(u.query))
+            proxy.update({
+                "type": "vless", "uuid": u.username, "cipher": "auto",
+                "tls": True if params.get("security") in ["tls", "reality"] else False,
+                "network": params.get("type", "tcp"), "sni": params.get("sni", u.hostname)
+            })
+            if params.get("security") == "reality":
+                proxy.update({"reality-opts": {"public-key": params.get("pbk", ""), "short-id": params.get("sid", "")}})
+        elif scheme in ["hysteria2", "hy2"]:
+            proxy.update({"type": "hysteria2", "password": u.username, "sni": u.hostname})
+        else: return None, None, None
+
+        return label, proxy, f"{link.split('#')[0]}#{urllib.parse.quote(new_name)}"
+    except: return None, None, None
 
 def main():
-    # 假设 nodes.txt 存在
-    input_file = 'nodes.txt'
-    output_file = 'links_fixed.txt'
+    if not os.path.exists('nodes.txt'): return
+    with open('nodes.txt', 'r', encoding='utf-8') as f:
+        raw_links = list(dict.fromkeys([l.strip() for l in f if "://" in l]))
     
-    with open(input_file, 'r', encoding='utf-8') as f:
-        links = [l.strip() for l in f if "://" in l]
+    region_map = defaultdict(list)
+    clash_proxies, rocket_links = [], []
     
-    region_counts = {f"{v}{k}": 0 for k, v in EMOJI_MAP.items()}
-    new_links = []
+    for l in raw_links:
+        lbl, _, _ = rebuild_node(l, "TEMP")
+        if not lbl: continue
+        idx = len(region_map[lbl]) + 1
+        # 格式：🇭🇰香港 zmxooo01
+        new_name = f"{lbl} {CHANNEL_MARK}{idx:02d}"
+        label, proxy, r_link = rebuild_node(l, new_name)
+        if proxy:
+            region_map[label].append(new_name)
+            clash_proxies.append(proxy)
+            rocket_links.append(r_link)
+
+    if rocket_links:
+        with open('index.html', 'w', encoding='utf-8') as f:
+            f.write(base64.b64encode("\n".join(rocket_links).encode()).decode())
     
-    for l in links:
-        label, new_l = rebuild_node(l, region_counts)
-        if new_l:
-            new_links.append(new_l)
-            
-    with open(output_file, 'w', encoding='utf-8') as f:
-        f.write("\n".join(new_links))
-    
-    print(f"处理完成，结果已保存至 {output_file}")
-    print("识别统计:", {k: v for k, v in region_counts.items() if v > 0})
+    if clash_proxies:
+        active_regions = sorted(list(region_map.keys()))
+        groups = [
+            {"name": "🚀节点选择", "type": "select", "proxies": ["🎬自动选择"] + active_regions + ["DIRECT"]},
+            {"name": "🎬自动选择", "type": "url-test", "url": TEST_URL, "interval": 300, "proxies": [p['name'] for p in clash_proxies]}
+        ]
+        for r in active_regions:
+            groups.append({"name": r, "type": "url-test", "url": TEST_URL, "interval": 300, "proxies": region_map[r]})
+        
+        config = {"mixed-port": 7890, "allow-lan": True, "mode": "rule", "proxies": clash_proxies, "proxy-groups": groups, "rules": ["MATCH,🚀节点选择"]}
+        with open('clash_config.yaml', 'w', encoding='utf-8') as f:
+            yaml.dump(config, f, allow_unicode=True, sort_keys=False)
 
 if __name__ == "__main__":
     main()
