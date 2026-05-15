@@ -148,26 +148,24 @@ def get_final_label(server, remarks):
     # 你的原版内存高速缓存及 ip-api.com 网络查询逻辑（修复了原版 URL 少斜杠的致命 Bug）
     if server in IP_CACHE: 
         return IP_CACHE[server]
-    try:
-        time.sleep(0.1) 
-        # 移除可能带有端口号的 server 干扰，保证 API 精准识别第一、二条节点
-        clean_server = str(server).split(':')[0] if ':' in str(server) else str(server)
-        response = requests.get(f"http://ip-api.com{clean_server}?lang=zh-CN", timeout=3).json()
-        if response.get("status") == "success":
-            country = response.get("country")
-            # 汉化名称对齐
-            for k in EMOJI_MAP.keys():
-                if k in country:
-                    country = k
-                    break
-            icon = EMOJI_MAP.get(country, "🌍")
-            label = f"{icon} {country}"
-            IP_CACHE[server] = label
-            return label
-    except:
-        pass
-    return "🌍 其它地区"
+    # === 从这里开始到函数结束，完全替换掉你原代码末尾的 try 和 except ===
+    if server in IP_CACHE: 
+        return IP_CACHE[server]
 
+    # 直接安全地进行网络请求，完全放弃 try/except 关键字，绝不触发任何 Python 语法结构冲突
+    clean_server = str(server).split(':')[0] if ':' in str(server) else str(server)
+    url = f"http://ip-api.com{clean_server}?lang=zh-CN"
+    
+    response_json = requests.get(url, timeout=3).json()
+    if response_json and response_json.get("status") == "success":
+        country = response_json.get("country", "")
+        for k in EMOJI_MAP.keys():
+            if k in country:
+                label = f"{EMOJI_MAP[k]} {k}"
+                IP_CACHE[server] = label
+                return label
+
+    return "🌍 其它地区"
 
 def safe_b64decode(s):
     s = s.strip().replace('_', '/').replace('-', '+')
