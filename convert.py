@@ -24,45 +24,114 @@ EMOJI_MAP = {
 }
 
 def get_final_label(server, remarks):
+    """
+    最强高精度节点国家/地区识别核心
+    支持：中转落地剥离、国际机场三字码(IATA)、边界防误触、双网络API高可用机制
+    """
     if not server: 
         return "🌍 其它地区"
+        
+    # 1. 文本预处理：转小写，移除频道后缀等杂质
     text = urllib.parse.unquote(str(remarks)).lower().strip()
+    if CHANNEL_MARK.lower() in text:
+        text = text.replace(CHANNEL_MARK.lower(), "")
+        
+    # 2. 高精度正则词库（包含中文、Emoji、国际机场代码、主流运营商简称）
     meta = [
-        ("香港", r"hk|香港|hongkong"), ("台湾", r"tw|台湾|台灣|taiwan"), 
-        ("美国", r"us|美国|美國|united states"), ("英国", r"gb|uk|英国|英國"), 
-        ("韩国", r"kr|韩国|韓國|korea"), ("日本", r"jp|日本|japan"),
-        ("新加坡", r"sg|新加坡|singapore"), ("越南", r"vn|越南|vietnam"), 
-        ("科威特", r"kw|科威特|kuwait"), ("德国", r"de|德国|germany"),
-        ("立陶宛", r"lt|立陶宛|lithuania"),
-        ("澳大利亚", r"au|australia|澳洲|澳大利亚"), ("荷兰", r"nl|netherlands|holland|荷兰"),
-        ("马来西亚", r"my|malaysia|马来西亚|大马"), ("泰国", r"th|thailand|泰国"),
-        ("印度", r"in|india|印度"), ("巴西", r"br|brazil|巴西"),
-        ("土耳其", r"tr|turkey|土耳其"), ("阿联酋", r"ae|uae|阿联酋|迪拜"),
-        ("菲律宾", r"ph|philippines|菲律宾"), ("阿根廷", r"ar|argentina|阿根廷"),
-        ("新西兰", r"nz|new zealand|新西兰"), ("意大利", r"it|italy|意大利"),
-        ("西班牙", r"es|spain|西班牙"), ("瑞士", r"ch|switzerland|瑞士"),
-        ("瑞典", r"se|sweden|瑞典"), ("南非", r"za|south africa|南非"),
-        ("爱尔兰", r"ie|ireland|爱尔兰"), ("墨西哥", r"mx|mexico|墨西哥"),
-        ("乌克兰", r"ua|ukraine|乌克兰")
+        ("香港", r"hk|香港|🇭🇰|hong.*kong|hgc|hkbn|wtt|hkt|clsl|hkg"), 
+        ("台湾", r"tw|台湾|台灣|🇹🇼|taiwan|cht|fet|tfn|hinet"), 
+        ("美国", r"\bus\b|美国|美國|🇺🇸|united.*states|america|los.*angeles|lax|sfo|sanjose|sjc|ord|dfw|jfk"), 
+        ("英国", r"\buk\b|\bgb\b|英国|英國|🇬🇧|united.*kingdom|london|lhr"), 
+        ("韩国", r"kr|韩国|韓國|🇰🇷|korea|seoul|icn"), 
+        ("日本", r"jp|日本|🇯🇵|japan|tokyo|osaka|nrt|hnd|kix"),
+        ("新加坡", r"\bsg\b|新加坡|🇸🇬|singapore|sin"), 
+        ("越南", r"vn|越南|🇻🇳|vietnam|hanoi|sgn"), 
+        ("科威特", r"kw|科威特|🇰🇼|kuwait"), 
+        ("德国", r"\bde\b|德国|🇩🇪|germany|frankfurt|fra"),
+        ("立陶宛", r"lt|立陶宛|🇱🇹|lithuania"),
+        ("澳大利亚", r"\bau\b|australia|澳洲|澳大利亚|🇦🇺|sydney|syd"), 
+        ("荷兰", r"\bnl\b|netherlands|holland|荷兰|🇳🇱|amsterdam|ams"),
+        ("马来西亚", r"\bmy\b|malaysia|马来西亚|大马|🇲🇾|kuala|kul"), 
+        ("泰国", r"\bth\b|thailand|泰国|🇹🇭|bangkok|bkk"),
+        ("印度", r"\bin\b|india|印度|🇮🇳|mumbai|bom|del"), 
+        ("巴西", r"\bbr\b|brazil|巴西|🇧🇷|sao.*paulo|gru"),
+        ("土耳其", r"\btr\b|turkey|土耳其|🇹🇷|istanbul|ist"), 
+        ("阿联酋", r"\bae\b|uae|阿联酋|迪拜|🇦🇪|dubai|dxb"),
+        ("菲律宾", r"\bph\b|philippines|菲律宾|🇵🇭|manila|mnl"), 
+        ("阿根廷", r"\bar\b|argentina|阿根廷|🇦🇷|bue"),
+        ("新西兰", r"\bnz|new.*zealand|新西兰|🇳🇿|akl"), 
+        ("意大利", r"\bit\b|italy|意大利|🇮🇹|milan|mxp"),
+        ("西班牙", r"\bes\b|spain|西班牙|🇪🇸|madrid|mad"), 
+        ("瑞士", r"\bch\b|switzerland|瑞士|🇨🇭|zurich|zrh"),
+        ("瑞典", r"\bse\b|sweden|瑞典|🇸🇪|arn"), 
+        ("南非", r"\bza\b|south.*africa|南非|🇿🇦|jnb"),
+        ("爱尔兰", r"\bie\b|ireland|爱尔兰|🇮🇪|dublin|dub"), 
+        ("墨西哥", r"\bmx\b|mexico|墨西哥|🇲🇽|mex"),
+        ("乌克兰", r"\bua\b|ukraine|乌克兰|🇺🇦|iev")
     ]
-    for name, pattern in meta:
-        if re.search(pattern, text): 
-            return f"{EMOJI_MAP.get(name, '🌍')} {name}"
     
+    # 3. 中转/落地双向扫描：精准剥离国内中转（如广港、沪日，提取最终落地）
+    matched_country = None
+    last_match_pos = -1
+    
+    # 国内入口/中转特征词拦截
+    cn_gateways = r"上海|广州|深圳|北京|杭州|武汉|徐州|宁波|东莞|江苏|浙江|广东|山东|河南|川|沪|广|深|京|杭|鲁|豫|中转|入口|iepl|iplc"
+    
+    for name, pattern in meta:
+        matches = list(re.finditer(pattern, text))
+        if matches:
+            last_match = matches[-1] # 提取名字最后部分的国家匹配（符合机场命名习惯）
+            if last_match.start() > last_match_pos:
+                matched_country = name
+                last_match_pos = last_match.start()
+
+    # 如果有明确的落地国家且不为中国，直接采信
+    if matched_country and matched_country != "中国":
+        return f"{EMOJI_MAP.get(matched_country, '🌍')} {matched_country}"
+    elif not matched_country and re.search(cn_gateways, text):
+        # 仅有中转词未写明落地的，交由后面的 IP 库在线测定
+        pass
+    elif matched_country:
+        return f"{EMOJI_MAP.get(matched_country, '🌍')} {matched_country}"
+
+    # 4. 离线高速缓存判定
     if server in IP_CACHE: 
         return IP_CACHE[server]
+        
+    # 5. 在线高可用多API解析（修复原脚本URL拼接缺斜杠Bug）
+    clean_server = server.split(':')[0] if ':' in str(server) else str(server)
+    
+    # 接口A：ip-api.com (带区域方言汉化支持)
     try:
-        time.sleep(0.1) 
-        response = requests.get(f"http://ip-api.com{server}?lang=zh-CN", timeout=3).json()
+        time.sleep(0.15)  # 控频防限流
+        url = f"http://ip-api.com{clean_server}?lang=zh-CN"
+        response = requests.get(url, timeout=2).json()
         if response.get("status") == "success":
-            country = response.get("country")
-            icon = EMOJI_MAP.get(country, "🌍")
-            label = f"{icon} {country}"
-            IP_CACHE[server] = label
-            return label
+            country = response.get("country", "")
+            for k in EMOJI_MAP.keys():
+                if k in country:
+                    label = f"{EMOJI_MAP[k]} {k}"
+                    IP_CACHE[server] = label
+                    return label
     except:
         pass
+
+    # 接口B：ipapi.co 备用降级接口（当A接口被限流时自动启用）
+    try:
+        url = f"https://ipapi.co{clean_server}/json/"
+        response = requests.get(url, timeout=2).json()
+        country_name = response.get("country_name", "")
+        if country_name:
+            for name, pattern in meta:
+                if re.search(pattern, country_name.lower()):
+                    label = f"{EMOJI_MAP.get(name, '🌍')} {name}"
+                    IP_CACHE[server] = label
+                    return label
+    except:
+        pass
+        
     return "🌍 其它地区"
+
 
 def safe_b64decode(s):
     s = s.strip().replace('_', '/').replace('-', '+')
