@@ -1,79 +1,79 @@
 proxies:
 - name: 🇭🇰香港 zmxooo01
   server: 202.146.222.41
-  type: ss
+  type: hysteria2
 - name: 🇭🇰香港 zmxooo02
   server: 202.146.222.13
-  type: ss
+  type: hysteria2
 - name: 🇭🇰香港 zmxooo03
   server: 202.146.222.93
-  type: ss
+  type: hysteria2
 - name: 🇭🇰香港 zmxooo04
   server: 202.146.222.89
-  type: ss
+  type: hysteria2
 - name: 🇭🇰香港 zmxooo05
   server: 202.146.222.11
-  type: ss
+  type: hysteria2
 - name: 🇭🇰香港 zmxooo06
   server: 202.146.222.45
-  type: ss
+  type: hysteria2
 - name: 🇭🇰香港 zmxooo07
   server: 202.146.222.5
-  type: ss
+  type: hysteria2
 - name: 🇭🇰香港 zmxooo08
   server: 202.146.222.1
-  type: ss
+  type: hysteria2
 - name: 🇭🇰香港 zmxooo09
   server: 202.146.222.15
-  type: ss
+  type: hysteria2
 - name: 🇹🇼台湾 zmxooo01
   server: 45.132.226.177
-  type: ss
+  type: hysteria2
 - name: 🇹🇼台湾 zmxooo02
   server: 45.132.226.161
-  type: ss
+  type: hysteria2
 - name: 🇹🇼台湾 zmxooo03
   server: 45.132.226.153
-  type: ss
+  type: hysteria2
 - name: 🇺🇸美国 zmxooo01
   server: 152.67.203.35
-  type: ss
+  type: vmess
 - name: 🇺🇸美国 zmxooo02
   server: 140.238.23.31
-  type: ss
+  type: vmess
 - name: 🇺🇸美国 zmxooo03
   server: 129.153.159.228
-  type: ss
+  type: vmess
 - name: 🇺🇸美国 zmxooo04
   server: 43.130.93.140
-  type: ss
+  type: vmess
 - name: 🇺🇸美国 zmxooo05
   server: 129.153.159.228
-  type: ss
+  type: vmess
 - name: 🇺🇸美国 zmxooo06
   server: 45.76.109.237
-  type: ss
+  type: vmess
 - name: 🇺🇸美国 zmxooo07
   server: 152.67.203.35
-  type: ss
+  type: vmess
 - name: 🇺🇸美国 zmxooo08
   server: 129.153.159.228
-  type: ss
+  type: vmess
 - name: 🇺🇸美国 zmxooo09
   server: 43.130.93.140
-  type: ss
+  type: vmess
 - name: 🇺🇸美国 zmxooo10
   server: 45.76.109.237
-  type: ss
+  type: vmess
 - name: 🇺🇸美国 zmxooo11
   server: 152.67.203.35
-  type: ss
+  type: vmess
 - name: 🇺🇸美国 zmxooo12
   server: 129.153.159.228
-  type: ss
+  type: vmess
 - name: 🇺🇸美国 zmxooo13
   server: 43.130.93.140
-  type: ss
+  type: vmess
 - name: 🇭🇰香港 zmxooo10
   server: 202.146.222.11
   type: ss
@@ -100,58 +100,58 @@ proxies:
   type: ss
 - name: 🇹🇼台湾 zmxooo04
   server: 45.132.226.137
-  type: ss
+  type: hysteria2
 - name: 🇹🇼台湾 zmxooo05
   server: 45.132.226.137
-  type: ss
+  type: https
 - name: 🇹🇼台湾 zmxooo06
   server: 45.132.226.169
-  type: ss
-- name: 🇩🇪德国 zmxooo01
+  type: hysteria2
+- name: 🌍其它 zmxooo01
   server: 194.48.118.142
-  type: ss
-- name: 🇩🇪德国 zmxooo02
+  type: vmess
+- name: 🌍其它 zmxooo02
   server: 194.48.118.180
-  type: ss
-- name: 🇩🇪德国 zmxooo03
+  type: vmess
+- name: 🌍其它 zmxooo03
   server: 194.48.118.56
-  type: ss
-- name: 🇩🇪德国 zmxooo04
+  type: vmess
+- name: 🌍其它 zmxooo04
   server: 194.48.118.58
-  type: ss
+  type: vmess
 - name: 🇹🇼台湾 zmxooo07
   server: 45.132.226.137
   type: ss
 - name: 🇬🇧英国 zmxooo01
   server: 193.187.118.66
-  type: ss
+  type: trojan
 - name: 🇬🇧英国 zmxooo02
   server: 193.187.118.172
-  type: ss
+  type: trojan
 - name: 🇬🇧英国 zmxooo03
   server: 193.187.118.42
-  type: ss
+  type: trojan
 - name: 🇬🇧英国 zmxooo04
   server: 193.187.118.157
-  type: ss
+  type: trojan
 - name: 🇬🇧英国 zmxooo05
   server: 193.187.118.125
-  type: ss
+  type: trojan
 - name: 🇬🇧英国 zmxooo06
   server: 193.187.118.151
-  type: ss
-- name: 🌍其它 zmxooo01
+  type: trojan
+- name: 🌍其它 zmxooo05
   server: 82.198.246.93
-  type: ss
-- name: 🌍其它 zmxooo02
+  type: vmess
+- name: 🌍其它 zmxooo06
   server: 82.198.246.93
-  type: ss
-- name: 🌍其它 zmxooo03
+  type: vmess
+- name: 🌍其它 zmxooo07
   server: 82.198.246.37
-  type: ss
-- name: 🌍其它 zmxooo04
+  type: vmess
+- name: 🌍其它 zmxooo08
   server: 82.198.246.9
-  type: ss
+  type: vmess
 - name: 🇹🇼台湾 zmxooo08
   server: 45.132.226.177
   type: ss
@@ -163,22 +163,22 @@ proxies:
   type: ss
 - name: 🇬🇧英国 zmxooo07
   server: 193.187.118.66
-  type: ss
-- name: 🌍其它 zmxooo05
-  server: 82.198.246.93
-  type: ss
-- name: 🌍其它 zmxooo06
-  server: 82.198.246.9
-  type: ss
-- name: 🌍其它 zmxooo07
-  server: 82.198.246.37
-  type: ss
-- name: 🌍其它 zmxooo08
-  server: 82.198.246.9
-  type: ss
+  type: trojan
 - name: 🌍其它 zmxooo09
+  server: 82.198.246.93
+  type: vmess
+- name: 🌍其它 zmxooo10
+  server: 82.198.246.9
+  type: vmess
+- name: 🌍其它 zmxooo11
   server: 82.198.246.37
-  type: ss
+  type: vmess
+- name: 🌍其它 zmxooo12
+  server: 82.198.246.9
+  type: vmess
+- name: 🌍其它 zmxooo13
+  server: 82.198.246.37
+  type: vmess
 - name: 🇹🇼台湾 zmxooo11
   server: 45.132.226.169
   type: ss
