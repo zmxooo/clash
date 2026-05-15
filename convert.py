@@ -14,6 +14,10 @@ FIXED_SUFFIX = "zmxooo"
 IP_CACHE_FILE = "ip_cache.json"
 MAX_WORKERS = 10  # 并发线程数
 
+# 同步的目标文件定义
+INDEX_FILE = "index.html"
+CONFIG_FILE = "config.yaml"
+
 RULES = [
     ("香港", r"HK|HONGKONG|香港|廣港|CMI|HKT|PCCW|HGC|WTT"),
     ("台湾", r"TW|TAIWAN|台湾|台灣|彰化|台北|CHT"),
@@ -63,14 +67,12 @@ def fetch_ip_api(server):
     if server.endswith('.tw'): return server, "台湾"
     if server.endswith('.jp'): return server, "日本"
     
-    # 检测是否为 IP 地址，若非 IP 且无后缀，跳过 API 规避限流
     if not re.match(r"^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$", server) and "." in server:
         return server, "其它"
 
     try:
-        # 限流保护：请求间硬性等待 1.3 秒
-        time.sleep(1.3)
-        url = f"http://ip-api.com/json/{server}?lang=zh-CN"
+        time.sleep(1.3) # 强控频，规避 API 限流
+        url = f"http://ip-api.com{server}?lang=zh-CN"
         r = requests.get(url, timeout=4).json()
         if r.get("status") == "success":
             country = r.get("country", "")
@@ -104,7 +106,7 @@ def process_node_region(link):
 
 def main():
     if not os.path.exists('nodes.txt'):
-        print("未找到 nodes.txt 输入文件")
+        print("未找到 nodes.txt，无法执行同步更新。")
         return
 
     with open('nodes.txt', 'r', encoding='utf-8', errors='ignore') as f:
@@ -122,21 +124,22 @@ def main():
                 api_query_servers.add(res[2])
 
     if api_query_servers:
-        print(r"正在通过 API 识别未匹配节点的地理位置...")
-        with ThreadPoolExecutor(max_workers=1) as api_executor: # 降为单线程强控频
+        with ThreadPoolExecutor(max_workers=1) as api_executor: 
             api_futures = [api_executor.submit(fetch_ip_api, srv) for srv in api_query_servers]
             for fut in as_completed(api_futures):
                 srv, reg = fut.result()
                 IP_CACHE[srv] = reg
         
-        # 写入持久化 IP 缓存文件
-        with open(IP_CACHE_FILE, 'w', encoding='utf-8') as f:
-            json.dump(IP_CACHE, f, ensure_ascii=False, indent=2)
+        try:
+            with open(IP_CACHE_FILE, 'w', encoding='utf-8') as f:
+                json.dump(IP_CACHE, f, ensure_ascii=False, indent=2)
+        except: 
+            pass
 
     classified_nodes = defaultdict(list)
     for link, region, host, raw_rem in first_stage_results:
         if region == "NEED_API":
-            region = IP_CACHE.get(host, "其它")
+            region = IP_CACHE.get(host, "官方/其它")
         classified_nodes[region].append(link)
 
     final_links, clash_proxies = [], []
@@ -208,24 +211,42 @@ def main():
                             if ":" in dec_user:
                                 p["cipher"], p["password"] = dec_user.split(':', 1)
                                 clash_proxies.append(p)
-                                # 重新组合通用格式的链接
                                 final_links.append(f"ss://{user_info}@{p['server']}:{p['port']}#{urllib.parse.quote(new_name)}")
                         except:
                             pass
-            except Exception as e:
-                print(f"处理节点出错 {new_name}: {e}")
+            except:
+                pass
 
-    # 步骤 5：持久化导出结果
+    # --- 核心同步落地修复 ---
+    
+    # 1. 覆盖同步 index.html (通用格式节点列表)
     if final_links:
-        with open('output_links.txt', 'w', encoding='utf-8') as f:
+        with open(INDEX_FILE, 'w', encoding='utf-8') as f:
             f.write("\n".join(final_links))
-        print("通用节点格式已导出至: output_links.txt")
+        print(f"成功同步更新：{INDEX_FILE} (共 {len(final_links)} 个节点)")
+    else:
+        print(f"警告：未生成任何通用链接，{INDEX_FILE} 未被修改。")
 
+    # 2. 覆盖同步 config.yaml (Clash 代理配置列表)
     if clash_proxies:
-        clash_config = {"proxies": clash_proxies}
-        with open('clash_proxies.yaml', 'w', encoding='utf-8') as f:
-            yaml.dump(clash_config, f, allow_unicode=True, sort_keys=False)
-        print("Clash 配置格式已导出至: clash_proxies.yaml")
+        try:
+            # 读取原有 config.yaml（用于保留原本的 Rule, Proxy Provider 等策略组外围框架）
+            if os.path.exists(CONFIG_FILE):
+                with open(CONFIG_FILE, 'r', encoding='utf-8') as f:
+                    base_config = yaml.safe_load(f) or {}
+            else:
+                base_config = {}
+                
+            # 无论原本框架如何，直接用新转换的 proxies 列表替换掉老数据
+            base_config["proxies"] = clash_proxies
+            
+            with open(CONFIG_FILE, 'w', encoding='utf-8') as f:
+                yaml.dump(base_config, f, allow_unicode=True, sort_keys=False)
+            print(f"成功同步更新：{CONFIG_FILE} (共 {len(clash_proxies)} 个 Clash 节点)")
+        except Exception as e:
+            print(f"同步更新 {CONFIG_FILE} 失败，错误原因: {e}")
+    else:
+        print(f"警告：未生成任何 Clash 节点，{CONFIG_FILE} 未被修改。")
 
 if __name__ == '__main__':
     main()
