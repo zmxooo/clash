@@ -14,53 +14,74 @@ MAX_WORKERS = 40
 TIMEOUT = 4
 
 def download_mihomo_core():
-    """安全下载器：加入浏览器头伪装与双渠道保障，纯Python实现，拒绝使用系统命令行"""
+    """使用多冗余全球镜像镜像源 + 浏览器头混淆，彻底刺穿 GitHub Action 官方直连下载阻断"""
     core_path = "./mihomo"
     if os.path.exists(core_path):
         return core_path
     
-    print("正在从 GitHub 官方下载轻量级测速内核...")
-    url = "https://github.com"
+    print("正在通过全球高可用加速镜像源加载轻量级测速内核...")
+    
+    # 构建高弹性的冗余镜像链条（当主官方链接人机拦截时，自动无缝轮询高速 CDN 集群）
+    urls = [
+        "https://ghproxy.com",
+        "https://ghfast.top",
+        "https://github.com"
+    ]
     
     headers = {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
     }
     
-    try:
-        req = urllib.request.Request(url, headers=headers)
-        with urllib.request.urlopen(req, timeout=15) as response:
-            with open("mihomo.gz", "wb") as f_out:
-                shutil.copyfileobj(response, f_out)
-        
-        if os.path.exists("mihomo.gz") and os.path.getsize("mihomo.gz") < 1000:
-            raise ValueError("流文件长度异常，疑似拦截")
-
-        with gzip.open("mihomo.gz", "rb") as f_in:
-            with open(core_path, "wb") as f_out:
-                shutil.copyfileobj(f_in, f_out)
-                
-        os.chmod(core_path, 0o755)
-        if os.path.exists("mihomo.gz"): 
-            os.remove("mihomo.gz")
-        print("内核下载并流式解压成功！")
-        return core_path
-    except Exception as e:
-        print(f"主通道报错: {e}，正在切入系统级安全备用通道...")
+    success = False
+    for url in urls:
         try:
-            if os.path.exists("mihomo.gz"): 
-                os.remove("mihomo.gz")
-            subprocess.run(["curl", "-L", "-A", "Mozilla/5.0", "-o", "mihomo.gz", url], check=True)
+            if os.path.exists("mihomo.gz"): os.remove("mihomo.gz")
+            print(f"正在尝试拉取通道: {url}")
+            
+            # 使用原生 urllib 注入伪装头
+            req = urllib.request.Request(url, headers=headers)
+            with urllib.request.urlopen(req, timeout=20) as response:
+                with open("mihomo.gz", "wb") as f_out:
+                    shutil.copyfileobj(response, f_out)
+            
+            # 严格拦截校验：小于 1MB (1000000 字节) 的文件绝对是拦截网页或干扰空文本，直接抛出异常切入下一条镜像
+            if os.path.exists("mihomo.gz") and os.path.getsize("mihomo.gz") < 1000000:
+                raise ValueError("抓取到人机验证拦截页面，并非有效二进制流")
+                
+            # 3. 通过原生标准流式解压
             with gzip.open("mihomo.gz", "rb") as f_in:
                 with open(core_path, "wb") as f_out:
                     shutil.copyfileobj(f_in, f_out)
+            
             os.chmod(core_path, 0o755)
-            if os.path.exists("mihomo.gz"): 
-                os.remove("mihomo.gz")
-            print("备用系统安全通道成功加载核心！")
+            if os.path.exists("mihomo.gz"): os.remove("mihomo.gz")
+            print("🎉 恭喜！内核已通过高速分发集群全自动加载成功！")
+            success = True
             return core_path
-        except Exception as backup_err:
-            print(f"致命缺陷：双通道全量崩溃: {backup_err}")
-            sys.exit(1)
+        except Exception as err:
+            print(f"当前节点加载失败: {err}，正在自动挂载后备节点...")
+            continue
+            
+    if not success:
+        print("警告：全量网络库管道被阻断，正在激活最终系统级网络穿透卷轴 (curl-tunnel)...")
+        for url in urls:
+            try:
+                if os.path.exists("mihomo.gz"): os.remove("mihomo.gz")
+                # -L 自动追踪重定向，-A 伪装浏览器，--retry 失败重试
+                subprocess.run(["curl", "-L", "-A", "Mozilla/5.0", "--retry", "2", "-o", "mihomo.gz", url], check=True)
+                if os.path.exists("mihomo.gz") and os.path.getsize("mihomo.gz") > 1000000:
+                    with gzip.open("mihomo.gz", "rb") as f_in:
+                        with open(core_path, "wb") as f_out:
+                            shutil.copyfileobj(f_in, f_out)
+                    os.chmod(core_path, 0o755)
+                    if os.path.exists("mihomo.gz"): os.remove("mihomo.gz")
+                    print("🎉 终极系统穿透管道加载核心成功！")
+                    return core_path
+            except:
+                continue
+                
+        print("致命缺陷：全球加速镜像集群与虚拟机级本地 curl 管道已被环境死锁，请检查网络权限。")
+        sys.exit(1)
 
 def run_test_on_single_node(node_index, node_name, local_socks_port):
     """探针：并发捕获100%精准的底层物理出口位置"""
@@ -128,7 +149,6 @@ def start_speedtest_pipeline(valid_proxies):
     print(f"开始并行测速校准（最大线程数: {MAX_WORKERS}）...")
     results = {}
     
-    # 核心修复：重构为标准严谨的传统 4 行线程池写法，规避简写引发的 SyntaxError
     with ThreadPoolExecutor(max_workers=MAX_WORKERS) as executor:
         futures = []
         for idx, p in enumerate(valid_proxies):
