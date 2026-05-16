@@ -20,15 +20,13 @@ jobs:
       - name: 安装必要插件
         run: pip install pyyaml requests
 
-      # 🟢 就在这里切入系统级强制注入，直接下载 100% 纯正的 Linux 64位二进制程序并强行授权
+      # 🟢 核心加固：直接在虚拟机系统层彻底粉碎网页端的旧残留，用官方最新直链强行注入纯正的 Linux-64位二进制程序
       - name: 强制注入测速内核
         run: |
           rm -f ./mihomo
-          curl -L -k -A "Mozilla/5.0" -o ./mihomo "https://ghproxy.com"
+          curl -L -k -A "Mozilla/5.0 (Windows NT 10.0; Win64; x64)" -o ./mihomo "https://github.com"
           chmod +x ./mihomo
 
-      - name: 运行转换脚本
-        run: python convert.py
       - name: 运行转换脚本
         run: python convert.py
 
@@ -36,13 +34,7 @@ jobs:
         run: |
           git config --local user.email "actions@github.com"
           git config --local user.name "GitHub Action"
-          
-          # 同时追踪两个输出文件
           git add config.yaml index.html
-          
-          # 动态时间戳防止 Git 因无变更而终止
           git commit -m "自动刷新全协议配置系统 (时间: $(date +'%Y-%m-%d %H:%M:%S'))" || true
-          
-          # 先变基解决并发冲突，再推送到主干
           git pull --rebase origin main || true
           git push origin main
