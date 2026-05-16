@@ -422,15 +422,15 @@ def main():
             ]
         }
         
-# 1. 写入 config.yaml
+        # 1. 写入 config.yaml
         with open("config.yaml", "w", encoding="utf-8") as f:
             yaml.dump(clash_config, f, allow_unicode=True, sort_keys=False)
-            
-        # 2. 同步写入 index.html (确保与上面的 with 对齐)
+
+        # 2. 同步写入 index.html (确保缩进与上面的 with 垂直对齐)
         update_time = time.strftime("%Y-%m-%d %H:%M:%S")
         html_content = f"""
         <html>
-        <head><meta charset="utf-8"><title>同步看板</title></head>
+        <head><meta charset="utf-8"><title>订阅同步看板</title></head>
         <body style="font-family:sans-serif; padding:20px;">
             <h2>🚀 订阅同步状态：已就绪</h2>
             <p>最后运行时间: {update_time}</p>
@@ -442,11 +442,11 @@ def main():
         """
         with open("index.html", "w", encoding="utf-8") as f:
             f.write(html_content)
-            
+
         print(f"✨ 强同步完成：config.yaml 与 index.html 已同时刷新")
 
     else:
-        # 当节点为空时的清空逻辑
+        # 当 nodes.txt 为空或解析失败时的兜底逻辑
         with open("config.yaml", "w", encoding="utf-8") as f:
             yaml.dump({"mixed-port": 7890, "proxies": [], "proxy-groups": [{"name": "🚀 节点选择", "type": "select", "proxies": ["DIRECT"]}], "rules": ["MATCH,DIRECT"]}, f, allow_unicode=True)
         with open("index.html", "w", encoding="utf-8") as f:
