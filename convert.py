@@ -422,18 +422,15 @@ def main():
             ]
         }
         
-# 1. 写入 config.yaml (原有逻辑)
+# 1. 写入 config.yaml
         with open("config.yaml", "w", encoding="utf-8") as f:
             yaml.dump(clash_config, f, allow_unicode=True, sort_keys=False)
             
-        # 2. 【核心新增】立即同步刷新 index.html
-        # 只要 convert.py 被运行，无论节点变没变，这里都会生成最新时间戳
+        # 2. 同步写入 index.html (紧随其后，不加 else)
         update_time = time.strftime("%Y-%m-%d %H:%M:%S")
-        
-        # 构造简单的网页内容（你可以根据需要美化）
         html_content = f"""
         <html>
-        <head><meta charset="utf-8"><title>更新同步看板</title></head>
+        <head><meta charset="utf-8"><title>同步看板</title></head>
         <body style="font-family:sans-serif; padding:20px;">
             <h2>🚀 订阅同步状态：已就绪</h2>
             <p>最后运行时间: {update_time}</p>
@@ -443,17 +440,21 @@ def main():
         </body>
         </html>
         """
-        
         with open("index.html", "w", encoding="utf-8") as f:
             f.write(html_content)
             
-        print(f"✨ 强同步完成：config.yaml 与 index.html 已同时刷新于 {update_time}")
-            
-        print("config.yaml 更新成功（已完美植入客户端动态出口自对齐机制）")
+        print(f"✨ 强同步完成：config.yaml 与 index.html 已于 {update_time} 同时更新")
+
     else:
-        # 提供一个最基础的有效 Clash 文件，防止报错
+        # 当 nodes.txt 为空时的清空逻辑 (对应 if clash_proxies:)
         with open("config.yaml", "w", encoding="utf-8") as f:
-            yaml.dump({"mixed-port": 7890, "proxies": [], "proxy-groups": [{"name": "🚀 节点选择", "type": "select", "proxies": ["DIRECT"]}], "rules": ["MATCH,🚀 节点选择"]}, f, allow_unicode=True)
+            yaml.dump({"mixed-port": 7890, "proxies": [], "proxy-groups": [{"name": "🚀 节点选择", "type": "select", "proxies": ["DIRECT"]}], "rules": ["MATCH,DIRECT"]}, f, allow_unicode=True)
+        with open("index.html", "w", encoding="utf-8") as f:
+            f.write("<html><body><h2>⚠ 当前无可用节点</h2></body></html>")
+        print("⚠ 节点列表为空，已同步重置文件状态")
+
+if __name__ == "__main__":
+    main()
         print("⚠ 未发现满足导入条件的 Clash 节点")
 if __name__ == "__main__":
     main()
