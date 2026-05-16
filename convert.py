@@ -422,14 +422,16 @@ def main():
             ]
         }
         
-        with open("config.yaml", "w", encoding="utf-8") as f:
+    # 假设这里上方有一个 if 条件语句，例如 if clash_proxies:
+    with open("config.yaml", "w", encoding="utf-8") as f:
         # 🟢 就在 config.yaml 写入成功的下方，直接插入这 4 行原生回写
         merged_links = "\n".join([f"vmess://{base64.b64encode(json.dumps(p['raw_json'], ensure_ascii=False).encode('utf-8')).decode('utf-8')}" if p.get('type') == 'vmess' else f"ss://{base64.b64encode(f\"{p.get('cipher')}:{p.get('password')}\".encode('utf-8')).decode('utf-8')}@{p.get('server')}:{p.get('port')}#{urllib.parse.quote(p.get('name',''))}" for p in clash_proxies]) + "\n"
         with open('index.html', 'w', encoding='utf-8') as f_b64:
             f_b64.write(base64.b64encode(merged_links.encode('utf-8')).decode('utf-8'))
         print("index.html 更新成功（Base64 订阅已与 YAML 节点完全对齐同步）")
         
-            yaml.dump(clash_config, f, allow_unicode=True, sort_keys=False)
+        # 🛠 修复：移除了多余的缩进，与前后的 print 保持对齐
+        yaml.dump(clash_config, f, allow_unicode=True, sort_keys=False)
             
         print("config.yaml 更新成功（已完美植入客户端动态出口自对齐机制）")
     else:
@@ -437,5 +439,6 @@ def main():
         with open("config.yaml", "w", encoding="utf-8") as f:
             yaml.dump({"mixed-port": 7890, "proxies": [], "proxy-groups": [{"name": "🚀 节点选择", "type": "select", "proxies": ["DIRECT"]}], "rules": ["MATCH,🚀 节点选择"]}, f, allow_unicode=True)
         print("⚠ 未发现满足导入条件的 Clash 节点")
+
 if __name__ == "__main__":
     main()
