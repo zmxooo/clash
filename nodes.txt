@@ -51,3 +51,14 @@ vmess://eyJhZGQiOiAiODIuMTk4LjI0Ni4yMTQiLCAiYWlkIjogIjAiLCAiYWxwbiI6ICIiLCAiZnAi
 vmess://eyJhZGQiOiAiODIuMTk4LjI0Ni4yMzMiLCAiYWlkIjogIjAiLCAiYWxwbiI6ICIiLCAiZnAiOiAiIiwgImhvc3QiOiAiIiwgImlkIjogImQxM2ZjMmY1LTNlMDUtNDc5NS04MWViLTQ0MTQzYTA5ZTU1MiIsICJuZXQiOiAidGNwIiwgInBhdGgiOiAiIiwgInBvcnQiOiAiMTgwIiwgInBzIjogIlx1OGQ4YVx1NTM1NyIsICJzY3kiOiAiYXV0byIsICJzbmkiOiAiIiwgInRscyI6ICIiLCAidHlwZSI6ICIiLCAidiI6ICIyIn0=#越南
 hysteria://5.83.129.90:54177/?insecure=1&peer=apple.com&auth=dongtaiwang.com&upmbps=500&downmbps=1000&alpn=h3#德国
 vmess://eyJhZGQiOiAiODIuMTk4LjI0Ni45IiwgImFpZCI6ICIwIiwgImFscG4iOiAiIiwgImZwIjogIiIsICJob3N0IjogIiIsICJpZCI6ICJkMTNmYzJmNS0zZTA1LTQ3OTUtODFlYi00NDE0M2EwOWU1NTIiLCAibmV0IjogInRjcCIsICJwYXRoIjogIiIsICJwb3J0IjogIjE4MCIsICJwcyI6ICJcdTk3ZTlcdTU2ZmQiLCAic2N5IjogImF1dG8iLCAic25pIjogIiIsICJ0bHMiOiAiIiwgInR5cGUiOiAiIiwgInYiOiAiMiJ9#韩国
+vless://73bcd72f-9545-4cb8-8daf-7d004501880d@172.105.194.182:74?type=ws&encryption=none&host=dcsrzh.ccwu.cc&path=%2F%3Fed%3D2560&security=tls&sni=dcsrzh.ccwu.cc&allowInsecure=1#日本
+vless://73bcd72f-9545-4cb8-8daf-7d004501880d@83.229.126.127:32237?type=ws&encryption=none&host=dcsrzh.ccwu.cc&path=%2F%3Fed%3D2560&security=tls&sni=dcsrzh.ccwu.cc&allowInsecure=1#香港
+hy2://qQe1z5kU8kN6SlKnDt9Ru3Qp@13.201.41.222:443?insecure=1&sni=13.201.41.222#印度
+hy2://qQe1z5kU8kN6SlKnDt9Ru3Qp@43.205.254.42:443?insecure=1&sni=43.205.254.42#印度
+hy2://qQe1z5kU8kN6SlKnDt9Ru3Qp@43.205.231.160:443?insecure=1&sni=43.205.231.160#印度
+hy2://qQe1z5kU8kN6SlKnDt9Ru3Qp@43.205.214.214:443?insecure=1&sni=43.205.214.214#印度
+hy2://qQe1z5kU8kN6SlKnDt9Ru3Qp@54.169.215.241:443?insecure=1&sni=54.169.215.241#新加坡
+hy2://qQe1z5kU8kN6SlKnDt9Ru3Qp@18.143.102.14:443?insecure=1&sni=18.143.102.14#新加坡
+hy2://qQe1z5kU8kN6SlKnDt9Ru3Qp@13.250.58.52:443?insecure=1&sni=13.250.58.52#新加坡
+hy2://qQe1z5kU8kN6SlKnDt9Ru3Qp@47.128.219.180:443?insecure=1&sni=47.128.219.180#新加坡
+hysteria2://qQe1z5kU8kN6SlKnDt9Ru3Qp@160.187.100.109:443?insecure=1&sni=160.187.100.109#台湾
