@@ -20,14 +20,13 @@ def download_mihomo_core():
         return core_path
     
     print("正在从 GitHub 官方下载轻量级测速内核...")
-    url = "https://github.com/MetaCubeX/mihomo/releases/download/v1.18.9/mihomo-linux-amd64-v1.18.9.gz"
+    url = "https://github.com"
     
     headers = {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
     }
     
     try:
-        # 管道一：通过原生网络库模拟浏览器下载
         req = urllib.request.Request(url, headers=headers)
         with urllib.request.urlopen(req, timeout=15) as response:
             with open("mihomo.gz", "wb") as f_out:
@@ -36,7 +35,6 @@ def download_mihomo_core():
         if os.path.exists("mihomo.gz") and os.path.getsize("mihomo.gz") < 1000:
             raise ValueError("流文件长度异常，疑似拦截")
 
-        # 核心解压：纯解压数据流，安全写入目标，不发生任何文件名匹配错误
         with gzip.open("mihomo.gz", "rb") as f_in:
             with open(core_path, "wb") as f_out:
                 shutil.copyfileobj(f_in, f_out)
@@ -48,7 +46,6 @@ def download_mihomo_core():
         return core_path
     except Exception as e:
         print(f"主通道报错: {e}，正在切入系统级安全备用通道...")
-        # 管道二：当网络库阻断时，全自动无缝唤醒环境内置的系统级 curl
         try:
             if os.path.exists("mihomo.gz"): 
                 os.remove("mihomo.gz")
@@ -62,7 +59,7 @@ def download_mihomo_core():
             print("备用系统安全通道成功加载核心！")
             return core_path
         except Exception as backup_err:
-            print(f"致命缺陷：双通道全量崩溃，请检查 GitHub 虚拟机的外部网络连接: {backup_err}")
+            print(f"致命缺陷：双通道全量崩溃: {backup_err}")
             sys.exit(1)
 
 def run_test_on_single_node(node_index, node_name, local_socks_port):
@@ -130,6 +127,37 @@ def start_speedtest_pipeline(valid_proxies):
     
     print(f"开始并行测速校准（最大线程数: {MAX_WORKERS}）...")
     results = {}
+    
+    # 核心修复：重构为标准严谨的传统 4 行线程池写法，规避简写引发的 SyntaxError
     with ThreadPoolExecutor(max_workers=MAX_WORKERS) as executor:
-        futures = [executor.submit(run_test_on_single_node, idx, p.get("name", f"Node_{idx}"), base_port + idx) for idx, p in enumerate(valid_proxies)]
-        for future in 
+        futures = []
+        for idx, p in enumerate(valid_proxies):
+            task = executor.submit(run_test_on_single_node, idx, p.get("name", f"Node_{idx}"), base_port + idx)
+            futures.append(task)
+            
+        for future in futures:
+            idx, label = future.result()
+            if label:
+                results[idx] = label
+                
+    proc.terminate()
+    try:
+        proc.wait(timeout=2)
+    except subprocess.TimeoutExpired:
+        proc.kill()
+        
+    if os.path.exists("speedtest_clash.yaml"): 
+        os.remove("speedtest_clash.yaml")
+    
+    final_proxies = []
+    for idx, p in enumerate(valid_proxies):
+        if idx in results:
+            real_label = results[idx]
+            clean_num = re.sub(r'[^0-9]', '', p.get("name", ""))
+            p["name"] = f"{real_label} {clean_num if clean_num else idx} @zmxooo"
+            
+            if "label" in p: del p["label"]
+            if "raw_json" in p: del p["raw_json"]
+            final_proxies.append(p)
+            
+    return final_proxies
