@@ -471,6 +471,41 @@ proxies:
   password: qQe1z5kU8kN6SlKnDt9Ru3Qp
   sni: 47.128.219.180
   skip-cert-verify: true
+- name: 🇯🇵 日本 09 @zmxooo
+  type: hysteria2
+  server: 3.112.239.167
+  port: 443
+  password: qQe1z5kU8kN6SlKnDt9Ru3Qp
+  sni: https://t.me/zmxooo🇨🇳
+  skip-cert-verify: true
+- name: 🇯🇵 日本 10 @zmxooo
+  type: hysteria2
+  server: 13.112.138.56
+  port: 443
+  password: qQe1z5kU8kN6SlKnDt9Ru3Qp
+  sni: https://t.me/zmxooo🇨🇳
+  skip-cert-verify: true
+- name: 🇯🇵 日本 11 @zmxooo
+  type: hysteria2
+  server: 13.115.3.140
+  port: 443
+  password: qQe1z5kU8kN6SlKnDt9Ru3Qp
+  sni: https://t.me/zmxooo🇨🇳
+  skip-cert-verify: true
+- name: 🇯🇵 日本 12 @zmxooo
+  type: hysteria2
+  server: 13.231.21.110
+  port: 443
+  password: qQe1z5kU8kN6SlKnDt9Ru3Qp
+  sni: https://t.me/zmxooo🇨🇳
+  skip-cert-verify: true
+- name: 🇯🇵 日本 13 @zmxooo
+  type: hysteria2
+  server: 13.231.162.174
+  port: 443
+  password: qQe1z5kU8kN6SlKnDt9Ru3Qp
+  sni: https://t.me/zmxooo🇨🇳
+  skip-cert-verify: true
 proxy-groups:
 - name: 🚀 节点选择
   type: select
@@ -553,6 +588,11 @@ proxy-groups:
   - 🇸🇬 新加坡 10 @zmxooo
   - 🇸🇬 新加坡 11 @zmxooo
   - 🇸🇬 新加坡 12 @zmxooo
+  - 🇯🇵 日本 09 @zmxooo
+  - 🇯🇵 日本 10 @zmxooo
+  - 🇯🇵 日本 11 @zmxooo
+  - 🇯🇵 日本 12 @zmxooo
+  - 🇯🇵 日本 13 @zmxooo
 - name: 🎯 手动选择
   type: select
   proxies:
@@ -617,6 +657,11 @@ proxy-groups:
   - 🇸🇬 新加坡 10 @zmxooo
   - 🇸🇬 新加坡 11 @zmxooo
   - 🇸🇬 新加坡 12 @zmxooo
+  - 🇯🇵 日本 09 @zmxooo
+  - 🇯🇵 日本 10 @zmxooo
+  - 🇯🇵 日本 11 @zmxooo
+  - 🇯🇵 日本 12 @zmxooo
+  - 🇯🇵 日本 13 @zmxooo
 - name: 🇭🇰 香港
   type: url-test
   url: http://www.gstatic.com/generate_204
@@ -701,6 +746,11 @@ proxy-groups:
   - 🇯🇵 日本 06 @zmxooo
   - 🇯🇵 日本 07 @zmxooo
   - 🇯🇵 日本 08 @zmxooo
+  - 🇯🇵 日本 09 @zmxooo
+  - 🇯🇵 日本 10 @zmxooo
+  - 🇯🇵 日本 11 @zmxooo
+  - 🇯🇵 日本 12 @zmxooo
+  - 🇯🇵 日本 13 @zmxooo
 - name: 🇺🇸 美国
   type: url-test
   url: http://www.gstatic.com/generate_204
