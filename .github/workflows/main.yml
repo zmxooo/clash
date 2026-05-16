@@ -17,6 +17,12 @@ jobs:
         with:
           python-version: '3.10'
 
+      # 🟢 核心修复：直接使用 GitHub 官方认可的 Ubuntu APT 系统包管理器，一枪封喉，100% 杜绝人机拦截
+      - name: 部署系统级高可用测速核心
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y clash
+
       - name: 安装必要插件
         run: pip install pyyaml requests
 
