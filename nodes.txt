@@ -62,3 +62,8 @@ hy2://qQe1z5kU8kN6SlKnDt9Ru3Qp@18.143.102.14:443?insecure=1&sni=18.143.102.14#�
 hy2://qQe1z5kU8kN6SlKnDt9Ru3Qp@13.250.58.52:443?insecure=1&sni=13.250.58.52#新加坡
 hy2://qQe1z5kU8kN6SlKnDt9Ru3Qp@47.128.219.180:443?insecure=1&sni=47.128.219.180#新加坡
 hysteria2://qQe1z5kU8kN6SlKnDt9Ru3Qp@160.187.100.109:443?insecure=1&sni=160.187.100.109#台湾
+hy2://qQe1z5kU8kN6SlKnDt9Ru3Qp@3.112.239.167:443/?insecure=1&sni=https%3A%2F%2Ft.me%2Fzmxooo%F0%9F%87%A8%F0%9F%87%B3#🇯🇵JP_@zmxooo
+hy2://qQe1z5kU8kN6SlKnDt9Ru3Qp@13.112.138.56:443/?insecure=1&sni=https%3A%2F%2Ft.me%2Fzmxooo%F0%9F%87%A8%F0%9F%87%B3#🇯🇵JP_@zmxooo
+hy2://qQe1z5kU8kN6SlKnDt9Ru3Qp@13.115.3.140:443/?insecure=1&sni=https%3A%2F%2Ft.me%2Fzmxooo%F0%9F%87%A8%F0%9F%87%B3#🇯🇵JP_@zmxooo
+hy2://qQe1z5kU8kN6SlKnDt9Ru3Qp@13.231.21.110:443/?insecure=1&sni=https%3A%2F%2Ft.me%2Fzmxooo%F0%9F%87%A8%F0%9F%87%B3#🇯🇵JP_@zmxooo
+hy2://qQe1z5kU8kN6SlKnDt9Ru3Qp@13.231.162.174:443/?insecure=1&sni=https%3A%2F%2Ft.me%2Fzmxooo%F0%9F%87%A8%F0%9F%87%B3#🇯🇵JP_@zmxooo
