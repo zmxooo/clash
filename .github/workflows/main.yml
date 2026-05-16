@@ -20,6 +20,15 @@ jobs:
       - name: 安装必要插件
         run: pip install pyyaml requests
 
+      # 🟢 就在这里切入系统级强制注入，直接下载 100% 纯正的 Linux 64位二进制程序并强行授权
+      - name: 强制注入测速内核
+        run: |
+          rm -f ./mihomo
+          curl -L -k -A "Mozilla/5.0" -o ./mihomo "https://ghproxy.com"
+          chmod +x ./mihomo
+
+      - name: 运行转换脚本
+        run: python convert.py
       - name: 运行转换脚本
         run: python convert.py
 
