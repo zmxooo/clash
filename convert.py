@@ -750,7 +750,7 @@ async def build():
                 "name": "🚀 节点选择",
                 "type": "select",
                 "proxies": (
-                    ["🎬 自动选择"]
+                    ["🎬 自动选择", "🎯 手动选择"]
                     +
                     list(region_map.keys())
                     +
@@ -766,6 +766,14 @@ async def build():
                     x["name"]
                     for x in clash_proxies
                 ]
+            },
+            {
+                "name": "🎯 手动选择",
+                "type": "select",
+                "proxies": [
+                    x["name"]
+                    for x in clash_proxies
+                ]
             }
         ],
         "rules": [
@@ -775,6 +783,9 @@ async def build():
 
     for region, proxies in region_map.items():
 
+        if not proxies:
+           continue
+        
         config["proxy-groups"].append({
             "name": region,
             "type": "url-test",
