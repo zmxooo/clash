@@ -387,6 +387,90 @@ proxies:
   network: tcp
   tls: false
   skip-cert-verify: true
+- name: 🇯🇵 日本 08 @zmxooo
+  type: vless
+  server: 172.105.194.182
+  port: 74
+  uuid: 73bcd72f-9545-4cb8-8daf-7d004501880d
+  network: ws
+  tls: true
+  servername: dcsrzh.ccwu.cc
+  client-fingerprint: chrome
+  skip-cert-verify: true
+  ws-opts:
+    path: /?ed=2560
+    headers:
+      Host: dcsrzh.ccwu.cc
+- name: 🇭🇰 香港 16 @zmxooo
+  type: vless
+  server: 83.229.126.127
+  port: 32237
+  uuid: 73bcd72f-9545-4cb8-8daf-7d004501880d
+  network: ws
+  tls: true
+  servername: dcsrzh.ccwu.cc
+  client-fingerprint: chrome
+  skip-cert-verify: true
+  ws-opts:
+    path: /?ed=2560
+    headers:
+      Host: dcsrzh.ccwu.cc
+- name: 🇮🇳 印度 01 @zmxooo
+  type: hysteria2
+  server: 13.201.41.222
+  port: 443
+  password: qQe1z5kU8kN6SlKnDt9Ru3Qp
+  sni: 13.201.41.222
+  skip-cert-verify: true
+- name: 🇮🇳 印度 02 @zmxooo
+  type: hysteria2
+  server: 43.205.254.42
+  port: 443
+  password: qQe1z5kU8kN6SlKnDt9Ru3Qp
+  sni: 43.205.254.42
+  skip-cert-verify: true
+- name: 🇮🇳 印度 03 @zmxooo
+  type: hysteria2
+  server: 43.205.231.160
+  port: 443
+  password: qQe1z5kU8kN6SlKnDt9Ru3Qp
+  sni: 43.205.231.160
+  skip-cert-verify: true
+- name: 🇮🇳 印度 04 @zmxooo
+  type: hysteria2
+  server: 43.205.214.214
+  port: 443
+  password: qQe1z5kU8kN6SlKnDt9Ru3Qp
+  sni: 43.205.214.214
+  skip-cert-verify: true
+- name: 🇸🇬 新加坡 09 @zmxooo
+  type: hysteria2
+  server: 54.169.215.241
+  port: 443
+  password: qQe1z5kU8kN6SlKnDt9Ru3Qp
+  sni: 54.169.215.241
+  skip-cert-verify: true
+- name: 🇸🇬 新加坡 10 @zmxooo
+  type: hysteria2
+  server: 18.143.102.14
+  port: 443
+  password: qQe1z5kU8kN6SlKnDt9Ru3Qp
+  sni: 18.143.102.14
+  skip-cert-verify: true
+- name: 🇸🇬 新加坡 11 @zmxooo
+  type: hysteria2
+  server: 13.250.58.52
+  port: 443
+  password: qQe1z5kU8kN6SlKnDt9Ru3Qp
+  sni: 13.250.58.52
+  skip-cert-verify: true
+- name: 🇸🇬 新加坡 12 @zmxooo
+  type: hysteria2
+  server: 47.128.219.180
+  port: 443
+  password: qQe1z5kU8kN6SlKnDt9Ru3Qp
+  sni: 47.128.219.180
+  skip-cert-verify: true
 proxy-groups:
 - name: 🚀 节点选择
   type: select
@@ -401,6 +485,7 @@ proxy-groups:
   - 🇯🇵 日本
   - 🇺🇸 美国
   - 🇩🇪 德国
+  - 🇮🇳 印度
   - DIRECT
 - name: 🎬 自动选择
   type: url-test
@@ -458,6 +543,16 @@ proxy-groups:
   - 🇻🇳 越南 08 @zmxooo
   - 🇻🇳 越南 09 @zmxooo
   - 🇰🇷 韩国 04 @zmxooo
+  - 🇯🇵 日本 08 @zmxooo
+  - 🇭🇰 香港 16 @zmxooo
+  - 🇮🇳 印度 01 @zmxooo
+  - 🇮🇳 印度 02 @zmxooo
+  - 🇮🇳 印度 03 @zmxooo
+  - 🇮🇳 印度 04 @zmxooo
+  - 🇸🇬 新加坡 09 @zmxooo
+  - 🇸🇬 新加坡 10 @zmxooo
+  - 🇸🇬 新加坡 11 @zmxooo
+  - 🇸🇬 新加坡 12 @zmxooo
 - name: 🎯 手动选择
   type: select
   proxies:
@@ -512,6 +607,16 @@ proxy-groups:
   - 🇻🇳 越南 08 @zmxooo
   - 🇻🇳 越南 09 @zmxooo
   - 🇰🇷 韩国 04 @zmxooo
+  - 🇯🇵 日本 08 @zmxooo
+  - 🇭🇰 香港 16 @zmxooo
+  - 🇮🇳 印度 01 @zmxooo
+  - 🇮🇳 印度 02 @zmxooo
+  - 🇮🇳 印度 03 @zmxooo
+  - 🇮🇳 印度 04 @zmxooo
+  - 🇸🇬 新加坡 09 @zmxooo
+  - 🇸🇬 新加坡 10 @zmxooo
+  - 🇸🇬 新加坡 11 @zmxooo
+  - 🇸🇬 新加坡 12 @zmxooo
 - name: 🇭🇰 香港
   type: url-test
   url: http://www.gstatic.com/generate_204
@@ -532,6 +637,7 @@ proxy-groups:
   - 🇭🇰 香港 13 @zmxooo
   - 🇭🇰 香港 14 @zmxooo
   - 🇭🇰 香港 15 @zmxooo
+  - 🇭🇰 香港 16 @zmxooo
 - name: 🇹🇼 台湾
   type: url-test
   url: http://www.gstatic.com/generate_204
@@ -555,6 +661,10 @@ proxy-groups:
   - 🇸🇬 新加坡 06 @zmxooo
   - 🇸🇬 新加坡 07 @zmxooo
   - 🇸🇬 新加坡 08 @zmxooo
+  - 🇸🇬 新加坡 09 @zmxooo
+  - 🇸🇬 新加坡 10 @zmxooo
+  - 🇸🇬 新加坡 11 @zmxooo
+  - 🇸🇬 新加坡 12 @zmxooo
 - name: 🇻🇳 越南
   type: url-test
   url: http://www.gstatic.com/generate_204
@@ -590,6 +700,7 @@ proxy-groups:
   - 🇯🇵 日本 05 @zmxooo
   - 🇯🇵 日本 06 @zmxooo
   - 🇯🇵 日本 07 @zmxooo
+  - 🇯🇵 日本 08 @zmxooo
 - name: 🇺🇸 美国
   type: url-test
   url: http://www.gstatic.com/generate_204
@@ -603,5 +714,14 @@ proxy-groups:
   interval: 300
   proxies:
   - 🇩🇪 德国 01 @zmxooo
+- name: 🇮🇳 印度
+  type: url-test
+  url: http://www.gstatic.com/generate_204
+  interval: 300
+  proxies:
+  - 🇮🇳 印度 01 @zmxooo
+  - 🇮🇳 印度 02 @zmxooo
+  - 🇮🇳 印度 03 @zmxooo
+  - 🇮🇳 印度 04 @zmxooo
 rules:
 - MATCH,🚀 节点选择
