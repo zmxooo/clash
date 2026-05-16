@@ -1,7 +1,6 @@
 mixed-port: 7890
 allow-lan: true
 mode: rule
-log-level: info
 proxies:
 - type: hysteria2
   server: 202.146.222.41
@@ -385,20 +384,21 @@ proxy-groups:
 - name: 🚀 节点选择
   type: select
   proxies:
-  - ⚡ 自动测速分流
-  - 🇭🇰 香港节点
-  - 🇹🇼 台湾节点
-  - 🇸🇬 新加坡节点
-  - 🇰🇷 韩国节点
-  - 🇯🇵 日本节点
-  - 🇺🇸 美国节点
+  - 🎬 自动选择
+  - 🇭🇰 香港
+  - 🇹🇼 台湾
+  - 🇸🇬 新加坡
+  - 🇻🇳 越南
+  - 🇰🇷 韩国
+  - 🇯🇵 日本
+  - 🇺🇸 美国
   - 🌍 其它地区
+  - 🌍 待识别
   - DIRECT
-- name: ⚡ 自动测速分流
+- name: 🎬 自动选择
   type: url-test
   url: http://gstatic.com
   interval: 300
-  tolerance: 50
   proxies:
   - 🇭🇰 香港 01 @zmxooo
   - 🇭🇰 香港 02 @zmxooo
@@ -451,11 +451,10 @@ proxy-groups:
   - 🌍 待识别 04 @zmxooo
   - 🌍 待识别 05 @zmxooo
   - 🌍 待识别 06 @zmxooo
-- name: 🇭🇰 香港节点
+- name: 🇭🇰 香港
   type: url-test
   url: http://gstatic.com
   interval: 300
-  tolerance: 50
   proxies:
   - 🇭🇰 香港 01 @zmxooo
   - 🇭🇰 香港 02 @zmxooo
@@ -472,24 +471,20 @@ proxy-groups:
   - 🇭🇰 香港 13 @zmxooo
   - 🇭🇰 香港 14 @zmxooo
   - 🇭🇰 香港 15 @zmxooo
-  - 🌍 其它地区
-- name: 🇹🇼 台湾节点
+- name: 🇹🇼 台湾
   type: url-test
   url: http://gstatic.com
   interval: 300
-  tolerance: 50
   proxies:
   - 🇹🇼 台湾 01 @zmxooo
   - 🇹🇼 台湾 02 @zmxooo
   - 🇹🇼 台湾 03 @zmxooo
   - 🇹🇼 台湾 04 @zmxooo
   - 🇹🇼 台湾 05 @zmxooo
-  - 🌍 其它地区
-- name: 🇸🇬 新加坡节点
+- name: 🇸🇬 新加坡
   type: url-test
   url: http://gstatic.com
   interval: 300
-  tolerance: 50
   proxies:
   - 🇸🇬 新加坡 01 @zmxooo
   - 🇸🇬 新加坡 02 @zmxooo
@@ -499,38 +494,10 @@ proxy-groups:
   - 🇸🇬 新加坡 06 @zmxooo
   - 🇸🇬 新加坡 07 @zmxooo
   - 🇸🇬 新加坡 08 @zmxooo
-  - 🌍 其它地区
-- name: 🇰🇷 韩国节点
+- name: 🇻🇳 越南
   type: url-test
   url: http://gstatic.com
   interval: 300
-  tolerance: 50
-  proxies:
-  - 🇰🇷 韩国 01 @zmxooo
-  - 🇰🇷 韩国 02 @zmxooo
-  - 🇰🇷 韩国 03 @zmxooo
-  - 🌍 其它地区
-- name: 🇯🇵 日本节点
-  type: url-test
-  url: http://gstatic.com
-  interval: 300
-  tolerance: 50
-  proxies:
-  - 🇯🇵 日本 01 @zmxooo
-  - 🇯🇵 日本 02 @zmxooo
-  - 🇯🇵 日本 03 @zmxooo
-  - 🌍 其它地区
-- name: 🇺🇸 美国节点
-  type: url-test
-  url: http://gstatic.com
-  interval: 300
-  tolerance: 50
-  proxies:
-  - 🇺🇸 美国 01 @zmxooo
-  - 🇺🇸 美国 02 @zmxooo
-  - 🌍 其它地区
-- name: 🌍 其它地区
-  type: select
   proxies:
   - 🇻🇳 越南 01 @zmxooo
   - 🇻🇳 越南 02 @zmxooo
@@ -538,9 +505,42 @@ proxy-groups:
   - 🇻🇳 越南 04 @zmxooo
   - 🇻🇳 越南 05 @zmxooo
   - 🇻🇳 越南 06 @zmxooo
+- name: 🇰🇷 韩国
+  type: url-test
+  url: http://gstatic.com
+  interval: 300
+  proxies:
+  - 🇰🇷 韩国 01 @zmxooo
+  - 🇰🇷 韩国 02 @zmxooo
+  - 🇰🇷 韩国 03 @zmxooo
+- name: 🇯🇵 日本
+  type: url-test
+  url: http://gstatic.com
+  interval: 300
+  proxies:
+  - 🇯🇵 日本 01 @zmxooo
+  - 🇯🇵 日本 02 @zmxooo
+  - 🇯🇵 日本 03 @zmxooo
+- name: 🇺🇸 美国
+  type: url-test
+  url: http://gstatic.com
+  interval: 300
+  proxies:
+  - 🇺🇸 美国 01 @zmxooo
+  - 🇺🇸 美国 02 @zmxooo
+- name: 🌍 其它地区
+  type: url-test
+  url: http://gstatic.com
+  interval: 300
+  proxies:
   - 🌍 其它地区 01 @zmxooo
   - 🌍 其它地区 02 @zmxooo
   - 🌍 其它地区 03 @zmxooo
+- name: 🌍 待识别
+  type: url-test
+  url: http://gstatic.com
+  interval: 300
+  proxies:
   - 🌍 待识别 01 @zmxooo
   - 🌍 待识别 02 @zmxooo
   - 🌍 待识别 03 @zmxooo
