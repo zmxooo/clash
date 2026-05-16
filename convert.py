@@ -349,7 +349,7 @@ def main():
 
     # 写入 config.yaml
     if clash_proxies:
-                clash_proxies = start_speedtest_pipeline(clash_proxies)
+        clash_proxies = start_speedtest_pipeline(clash_proxies)
         active_regions = list(region_map.keys())
         proxy_groups = [
             {"name": "🚀 节点选择", "type": "select", "proxies": ["🎬 自动选择"] + active_regions + ["DIRECT"]},
