@@ -20,13 +20,6 @@ jobs:
       - name: 安装必要插件
         run: pip install pyyaml requests
 
-      # 🟢 降维打击：直接利用系统内置的官方 npm 集群进行内网极速部署，100% 绕过任何 Cloudflare 人机风控
-      - name: 强制注入测速内核
-        run: |
-          rm -f ./mihomo
-          npx --yes @metacubex/mihomo-linux-amd64 cp /pnp/mihomo ./mihomo || npx --yes -p @metacubex/mihomo-linux-amd64 -c "cp \$(which mihomo) ./mihomo"
-          chmod +x ./mihomo
-
       - name: 运行转换脚本
         run: python convert.py
 
