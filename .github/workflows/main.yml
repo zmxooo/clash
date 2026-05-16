@@ -1,39 +1,47 @@
-name: Auto Convert
+name: 转换
 
 on:
-  push:
-    branches: [ main ]
   workflow_dispatch:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: write
 
 jobs:
-  convert:
+  build:
     runs-on: ubuntu-latest
+
     steps:
       - name: 检查仓库代码
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: 设置 Python 环境
         uses: actions/setup-python@v5
         with:
-          python-version: '3.10'
+          python-version: "3.11"
 
-      - name: 安装必要插件
-        run: pip install pyyaml requests
-
-      - name: 运行转换脚本
-        run: python convert.py
-
-      - name: 推送生成的文件到仓库
+      - name: 安装必要插件并运行脚本
         run: |
-          git config --local user.email "actions@github.com"
-          git config --local user.name "GitHub Action"
-          
-          # 同时追踪两个输出文件
-          git add config.yaml index.html
-          
-          # 动态时间戳防止 Git 因无变更而终止
-          git commit -m "自动刷新全协议配置系统 (时间: $(date +'%Y-%m-%d %H:%M:%S'))" || true
-          
-          # 先变基解决并发冲突，再推送到主干
-          git pull --rebase origin main || true
-          git push origin main
+          python -m pip install --upgrade pip
+          python -m pip install aiohttp pyyaml requests
+          python convert.py
+
+      # 推送生成文件
+      - name: 推送生成文件
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@://github.com"
+
+          git add config.yaml index.html manifest.json ip_cache.json 2>/dev/null || git add .
+
+          if ! git diff --cached --exit-code --quiet; then
+            git commit -m "chore: 自动更新订阅文件 [$(date '+%Y-%m-%d %H:%M:%S')]"
+            git pull --rebase origin main
+            git push origin main
+          else
+            echo "没有检测到任何节点变动，跳过推送。"
+          fi
