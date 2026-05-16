@@ -426,7 +426,7 @@ def main():
         with open("config.yaml", "w", encoding="utf-8") as f:
             yaml.dump(clash_config, f, allow_unicode=True, sort_keys=False)
             
-        # 2. 同步写入 index.html (紧随其后，不加 else)
+        # 2. 同步写入 index.html (确保与上面的 with 对齐)
         update_time = time.strftime("%Y-%m-%d %H:%M:%S")
         html_content = f"""
         <html>
@@ -443,18 +443,15 @@ def main():
         with open("index.html", "w", encoding="utf-8") as f:
             f.write(html_content)
             
-        print(f"✨ 强同步完成：config.yaml 与 index.html 已于 {update_time} 同时更新")
+        print(f"✨ 强同步完成：config.yaml 与 index.html 已同时刷新")
 
     else:
-        # 当 nodes.txt 为空时的清空逻辑 (对应 if clash_proxies:)
+        # 当节点为空时的清空逻辑
         with open("config.yaml", "w", encoding="utf-8") as f:
             yaml.dump({"mixed-port": 7890, "proxies": [], "proxy-groups": [{"name": "🚀 节点选择", "type": "select", "proxies": ["DIRECT"]}], "rules": ["MATCH,DIRECT"]}, f, allow_unicode=True)
         with open("index.html", "w", encoding="utf-8") as f:
             f.write("<html><body><h2>⚠ 当前无可用节点</h2></body></html>")
         print("⚠ 节点列表为空，已同步重置文件状态")
 
-if __name__ == "__main__":
-    main()
-        print("⚠ 未发现满足导入条件的 Clash 节点")
 if __name__ == "__main__":
     main()
