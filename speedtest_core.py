@@ -11,10 +11,10 @@ MAX_WORKERS = 40
 TIMEOUT = 4
 
 def download_mihomo_core():
-    """直接读取系统 `.yml` 提前注入并完全授权好的纯正二进制内核"""
+    """直接读取由系统工作流通过官方 npm 提权并完全授权好的纯正二进制程序"""
     core_path = "./mihomo"
     if os.path.exists(core_path):
-        # 再次执行最终安全提权防线
+        # 建立最终安全可执行权限防线
         os.chmod(core_path, 0o755)
         print("🎉 成功挂载由系统级工作流注入的高可用原生内核，开始构建测速隧道...")
         return core_path
