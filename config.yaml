@@ -299,7 +299,7 @@ proxies:
   tls: false
   skip-cert-verify: true
   network: tcp
-  name: 🌍 其它地区 01 @zmxooo
+  name: 🇩🇪 德国 01 @zmxooo
 - type: vmess
   server: v13.zgtfqs.click
   port: 30813
@@ -309,7 +309,7 @@ proxies:
   tls: false
   skip-cert-verify: true
   network: tcp
-  name: 🌍 其它地区 02 @zmxooo
+  name: 🇯🇵 日本 04 @zmxooo
 - type: vmess
   server: v11.zgtfqs.click
   port: 30811
@@ -319,7 +319,7 @@ proxies:
   tls: false
   skip-cert-verify: true
   network: tcp
-  name: 🌍 其它地区 03 @zmxooo
+  name: 🇯🇵 日本 05 @zmxooo
 - type: vmess
   server: 82.198.246.97
   port: 180
@@ -329,7 +329,7 @@ proxies:
   tls: false
   skip-cert-verify: true
   network: tcp
-  name: 🌍 待识别 01 @zmxooo
+  name: 🇯🇵 日本 06 @zmxooo
 - type: vmess
   server: 82.198.246.37
   port: 180
@@ -339,7 +339,7 @@ proxies:
   tls: false
   skip-cert-verify: true
   network: tcp
-  name: 🌍 待识别 02 @zmxooo
+  name: 🇯🇵 日本 07 @zmxooo
 - type: vmess
   server: 82.198.246.250
   port: 180
@@ -349,7 +349,7 @@ proxies:
   tls: false
   skip-cert-verify: true
   network: tcp
-  name: 🌍 待识别 03 @zmxooo
+  name: 🇻🇳 越南 07 @zmxooo
 - type: vmess
   server: 82.198.246.214
   port: 180
@@ -359,7 +359,7 @@ proxies:
   tls: false
   skip-cert-verify: true
   network: tcp
-  name: 🌍 待识别 04 @zmxooo
+  name: 🇻🇳 越南 08 @zmxooo
 - type: vmess
   server: 82.198.246.233
   port: 180
@@ -369,7 +369,7 @@ proxies:
   tls: false
   skip-cert-verify: true
   network: tcp
-  name: 🌍 待识别 05 @zmxooo
+  name: 🇻🇳 越南 09 @zmxooo
 - type: vmess
   server: 82.198.246.9
   port: 180
@@ -379,7 +379,7 @@ proxies:
   tls: false
   skip-cert-verify: true
   network: tcp
-  name: 🌍 待识别 06 @zmxooo
+  name: 🇰🇷 韩国 04 @zmxooo
 proxy-groups:
 - name: 🚀 节点选择
   type: select
@@ -392,8 +392,7 @@ proxy-groups:
   - 🇰🇷 韩国
   - 🇯🇵 日本
   - 🇺🇸 美国
-  - 🌍 其它地区
-  - 🌍 待识别
+  - 🇩🇪 德国
   - DIRECT
 - name: 🎬 自动选择
   type: url-test
@@ -442,15 +441,15 @@ proxy-groups:
   - 🇯🇵 日本 03 @zmxooo
   - 🇺🇸 美国 01 @zmxooo
   - 🇺🇸 美国 02 @zmxooo
-  - 🌍 其它地区 01 @zmxooo
-  - 🌍 其它地区 02 @zmxooo
-  - 🌍 其它地区 03 @zmxooo
-  - 🌍 待识别 01 @zmxooo
-  - 🌍 待识别 02 @zmxooo
-  - 🌍 待识别 03 @zmxooo
-  - 🌍 待识别 04 @zmxooo
-  - 🌍 待识别 05 @zmxooo
-  - 🌍 待识别 06 @zmxooo
+  - 🇩🇪 德国 01 @zmxooo
+  - 🇯🇵 日本 04 @zmxooo
+  - 🇯🇵 日本 05 @zmxooo
+  - 🇯🇵 日本 06 @zmxooo
+  - 🇯🇵 日本 07 @zmxooo
+  - 🇻🇳 越南 07 @zmxooo
+  - 🇻🇳 越南 08 @zmxooo
+  - 🇻🇳 越南 09 @zmxooo
+  - 🇰🇷 韩国 04 @zmxooo
 - name: 🇭🇰 香港
   type: url-test
   url: http://gstatic.com
@@ -505,6 +504,9 @@ proxy-groups:
   - 🇻🇳 越南 04 @zmxooo
   - 🇻🇳 越南 05 @zmxooo
   - 🇻🇳 越南 06 @zmxooo
+  - 🇻🇳 越南 07 @zmxooo
+  - 🇻🇳 越南 08 @zmxooo
+  - 🇻🇳 越南 09 @zmxooo
 - name: 🇰🇷 韩国
   type: url-test
   url: http://gstatic.com
@@ -513,6 +515,7 @@ proxy-groups:
   - 🇰🇷 韩国 01 @zmxooo
   - 🇰🇷 韩国 02 @zmxooo
   - 🇰🇷 韩国 03 @zmxooo
+  - 🇰🇷 韩国 04 @zmxooo
 - name: 🇯🇵 日本
   type: url-test
   url: http://gstatic.com
@@ -521,6 +524,10 @@ proxy-groups:
   - 🇯🇵 日本 01 @zmxooo
   - 🇯🇵 日本 02 @zmxooo
   - 🇯🇵 日本 03 @zmxooo
+  - 🇯🇵 日本 04 @zmxooo
+  - 🇯🇵 日本 05 @zmxooo
+  - 🇯🇵 日本 06 @zmxooo
+  - 🇯🇵 日本 07 @zmxooo
 - name: 🇺🇸 美国
   type: url-test
   url: http://gstatic.com
@@ -528,24 +535,11 @@ proxy-groups:
   proxies:
   - 🇺🇸 美国 01 @zmxooo
   - 🇺🇸 美国 02 @zmxooo
-- name: 🌍 其它地区
+- name: 🇩🇪 德国
   type: url-test
   url: http://gstatic.com
   interval: 300
   proxies:
-  - 🌍 其它地区 01 @zmxooo
-  - 🌍 其它地区 02 @zmxooo
-  - 🌍 其它地区 03 @zmxooo
-- name: 🌍 待识别
-  type: url-test
-  url: http://gstatic.com
-  interval: 300
-  proxies:
-  - 🌍 待识别 01 @zmxooo
-  - 🌍 待识别 02 @zmxooo
-  - 🌍 待识别 03 @zmxooo
-  - 🌍 待识别 04 @zmxooo
-  - 🌍 待识别 05 @zmxooo
-  - 🌍 待识别 06 @zmxooo
+  - 🇩🇪 德国 01 @zmxooo
 rules:
 - MATCH,🚀 节点选择
