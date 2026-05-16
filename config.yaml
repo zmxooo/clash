@@ -392,6 +392,7 @@ proxy-groups:
   type: select
   proxies:
   - 🎬 自动选择
+  - 🎯 手动选择
   - 🇭🇰 香港
   - 🇹🇼 台湾
   - 🇸🇬 新加坡
@@ -405,6 +406,60 @@ proxy-groups:
   type: url-test
   url: http://www.gstatic.com/generate_204
   interval: 300
+  proxies:
+  - 🇭🇰 香港 01 @zmxooo
+  - 🇭🇰 香港 02 @zmxooo
+  - 🇭🇰 香港 03 @zmxooo
+  - 🇭🇰 香港 04 @zmxooo
+  - 🇭🇰 香港 05 @zmxooo
+  - 🇭🇰 香港 06 @zmxooo
+  - 🇭🇰 香港 07 @zmxooo
+  - 🇭🇰 香港 08 @zmxooo
+  - 🇭🇰 香港 09 @zmxooo
+  - 🇭🇰 香港 10 @zmxooo
+  - 🇭🇰 香港 11 @zmxooo
+  - 🇭🇰 香港 12 @zmxooo
+  - 🇭🇰 香港 13 @zmxooo
+  - 🇹🇼 台湾 01 @zmxooo
+  - 🇹🇼 台湾 02 @zmxooo
+  - 🇹🇼 台湾 03 @zmxooo
+  - 🇹🇼 台湾 04 @zmxooo
+  - 🇹🇼 台湾 05 @zmxooo
+  - 🇸🇬 新加坡 01 @zmxooo
+  - 🇸🇬 新加坡 02 @zmxooo
+  - 🇸🇬 新加坡 03 @zmxooo
+  - 🇸🇬 新加坡 04 @zmxooo
+  - 🇸🇬 新加坡 05 @zmxooo
+  - 🇸🇬 新加坡 06 @zmxooo
+  - 🇸🇬 新加坡 07 @zmxooo
+  - 🇸🇬 新加坡 08 @zmxooo
+  - 🇭🇰 香港 14 @zmxooo
+  - 🇭🇰 香港 15 @zmxooo
+  - 🇻🇳 越南 01 @zmxooo
+  - 🇻🇳 越南 02 @zmxooo
+  - 🇻🇳 越南 03 @zmxooo
+  - 🇻🇳 越南 04 @zmxooo
+  - 🇻🇳 越南 05 @zmxooo
+  - 🇻🇳 越南 06 @zmxooo
+  - 🇰🇷 韩国 01 @zmxooo
+  - 🇰🇷 韩国 02 @zmxooo
+  - 🇰🇷 韩国 03 @zmxooo
+  - 🇯🇵 日本 01 @zmxooo
+  - 🇯🇵 日本 02 @zmxooo
+  - 🇯🇵 日本 03 @zmxooo
+  - 🇺🇸 美国 01 @zmxooo
+  - 🇺🇸 美国 02 @zmxooo
+  - 🇩🇪 德国 01 @zmxooo
+  - 🇯🇵 日本 04 @zmxooo
+  - 🇯🇵 日本 05 @zmxooo
+  - 🇯🇵 日本 06 @zmxooo
+  - 🇯🇵 日本 07 @zmxooo
+  - 🇻🇳 越南 07 @zmxooo
+  - 🇻🇳 越南 08 @zmxooo
+  - 🇻🇳 越南 09 @zmxooo
+  - 🇰🇷 韩国 04 @zmxooo
+- name: 🎯 手动选择
+  type: select
   proxies:
   - 🇭🇰 香港 01 @zmxooo
   - 🇭🇰 香港 02 @zmxooo
