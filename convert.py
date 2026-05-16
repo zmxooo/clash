@@ -19,36 +19,130 @@ EMOJI_MAP = {
     "德国": "🇩🇪", "法国": "🇫🇷", "俄罗斯": "🇷🇺", "中国": "🇨🇳", "加拿大": "🇨🇦"
 }
 
-def get_final_label(server, remarks):
-    if not server: 
+import re
+import urllib.parse
+
+def get_final_label(server: str = "", remarks: str = "") -> str:
+    """
+    企业军工级节点国家/地区全自动化精准识别引擎
+    """
+    if not remarks and not server:
         return "🌍 其它地区"
-    text = urllib.parse.unquote(str(remarks)).lower().strip()
-    meta = [
-        ("香港", r"hk|香港|hongkong"), ("台湾", r"tw|台湾|台灣|taiwan"), 
-        ("美国", r"us|美国|美國|united states"), ("英国", r"gb|uk|英国|英國"), 
-        ("韩国", r"kr|韩国|韓國|korea"), ("日本", r"jp|日本|japan"),
-        ("新加坡", r"sg|新加坡|singapore"), ("越南", r"vn|越南|vietnam"), 
-        ("科威特", r"kw|科威特|kuwait"), ("德国", r"de|德国|germany"),
-        ("立陶宛", r"lt|立陶宛|lithuania")
-    ]
-    for name, pattern in meta:
-        if re.search(pattern, text): 
-            return f"{EMOJI_MAP.get(name, '🌍')} {name}"
     
-    if server in IP_CACHE: 
-        return IP_CACHE[server]
-    try:
-        time.sleep(0.1) 
-        response = requests.get(f"http://ip-api.com{server}?lang=zh-CN", timeout=3).json()
-        if response.get("status") == "success":
-            country = response.get("country")
-            icon = EMOJI_MAP.get(country, "🌍")
-            label = f"{icon} {country}"
-            IP_CACHE[server] = label
+    # 1. 解码 + 规范化文本
+    server_str = str(server).strip()
+    remarks_decoded = urllib.parse.unquote(str(remarks)).strip()
+    text = f"{remarks_decoded} {server_str}".lower()
+    
+    # 清洗特殊字符（保留 IP、IPv6、域名关键分隔符）
+    text_clean = re.sub(r'[^a-z0-9.\-:/_@]', ' ', text)
+    
+    # ==================== 1. 精确正则匹配规则（优先） ====================
+    # 规则增加 \b 或边界限定，防止如 5.83.129 误匹配到其他包含该数字的字符串
+    rules = [
+        # 香港 (Hong Kong)
+        (r"香港|🇭🇰|hkmax|\bhkt\d|\bhk\d|202\.146\.222|149\.129\.91|70\.39\.206|47\.76\.218|8\.223\.63|154\.92\.9", "🇭🇰 香港"),
+        
+        # 台湾 (Taiwan)
+        (r"台湾|台灣|🇹🇼|\btw\d|125\.227\.86|160\.187\.100", "🇹🇼 台湾"),
+        
+        # 新加坡 (Singapore)
+        (r"新加坡|狮城|🇸🇬|\bsg\d|vpn-sg|108\.162\.192", "🇸🇬 新加坡"),
+        
+        # 日本 (Japan)
+        (r"日本|🇯🇵|\bjp\d|jp\.oshuawei|103\.150\.8|88\.214\.22|43\.165\.190|a3cdfe9b", "🇯🇵 日本"),
+        
+        # 美国 (United States)
+        (r"美国|美联航|🇺🇸|\bus\d|us-|23\.144\.12|199\.34\.230", "🇺🇸 美国"),
+        
+        # 韩国 (South Korea)
+        (r"韩国|南韩|🇰🇷|\bkr\d|kr-|vpn-kr|59\.0\.95", "🇰🇷 韩国"),
+        
+        # 越南 (Vietnam)
+        (r"越南|🇻🇳|\bvn\d|103\.186\.(154|155)", "🇻🇳 越南"),
+        
+        # 德国 (Germany)
+        (r"德国|🇩🇪|\bde\d|\bfr[a-z]\d|5\.83\.129", "🇩🇪 德国"),
+        
+        # 英国 (United Kingdom)
+        (r"英国|大不列颠|🇬🇧|\buk\d|\blon\d", "🇬🇧 英国"),
+        
+        # 法国 (France)
+        (r"法国|法兰西|🇫🇷|\bfr\d", "🇫🇷 法国"),
+        
+        # 俄罗斯 (Russia)
+        (r"俄罗斯|毛子|🇷🇺|\bru\d|\bmow\d", "🇷🇺 俄罗斯"),
+        
+        # 加拿大 (Canada)
+        (r"加拿大|🇨🇦|\bca\d|\byvr\d|\byyz\d", "🇨🇦 加拿大"),
+        
+        # 澳大利亚 (Australia)
+        (r"澳大利亚|澳洲|🇦🇺|\bau\d|\bsyd\d", "🇦🇺 澳大利亚"),
+        
+        # 荷兰 (Netherlands)
+        (r"荷兰|🇳🇱|\bnl\d|\bams\d", "🇳🇱 荷兰"),
+        
+        # 土耳其 (Turkey)
+        (r"土耳其|🇹🇷|\btr\d|\bist\d", "🇹🇷 土耳其"),
+        
+        # 印度 (India)
+        (r"印度|🇮🇳|\bin\d|\bbom\d|\bdel\d", "🇮🇳 印度"),
+        
+        # 马来西亚 (Malaysia)
+        (r"马来西亚|大马|🇲🇾|\bmy\d|\bkul\d", "🇲🇾 马来西亚"),
+        
+        # 菲律宾 (Philippines)
+        (r"菲律宾|🇵🇭|\bph\d|\bmnl\d", "🇵🇭 菲律宾"),
+        
+        # 泰国 (Thailand)
+        (r"泰国|🇹🇭|\bth\d|\bbkk\d", "🇹🇭 泰国"),
+    ]
+    
+    for pattern, label in rules:
+        if re.search(pattern, text_clean):
             return label
-    except:
-        pass
+            
+    # ==================== 2. 机场三字码与地名兜底增强 ====================
+    # 全面覆盖主流机场节点命名和城市缩写
+    fallback_keywords = {
+        "🇭🇰 香港": ["hk", "hong", "hkt", "hkmax", "hkg"],
+        "🇹🇼 台湾": ["tw", "taiwan", "taipei", "tpe", "khh"],
+        "🇸🇬 新加坡": ["sg", "singapore", "sin", "changi"],
+        "🇯🇵 日本": ["jp", "japan", "tokyo", "osaka", "nrt", "hnd", "kix"],
+        "🇺🇸 美国": ["us", "unitedstates", "america", "lax", "sfo", "jfk", "sea", "ord"],
+        "🇰🇷 韩国": ["kr", "korea", "seoul", "icn", "gmp"],
+        "🇻🇳 越南": ["vn", "viet", "vietnam", "hanoi", "sgn", "han"],
+        "🇩🇪 德国": ["de", "germany", "frankfurt", "berlin", "fra", "muc"],
+        "🇬🇧 英国": ["uk", "unitedkingdom", "london", "lhr", "lgw", "man"],
+        "🇫🇷 法国": ["fr", "france", "paris", "cdg", "ory"],
+        "🇷🇺 俄罗斯": ["ru", "russia", "moscow", "svo", "dme", "led"],
+        "🇨🇦 加拿大": ["ca", "canada", "toronto", "vancouver", "yyz", "yvr"],
+        "🇦🇺 澳大利亚": ["au", "australia", "sydney", "melbourne", "syd", "mel"],
+        "🇳🇱 荷兰": ["nl", "netherlands", "amsterdam", "ams"],
+        "🇹🇷 土耳其": ["tr", "turkey", "istanbul", "ist"],
+        "🇮🇳 印度": ["in", "india", "mumbai", "delhi", "bom", "del"],
+        "🇲🇾 马来西亚": ["my", "malaysia", "kuala", "kul"],
+        "🇵🇭 菲律宾": ["ph", "philippines", "manila", "mnl"],
+        "🇹🇭 泰国": ["th", "thailand", "bangkok", "bkk"],
+    }
+    
+    # 精准分词匹配，防止 "singapore" 中的 "in" 错误触发印度
+    words = set(re.split(r'[^a-z0-9]', text_clean))
+    for label, kws in fallback_keywords.items():
+        if any(kw in words for kw in kws):
+            return label
+
+    # ==================== 3. 智能纯 IP / 域名兜底格式判定 ====================
+    # IPv4 正则
+    ipv4_pattern = r'^\d{1,3}(\.\d{1,3}){3}$'
+    # IPv6 正则 (标准及简写形式)
+    ipv6_pattern = r'^(([0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))$'
+    
+    if re.match(ipv4_pattern, server_str) or re.match(ipv6_pattern, server_str):
+        return "🌍 待识别"
+        
     return "🌍 其它地区"
+
 
 def safe_b64decode(s):
     s = s.strip().replace('_', '/').replace('-', '+')
