@@ -423,6 +423,12 @@ def main():
         }
         
         with open("config.yaml", "w", encoding="utf-8") as f:
+        # 🟢 就在 config.yaml 写入成功的下方，直接插入这 4 行原生回写
+        merged_links = "\n".join([f"vmess://{base64.b64encode(json.dumps(p['raw_json'], ensure_ascii=False).encode('utf-8')).decode('utf-8')}" if p.get('type') == 'vmess' else f"ss://{base64.b64encode(f\"{p.get('cipher')}:{p.get('password')}\".encode('utf-8')).decode('utf-8')}@{p.get('server')}:{p.get('port')}#{urllib.parse.quote(p.get('name',''))}" for p in clash_proxies]) + "\n"
+        with open('index.html', 'w', encoding='utf-8') as f_b64:
+            f_b64.write(base64.b64encode(merged_links.encode('utf-8')).decode('utf-8'))
+        print("index.html 更新成功（Base64 订阅已与 YAML 节点完全对齐同步）")
+        
             yaml.dump(clash_config, f, allow_unicode=True, sort_keys=False)
             
         print("config.yaml 更新成功（已完美植入客户端动态出口自对齐机制）")
