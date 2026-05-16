@@ -27,7 +27,13 @@ jobs:
         run: |
           git config --local user.email "actions@github.com"
           git config --local user.name "GitHub Action"
+          
+          # 同时追踪两个输出文件
           git add config.yaml index.html
+          
+          # 动态时间戳防止 Git 因无变更而终止
           git commit -m "自动刷新全协议配置系统 (时间: $(date +'%Y-%m-%d %H:%M:%S'))" || true
+          
+          # 先变基解决并发冲突，再推送到主干
           git pull --rebase origin main || true
           git push origin main
