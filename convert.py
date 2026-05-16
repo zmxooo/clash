@@ -340,118 +340,30 @@ def main():
                 clash_proxies.append(p)
                 region_map[label].append(new_name)
 
+    # 写入 index.html
+    with open('index.html', 'w', encoding='utf-8') as f:
+        sub_b64 = base64.b64encode("\n".join(rocket_links).encode('utf-8')).decode('utf-8') if rocket_links else ""
+        f.write(sub_b64)
+    print(f"index.html 更新完毕，包含 {len(rocket_links)} 节点")
+
     # 写入 config.yaml
     if clash_proxies:
-        # ==================== 【 1. 纯静态国别基础归类 】 ====================
-        active_regions = defaultdict(list)
-        
-        for p in clash_proxies:
-            p_name = p.get("name", "")
-            
-            # 使用本地最纯净、绝不报错的静态关键字做初步归类
-            if any(k in p_name.lower() for k in ["hk", "香港", "hongkong"]):
-                active_regions["🇭🇰 香港节点"].append(p_name)
-            elif any(k in p_name.lower() for k in ["tw", "台湾", "台灣", "taiwan"]):
-                active_regions["🇹🇼 台湾节点"].append(p_name)
-            elif any(k in p_name.lower() for k in ["sg", "新加坡", "singapore", "狮城"]):
-                active_regions["🇸🇬 新加坡节点"].append(p_name)
-            elif any(k in p_name.lower() for k in ["jp", "日本", "japan", "东京", "大阪"]):
-                active_regions["🇯🇵 日本节点"].append(p_name)
-            elif any(k in p_name.lower() for k in ["us", "美国", "美國", "america", "洛杉矶"]):
-                active_regions["🇺🇸 美国节点"].append(p_name)
-            elif any(k in p_name.lower() for k in ["kr", "韩国", "韓國", "korea", "首尔"]):
-                active_regions["🇰🇷 韩国节点"].append(p_name)
-            else:
-                # 凡是带有“待识别”、“其他地区”或无特征的盲盒中转节点，通通塞进这里
-                active_regions["🌍 其它地区"].append(p_name)
+        active_regions = list(region_map.keys())
+        proxy_groups = [
+            {"name": "🚀 节点选择", "type": "select", "proxies": ["🎬 自动选择"] + active_regions + ["DIRECT"]},
+            {"name": "🎬 自动选择", "type": "url-test", "url": TEST_URL, "interval": 300, "proxies": [px['name'] for px in clash_proxies]}
+        ]
+        for r in active_regions:
+            proxy_groups.append({"name": r, "type": "url-test", "url": TEST_URL, "interval": 300, "proxies": region_map[r]})
 
-        # ==================== 【 2. 注入动态测速策略组 】 ====================
-        proxy_groups = []
-        all_other_nodes = active_regions.get("🌍 其它地区", [])
-        
-        # 生成各个国家的自动化测速组 (url-test)
-        for group_name, node_list in active_regions.items():
-            if group_name == "🌍 其它地区":
-                continue # 盲盒池单独在下方配置
-                
-            proxy_groups.append({
-                "name": group_name,
-                "type": "url-test",
-                "url": "http://gstatic.com",
-                "interval": 300, # ⏱ 用户的客户端每 5 分钟在后台自动测速并刷新一次出口
-                "tolerance": 50,
-                "proxies": node_list + (["🌍 其它地区"] if all_other_nodes else []) # 巧妙塞入盲盒池
-            })
-            
-        # 独立配置盲盒池作为底层支撑
-        if all_other_nodes:
-            proxy_groups.append({
-                "name": "🌍 其它地区",
-                "type": "select",
-                "proxies": all_other_nodes
-            })
-            
-        # 插入控制顶级大组
-        available_group_names = [g["name"] for g in proxy_groups]
-        
-        proxy_groups.insert(0, {
-            "name": "🚀 节点选择",
-            "type": "select",
-            "proxies": ["⚡ 自动测速分流"] + available_group_names + ["DIRECT"]
-        })
-        
-        proxy_groups.insert(1, {
-            "name": "⚡ 自动测速分流",
-            "type": "url-test",
-            "url": "http://gstatic.com",
-            "interval": 300,
-            "tolerance": 50,
-            "proxies": [p.get("name") for p in clash_proxies] # 全节点总测速
-        })
-
-        # ==================== 【 3. 最终组合并无报错写入 YAML 】 ====================
-        clash_config = {
-            "mixed-port": 7890,
-            "allow-lan": True,
-            "mode": "rule",
-            "log-level": "info",
-            "proxies": clash_proxies,
-            "proxy-groups": proxy_groups,
-            "rules": [
-                "MATCH,🚀 节点选择"
-            ]
-        }
-        
-        # 1. 写入 config.yaml
-        with open("config.yaml", "w", encoding="utf-8") as f:
-            yaml.dump(clash_config, f, allow_unicode=True, sort_keys=False)
-
-        # 2. 同步写入 index.html (确保缩进与上面的 with 垂直对齐)
-        update_time = time.strftime("%Y-%m-%d %H:%M:%S")
-        html_content = f"""
-        <html>
-        <head><meta charset="utf-8"><title>订阅同步看板</title></head>
-        <body style="font-family:sans-serif; padding:20px;">
-            <h2>🚀 订阅同步状态：已就绪</h2>
-            <p>最后运行时间: {update_time}</p>
-            <p>当前配置节点总数: {len(clash_proxies)}</p>
-            <hr>
-            <p>🔗 <a href="config.yaml">下载最新 config.yaml</a></p>
-        </body>
-        </html>
-        """
-        with open("index.html", "w", encoding="utf-8") as f:
-            f.write(html_content)
-
-        print(f"✨ 强同步完成：config.yaml 与 index.html 已同时刷新")
-
+        with open('config.yaml', 'w', encoding='utf-8') as f:
+            yaml.dump({"mixed-port": 7890, "allow-lan": True, "mode": "rule", "proxies": clash_proxies, "proxy-groups": proxy_groups, "rules": ["MATCH,🚀 节点选择"]}, f, allow_unicode=True, sort_keys=False)
+        print("config.yaml 更新成功")
     else:
-        # 当 nodes.txt 为空或解析失败时的兜底逻辑
-        with open("config.yaml", "w", encoding="utf-8") as f:
-            yaml.dump({"mixed-port": 7890, "proxies": [], "proxy-groups": [{"name": "🚀 节点选择", "type": "select", "proxies": ["DIRECT"]}], "rules": ["MATCH,DIRECT"]}, f, allow_unicode=True)
-        with open("index.html", "w", encoding="utf-8") as f:
-            f.write("<html><body><h2>⚠ 当前无可用节点</h2></body></html>")
-        print("⚠ 节点列表为空，已同步重置文件状态")
+        # 提供一个最基础的有效 Clash 文件，防止因为没有合格节点导致文件内容不变化、不更新
+        with open('config.yaml', 'w', encoding='utf-8') as f:
+            yaml.dump({"mixed-port": 7890, "mode": "rule", "proxies": [{"name": "DIRECT_NODE", "type": "direct"}], "proxy-groups": [{"name": "🚀 节点选择", "type": "select", "proxies": ["DIRECT"]}], "rules": ["MATCH,🚀 节点选择"]}, f)
+        print("⚠️ 未发现满足导入条件的 Clash 节点，已启用 DIRECT 兜底写入。")
 
 if __name__ == "__main__":
     main()
