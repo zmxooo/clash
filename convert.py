@@ -241,69 +241,6 @@ class Parser:
             return None
         return None
 
-    @staticmethod
-    async def parse_ss(session, link):
-        """
-        Shadowsocks (SS) 节点核心解析函数【已统一整合精简，完美支持 SIP002、复杂密码与插件】
-        """
-        try:
-            remarks = "SS节点"
-            if "#" in link:
-                link, rem = link.split("#", 1)
-                remarks = urllib.parse.unquote(rem.strip())
-
-            raw = link[5:].strip()
-            if not raw:
-                return None
-
-            # 兼容处理 Legacy 全加密旧格式
-            if "@" not in raw:
-                try:
-                    raw = safe_b64decode(raw)
-                except Exception:
-                    return None
-
-            if not raw or "@" not in raw:
-                return None
-
-            # 从右往左切分 @ 字符，隔离防止用户密码中包含 @
-            auth, endpoint = raw.rsplit("@", 1)
-
-            # 解析 SIP002 独立加密的 Userinfo
-            if ":" not in auth:
-                try:
-                    auth = safe_b64decode(auth)
-                except Exception:
-                    return None
-
-            if not auth or ":" not in auth:
-                return None
-
-            # 分离加密方法与密码，支持密码中含有冒号
-            auth_parts = auth.split(":", 1)
-            if len(auth_parts) != 2:
-                return None
-            cipher, password = auth_parts[0].strip().lower().replace("_", "-"), auth_parts[1]
-
-            if not cipher or not password:
-                return None
-
-            # 加密算法白名单安全清洗
-            if cipher not in {"aes-128-gcm", "aes-256-gcm", "chacha20-poly1305", "chacha20-ietf-poly1305", "none", "2022-blake3-aes-128-gcm", "2022-blake3-aes-256-gcm"}:
-                cipher = "aes-256-gcm"
-
-            # 剥离 Query 与 Path 参数并安全提取 plugin
-            plugin = None
-            if "?" in endpoint:
-                endpoint, query = endpoint.split("?", 1)
-                params = urllib.parse.parse_qs(query)
-                if "plugin" in params:
-                    plugin = params["plugin"][0]
-            if "/" in endpoint:
-                endpoint = endpoint.split("/", 1)[0]
-
-            endpoint = endpoint.strip().rstrip("/")
-
 import urllib.parse
 import re
 
