@@ -3,42 +3,42 @@ allow-lan: true
 mode: rule
 log-level: info
 proxies:
-- name: 🇭🇰 香港 01 @zmxooo
+- name: '🇭🇰 香港 01 '
   type: hysteria2
   server: 202.146.222.93
   port: 443
   password: qQe1z5kU8kN6SlKnDt9Ru3Qp
   sni: https://t.me/zmxooo🇨🇳
   skip-cert-verify: true
-- name: 🇭🇰 香港 02 @zmxooo
+- name: '🇭🇰 香港 02 '
   type: hysteria2
   server: 202.146.222.89
   port: 443
   password: qQe1z5kU8kN6SlKnDt9Ru3Qp
   sni: https://t.me/zmxooo🇨🇳
   skip-cert-verify: true
-- name: 🇭🇰 香港 03 @zmxooo
+- name: '🇭🇰 香港 03 '
   type: hysteria2
   server: 202.146.222.41
   port: 443
   password: qQe1z5kU8kN6SlKnDt9Ru3Qp
   sni: https://t.me/zmxooo🇨🇳
   skip-cert-verify: true
-- name: 🇭🇰 香港 04 @zmxooo
+- name: '🇭🇰 香港 04 '
   type: hysteria2
   server: 202.146.222.29
   port: 443
   password: qQe1z5kU8kN6SlKnDt9Ru3Qp
   sni: https://t.me/zmxooo🇨🇳
   skip-cert-verify: true
-- name: 🇭🇰 香港 05 @zmxooo
+- name: '🇭🇰 香港 05 '
   type: hysteria2
   server: 202.146.222.16
   port: 443
   password: qQe1z5kU8kN6SlKnDt9Ru3Qp
   sni: https://t.me/zmxooo🇨🇳
   skip-cert-verify: true
-- name: 🇭🇰 香港 06 @zmxooo
+- name: '🇭🇰 香港 06 '
   type: vless
   server: hk.chinablog.xyz
   port: 8080
@@ -51,21 +51,21 @@ proxies:
   reality-opts:
     public-key: bXstTdAgEyOn8LEMM_K2gIOw7T2iKhr6l-lXcrF4PlM
     short-id: ''
-- name: 🇭🇰 香港 07 @zmxooo
+- name: '🇭🇰 香港 07 '
   type: hysteria2
   server: 202.146.222.13
   port: 443
   password: qQe1z5kU8kN6SlKnDt9Ru3Qp
   sni: https://t.me/zmxooo🇨🇳
   skip-cert-verify: true
-- name: 🇭🇰 香港 08 @zmxooo
+- name: '🇭🇰 香港 08 '
   type: hysteria2
   server: 202.146.222.11
   port: 443
   password: qQe1z5kU8kN6SlKnDt9Ru3Qp
   sni: https://t.me/zmxooo🇨🇳
   skip-cert-verify: true
-- name: 🇭🇰 香港 09 @zmxooo
+- name: '🇭🇰 香港 09 '
   type: vless
   server: hk01zl.lovetutujiejie.com
   port: 443
@@ -78,7 +78,7 @@ proxies:
   reality-opts:
     public-key: Csew0d2GnhUKWv4TADPkJp1FJ8mPI_omJVHZetrcnWA
     short-id: 7d70069a4058
-- name: 🇭🇰 香港 10 @zmxooo
+- name: '🇭🇰 香港 10 '
   type: vless
   server: 83.229.126.127
   port: 32237
@@ -92,7 +92,7 @@ proxies:
     path: /?ed=2560&https://t.me/WangCai2🇨🇳
     headers:
       Host: dcsrzh.ccwu.cc
-- name: 🇭🇰 香港 11 @zmxooo
+- name: '🇭🇰 香港 11 '
   type: vmess
   server: v10.hdacd.com
   port: 30807
@@ -102,70 +102,70 @@ proxies:
   network: tcp
   tls: false
   skip-cert-verify: true
-- name: 🇹🇼 台湾 01 @zmxooo
+- name: '🇹🇼 台湾 01 '
   type: hysteria2
   server: 160.187.100.109
   port: 443
   password: qQe1z5kU8kN6SlKnDt9Ru3Qp
   sni: https://t.me/zmxooo🇨🇳
   skip-cert-verify: true
-- name: 🇹🇼 台湾 02 @zmxooo
+- name: '🇹🇼 台湾 02 '
   type: ss
   server: r3mrcg007147vhp.cybervena.com
   port: 50099
-  cipher: chacha20-ietf-poly1305
+  cipher: aes-256-gcm
   password: 7e731ec3-f8e1-43f6-92cf-3978d14705c4
   udp: true
-- name: 🇹🇼 台湾 03 @zmxooo
+- name: '🇹🇼 台湾 03 '
   type: trojan
   server: 125.227.86.48
   port: 443
   password: 3f5bc61547b1f0d9
   sni: 125.227.86.48
   skip-cert-verify: true
-- name: 🇹🇼 台湾 04 @zmxooo
+- name: '🇹🇼 台湾 04 '
   type: trojan
   server: 125.227.86.45
   port: 443
   password: 0a9f1f5a397bd427
   sni: 125.227.86.45
   skip-cert-verify: true
-- name: 🇸🇬 新加坡 01 @zmxooo
+- name: '🇸🇬 新加坡 01 '
   type: hysteria2
   server: vpn-sg-003.fastervpn.world
   port: 443
   password: qQe1z5kU8kN6SlKnDt9Ru3Qp
   sni: vpn-sg-003.fastervpn.world
   skip-cert-verify: true
-- name: 🇯🇵 日本 01 @zmxooo
+- name: '🇯🇵 日本 01 '
   type: ss
   server: 43.165.190.11
   port: 42841
   cipher: none
   password: 59fc5f8c-5697-4eb8-acf2-8ae363f203a2
   udp: true
-- name: 🇯🇵 日本 02 @zmxooo
+- name: '🇯🇵 日本 02 '
   type: trojan
   server: 43.168.16.112
   port: 443
   password: 8r%3C%5B9%27l6hAO%238ZQi
   sni: 43.168.16.112
   skip-cert-verify: true
-- name: 🇰🇷 韩国 01 @zmxooo
+- name: '🇰🇷 韩国 01 '
   type: hysteria2
   server: vpn-kr-001.fastervpn.world
   port: 443
   password: qQe1z5kU8kN6SlKnDt9Ru3Qp
   sni: vpn-kr-001.fastervpn.world
   skip-cert-verify: true
-- name: 🇰🇷 韩国 02 @zmxooo
+- name: '🇰🇷 韩国 02 '
   type: ss
   server: 211.178.105.134
   port: 6123
-  cipher: aes-256-cfb
+  cipher: aes-256-gcm
   password: qwerREWQ@@
   udp: true
-- name: 🇺🇸 美国 01 @zmxooo
+- name: '🇺🇸 美国 01 '
   type: vmess
   server: 82.198.246.233
   port: 180
@@ -175,7 +175,7 @@ proxies:
   network: tcp
   tls: false
   skip-cert-verify: true
-- name: 🇺🇸 美国 02 @zmxooo
+- name: '🇺🇸 美国 02 '
   type: vmess
   server: 82.198.246.250
   port: 180
@@ -185,7 +185,7 @@ proxies:
   network: tcp
   tls: false
   skip-cert-verify: true
-- name: 🇺🇸 美国 03 @zmxooo
+- name: '🇺🇸 美国 03 '
   type: vmess
   server: 82.198.246.37
   port: 180
@@ -195,7 +195,7 @@ proxies:
   network: tcp
   tls: false
   skip-cert-verify: true
-- name: 🇺🇸 美国 04 @zmxooo
+- name: '🇺🇸 美国 04 '
   type: vless
   server: r1.mizulina.top
   port: 22231
@@ -205,14 +205,14 @@ proxies:
   servername: r1.mizulina.top
   client-fingerprint: edge
   skip-cert-verify: true
-- name: 🇺🇸 美国 05 @zmxooo
+- name: '🇺🇸 美国 05 '
   type: hysteria2
   server: 23.144.12.162
   port: 443
   password: qQe1z5kU8kN6SlKnDt9Ru3Qp
   sni: https://t.me/zmxooo🇨🇳
   skip-cert-verify: true
-- name: 🇺🇸 美国 06 @zmxooo
+- name: '🇺🇸 美国 06 '
   type: vless
   server: 144.31.157.163
   port: 443
@@ -225,14 +225,14 @@ proxies:
   reality-opts:
     public-key: ZHEMPjSWslk6_qD2JNQzd5enUPz8nY9mYRRuM6NkZmU
     short-id: 0123456789abcdef
-- name: 🇺🇸 美国 07 @zmxooo
+- name: '🇺🇸 美国 07 '
   type: trojan
   server: 154.17.225.73
   port: 443
   password: 8r%3C%5B9%27l6hAO%238ZQi
   sni: 154.17.225.73
   skip-cert-verify: true
-- name: 🇺🇸 美国 08 @zmxooo
+- name: '🇺🇸 美国 08 '
   type: vmess
   server: 82.198.246.214
   port: 180
@@ -242,7 +242,7 @@ proxies:
   network: tcp
   tls: false
   skip-cert-verify: true
-- name: 🇺🇸 美国 09 @zmxooo
+- name: '🇺🇸 美国 09 '
   type: vmess
   server: 82.198.246.97
   port: 180
@@ -252,42 +252,42 @@ proxies:
   network: tcp
   tls: false
   skip-cert-verify: true
-- name: 🇩🇪 德国 01 @zmxooo
+- name: '🇩🇪 德国 01 '
   type: trojan
   server: 159.89.207.154
   port: 443
   password: 8r%3C%5B9%27l6hAO%238ZQi
   sni: 159.89.207.154
   skip-cert-verify: true
-- name: 🇩🇪 德国 02 @zmxooo
+- name: '🇩🇪 德国 02 '
   type: trojan
   server: 125.227.86.46
   port: 443
   password: 3f5bc61547b1f0d9
   sni: 125.227.86.46
   skip-cert-verify: true
-- name: 🇩🇪 德国 03 @zmxooo
+- name: '🇩🇪 德国 03 '
   type: trojan
   server: 125.227.86.47
   port: 443
   password: 0a9f1f5a397bd427
   sni: 125.227.86.47
   skip-cert-verify: true
-- name: 🇩🇪 德国 04 @zmxooo
+- name: '🇩🇪 德国 04 '
   type: ss
   server: 103.186.154.214
   port: 38388
-  cipher: aes-256-cfb
+  cipher: aes-256-gcm
   password: Xn8jKdmDM00IeO%#$#fJAMtsEAEUOpH/YWYtYqDFnT0SV
   udp: true
-- name: 🇩🇪 德国 05 @zmxooo
+- name: '🇩🇪 德国 05 '
   type: ss
   server: 103.186.154.24
   port: 38388
-  cipher: aes-256-cfb
+  cipher: aes-256-gcm
   password: Xn8jKdmDM00IeO%#$#fJAMtsEAEUOpH/YWYtYqDFnT0SV
   udp: true
-- name: 🇩🇪 德国 06 @zmxooo
+- name: '🇩🇪 德国 06 '
   type: vmess
   server: 82.198.246.9
   port: 180
@@ -297,137 +297,137 @@ proxies:
   network: tcp
   tls: false
   skip-cert-verify: true
-- name: 🇩🇪 德国 07 @zmxooo
+- name: '🇩🇪 德国 07 '
   type: trojan
   server: 72.56.110.162
   port: 443
   password: 8r%3C%5B9%27l6hAO%238ZQi
   sni: 72.56.110.162
   skip-cert-verify: true
-- name: 🇩🇪 德国 08 @zmxooo
+- name: '🇩🇪 德国 08 '
   type: trojan
   server: 152.42.169.132
   port: 443
   password: 8r%3C%5B9%27l6hAO%238ZQi
   sni: 152.42.169.132
   skip-cert-verify: true
-- name: 🇩🇪 德国 09 @zmxooo
+- name: '🇩🇪 德国 09 '
   type: trojan
   server: 172.64.149.54
   port: 2096
   password: 8r%3C%5B9%27l6hAO%238ZQi
   sni: 172.64.149.54
   skip-cert-verify: true
-- name: 🇻🇳 越南 01 @zmxooo
+- name: '🇻🇳 越南 01 '
   type: ss
   server: 103.186.155.223
   port: 38388
-  cipher: aes-256-cfb
+  cipher: aes-256-gcm
   password: Xn8jKdmDM00IeO%#$#fJAMtsEAEUOpH/YWYtYqDFnT0SV
   udp: true
-- name: 🇻🇳 越南 02 @zmxooo
+- name: '🇻🇳 越南 02 '
   type: ss
   server: 103.186.155.33
   port: 38388
-  cipher: aes-256-cfb
+  cipher: aes-256-gcm
   password: Xn8jKdmDM00IeO%#$#fJAMtsEAEUOpH/YWYtYqDFnT0SV
   udp: true
-- name: 🇻🇳 越南 03 @zmxooo
+- name: '🇻🇳 越南 03 '
   type: ss
   server: 103.186.155.113
   port: 38388
-  cipher: aes-256-cfb
+  cipher: aes-256-gcm
   password: Xn8jKdmDM00IeO%#$#fJAMtsEAEUOpH/YWYtYqDFnT0SV
   udp: true
-- name: 🇻🇳 越南 04 @zmxooo
+- name: '🇻🇳 越南 04 '
   type: ss
   server: 103.186.154.169
   port: 38388
-  cipher: aes-256-cfb
+  cipher: aes-256-gcm
   password: Xn8jKdmDM00IeO%#$#fJAMtsEAEUOpH/YWYtYqDFnT0SV
   udp: true
-- name: 🇻🇳 越南 05 @zmxooo
+- name: '🇻🇳 越南 05 '
   type: ss
   server: 103.186.154.215
   port: 38388
-  cipher: aes-256-cfb
+  cipher: aes-256-gcm
   password: Xn8jKdmDM00IeO%#$#fJAMtsEAEUOpH/YWYtYqDFnT0SV
   udp: true
-- name: 🇻🇳 越南 06 @zmxooo
+- name: '🇻🇳 越南 06 '
   type: ss
   server: 103.186.155.125
   port: 38388
-  cipher: aes-256-cfb
+  cipher: aes-256-gcm
   password: Xn8jKdmDM00IeO%#$#fJAMtsEAEUOpH/YWYtYqDFnT0SV
   udp: true
-- name: 🇻🇳 越南 07 @zmxooo
+- name: '🇻🇳 越南 07 '
   type: ss
   server: 103.186.154.245
   port: 38388
-  cipher: aes-256-cfb
+  cipher: aes-256-gcm
   password: Xn8jKdmDM00IeO%#$#fJAMtsEAEUOpH/YWYtYqDFnT0SV
   udp: true
-- name: 🇻🇳 越南 08 @zmxooo
+- name: '🇻🇳 越南 08 '
   type: ss
   server: 103.186.155.2
   port: 38388
-  cipher: aes-256-cfb
+  cipher: aes-256-gcm
   password: Xn8jKdmDM00IeO%#$#fJAMtsEAEUOpH/YWYtYqDFnT0SV
   udp: true
-- name: 🇻🇳 越南 09 @zmxooo
+- name: '🇻🇳 越南 09 '
   type: ss
   server: 103.186.155.61
   port: 38388
-  cipher: aes-256-cfb
+  cipher: aes-256-gcm
   password: Xn8jKdmDM00IeO%#$#fJAMtsEAEUOpH/YWYtYqDFnT0SV
   udp: true
-- name: 🇻🇳 越南 10 @zmxooo
+- name: '🇻🇳 越南 10 '
   type: ss
   server: 103.186.154.248
   port: 38388
-  cipher: aes-256-cfb
+  cipher: aes-256-gcm
   password: Xn8jKdmDM00IeO%#$#fJAMtsEAEUOpH/YWYtYqDFnT0SV
   udp: true
-- name: 🇻🇳 越南 11 @zmxooo
+- name: '🇻🇳 越南 11 '
   type: ss
   server: 103.186.154.235
   port: 38388
-  cipher: aes-256-cfb
+  cipher: aes-256-gcm
   password: Xn8jKdmDM00IeO%#$#fJAMtsEAEUOpH/YWYtYqDFnT0SV
   udp: true
-- name: 🇻🇳 越南 12 @zmxooo
+- name: '🇻🇳 越南 12 '
   type: ss
   server: 103.186.154.164
   port: 38388
-  cipher: aes-256-cfb
+  cipher: aes-256-gcm
   password: Xn8jKdmDM00IeO%#$#fJAMtsEAEUOpH/YWYtYqDFnT0SV
   udp: true
-- name: 🇻🇳 越南 13 @zmxooo
+- name: '🇻🇳 越南 13 '
   type: ss
   server: 103.186.155.71
   port: 38388
-  cipher: aes-256-cfb
+  cipher: aes-256-gcm
   password: Xn8jKdmDM00IeO%#$#fJAMtsEAEUOpH/YWYtYqDFnT0SV
   udp: true
-- name: 🇻🇳 越南 14 @zmxooo
+- name: '🇻🇳 越南 14 '
   type: ss
   server: 103.186.154.190
   port: 38388
-  cipher: aes-256-cfb
+  cipher: aes-256-gcm
   password: Xn8jKdmDM00IeO%#$#fJAMtsEAEUOpH/YWYtYqDFnT0SV
   udp: true
-- name: 🇻🇳 越南 15 @zmxooo
+- name: '🇻🇳 越南 15 '
   type: ss
   server: 103.186.154.251
   port: 38388
-  cipher: aes-256-cfb
+  cipher: aes-256-gcm
   password: Xn8jKdmDM00IeO%#$#fJAMtsEAEUOpH/YWYtYqDFnT0SV
   udp: true
-- name: 🇻🇳 越南 16 @zmxooo
+- name: '🇻🇳 越南 16 '
   type: ss
   server: 103.186.155.81
   port: 38388
-  cipher: aes-256-cfb
+  cipher: aes-256-gcm
   password: Xn8jKdmDM00IeO%#$#fJAMtsEAEUOpH/YWYtYqDFnT0SV
   udp: true
 proxy-groups:
@@ -450,210 +450,194 @@ proxy-groups:
   url: http://www.gstatic.com/generate_204
   interval: 300
   proxies:
-  - 🇭🇰 香港 01 @zmxooo
-  - 🇭🇰 香港 02 @zmxooo
-  - 🇭🇰 香港 03 @zmxooo
-  - 🇭🇰 香港 04 @zmxooo
-  - 🇭🇰 香港 05 @zmxooo
-  - 🇭🇰 香港 06 @zmxooo
-  - 🇭🇰 香港 07 @zmxooo
-  - 🇭🇰 香港 08 @zmxooo
-  - 🇭🇰 香港 09 @zmxooo
-  - 🇭🇰 香港 10 @zmxooo
-  - 🇭🇰 香港 11 @zmxooo
-  - 🇹🇼 台湾 01 @zmxooo
-  - 🇹🇼 台湾 02 @zmxooo
-  - 🇹🇼 台湾 03 @zmxooo
-  - 🇹🇼 台湾 04 @zmxooo
-  - 🇸🇬 新加坡 01 @zmxooo
-  - 🇯🇵 日本 01 @zmxooo
-  - 🇯🇵 日本 02 @zmxooo
-  - 🇰🇷 韩国 01 @zmxooo
-  - 🇰🇷 韩国 02 @zmxooo
-  - 🇺🇸 美国 01 @zmxooo
-  - 🇺🇸 美国 02 @zmxooo
-  - 🇺🇸 美国 03 @zmxooo
-  - 🇺🇸 美国 04 @zmxooo
-  - 🇺🇸 美国 05 @zmxooo
-  - 🇺🇸 美国 06 @zmxooo
-  - 🇺🇸 美国 07 @zmxooo
-  - 🇺🇸 美国 08 @zmxooo
-  - 🇺🇸 美国 09 @zmxooo
-  - 🇩🇪 德国 01 @zmxooo
-  - 🇩🇪 德国 02 @zmxooo
-  - 🇩🇪 德国 03 @zmxooo
-  - 🇩🇪 德国 04 @zmxooo
-  - 🇩🇪 德国 05 @zmxooo
-  - 🇩🇪 德国 06 @zmxooo
-  - 🇩🇪 德国 07 @zmxooo
-  - 🇩🇪 德国 08 @zmxooo
-  - 🇩🇪 德国 09 @zmxooo
-  - 🇻🇳 越南 01 @zmxooo
-  - 🇻🇳 越南 02 @zmxooo
-  - 🇻🇳 越南 03 @zmxooo
-  - 🇻🇳 越南 04 @zmxooo
-  - 🇻🇳 越南 05 @zmxooo
-  - 🇻🇳 越南 06 @zmxooo
-  - 🇻🇳 越南 07 @zmxooo
-  - 🇻🇳 越南 08 @zmxooo
-  - 🇻🇳 越南 09 @zmxooo
-  - 🇻🇳 越南 10 @zmxooo
-  - 🇻🇳 越南 11 @zmxooo
-  - 🇻🇳 越南 12 @zmxooo
-  - 🇻🇳 越南 13 @zmxooo
-  - 🇻🇳 越南 14 @zmxooo
-  - 🇻🇳 越南 15 @zmxooo
-  - 🇻🇳 越南 16 @zmxooo
+  - '🇭🇰 香港 01 '
+  - '🇭🇰 香港 02 '
+  - '🇭🇰 香港 03 '
+  - '🇭🇰 香港 04 '
+  - '🇭🇰 香港 05 '
+  - '🇭🇰 香港 06 '
+  - '🇭🇰 香港 07 '
+  - '🇭🇰 香港 08 '
+  - '🇭🇰 香港 09 '
+  - '🇭🇰 香港 10 '
+  - '🇭🇰 香港 11 '
+  - '🇹🇼 台湾 01 '
+  - '🇹🇼 台湾 02 '
+  - '🇹🇼 台湾 03 '
+  - '🇹🇼 台湾 04 '
+  - '🇸🇬 新加坡 01 '
+  - '🇯🇵 日本 01 '
+  - '🇯🇵 日本 02 '
+  - '🇰🇷 韩国 01 '
+  - '🇰🇷 韩国 02 '
+  - '🇺🇸 美国 01 '
+  - '🇺🇸 美国 02 '
+  - '🇺🇸 美国 03 '
+  - '🇺🇸 美国 04 '
+  - '🇺🇸 美国 05 '
+  - '🇺🇸 美国 06 '
+  - '🇺🇸 美国 07 '
+  - '🇺🇸 美国 08 '
+  - '🇺🇸 美国 09 '
+  - '🇩🇪 德国 01 '
+  - '🇩🇪 德国 02 '
+  - '🇩🇪 德国 03 '
+  - '🇩🇪 德国 04 '
+  - '🇩🇪 德国 05 '
+  - '🇩🇪 德国 06 '
+  - '🇩🇪 德国 07 '
+  - '🇩🇪 德国 08 '
+  - '🇩🇪 德国 09 '
+  - '🇻🇳 越南 01 '
+  - '🇻🇳 越南 02 '
+  - '🇻🇳 越南 03 '
+  - '🇻🇳 越南 04 '
+  - '🇻🇳 越南 05 '
+  - '🇻🇳 越南 06 '
+  - '🇻🇳 越南 07 '
+  - '🇻🇳 越南 08 '
+  - '🇻🇳 越南 09 '
+  - '🇻🇳 越南 10 '
+  - '🇻🇳 越南 11 '
+  - '🇻🇳 越南 12 '
+  - '🇻🇳 越南 13 '
+  - '🇻🇳 越南 14 '
+  - '🇻🇳 越南 15 '
+  - '🇻🇳 越南 16 '
 - name: 🎯 手动选择
   type: select
   proxies:
-  - 🇭🇰 香港 01 @zmxooo
-  - 🇭🇰 香港 02 @zmxooo
-  - 🇭🇰 香港 03 @zmxooo
-  - 🇭🇰 香港 04 @zmxooo
-  - 🇭🇰 香港 05 @zmxooo
-  - 🇭🇰 香港 06 @zmxooo
-  - 🇭🇰 香港 07 @zmxooo
-  - 🇭🇰 香港 08 @zmxooo
-  - 🇭🇰 香港 09 @zmxooo
-  - 🇭🇰 香港 10 @zmxooo
-  - 🇭🇰 香港 11 @zmxooo
-  - 🇹🇼 台湾 01 @zmxooo
-  - 🇹🇼 台湾 02 @zmxooo
-  - 🇹🇼 台湾 03 @zmxooo
-  - 🇹🇼 台湾 04 @zmxooo
-  - 🇸🇬 新加坡 01 @zmxooo
-  - 🇯🇵 日本 01 @zmxooo
-  - 🇯🇵 日本 02 @zmxooo
-  - 🇰🇷 韩国 01 @zmxooo
-  - 🇰🇷 韩国 02 @zmxooo
-  - 🇺🇸 美国 01 @zmxooo
-  - 🇺🇸 美国 02 @zmxooo
-  - 🇺🇸 美国 03 @zmxooo
-  - 🇺🇸 美国 04 @zmxooo
-  - 🇺🇸 美国 05 @zmxooo
-  - 🇺🇸 美国 06 @zmxooo
-  - 🇺🇸 美国 07 @zmxooo
-  - 🇺🇸 美国 08 @zmxooo
-  - 🇺🇸 美国 09 @zmxooo
-  - 🇩🇪 德国 01 @zmxooo
-  - 🇩🇪 德国 02 @zmxooo
-  - 🇩🇪 德国 03 @zmxooo
-  - 🇩🇪 德国 04 @zmxooo
-  - 🇩🇪 德国 05 @zmxooo
-  - 🇩🇪 德国 06 @zmxooo
-  - 🇩🇪 德国 07 @zmxooo
-  - 🇩🇪 德国 08 @zmxooo
-  - 🇩🇪 德国 09 @zmxooo
-  - 🇻🇳 越南 01 @zmxooo
-  - 🇻🇳 越南 02 @zmxooo
-  - 🇻🇳 越南 03 @zmxooo
-  - 🇻🇳 越南 04 @zmxooo
-  - 🇻🇳 越南 05 @zmxooo
-  - 🇻🇳 越南 06 @zmxooo
-  - 🇻🇳 越南 07 @zmxooo
-  - 🇻🇳 越南 08 @zmxooo
-  - 🇻🇳 越南 09 @zmxooo
-  - 🇻🇳 越南 10 @zmxooo
-  - 🇻🇳 越南 11 @zmxooo
-  - 🇻🇳 越南 12 @zmxooo
-  - 🇻🇳 越南 13 @zmxooo
-  - 🇻🇳 越南 14 @zmxooo
-  - 🇻🇳 越南 15 @zmxooo
-  - 🇻🇳 越南 16 @zmxooo
+  - '🇭🇰 香港 01 '
+  - '🇭🇰 香港 02 '
+  - '🇭🇰 香港 03 '
+  - '🇭🇰 香港 04 '
+  - '🇭🇰 香港 05 '
+  - '🇭🇰 香港 06 '
+  - '🇭🇰 香港 07 '
+  - '🇭🇰 香港 08 '
+  - '🇭🇰 香港 09 '
+  - '🇭🇰 香港 10 '
+  - '🇭🇰 香港 11 '
+  - '🇹🇼 台湾 01 '
+  - '🇹🇼 台湾 02 '
+  - '🇹🇼 台湾 03 '
+  - '🇹🇼 台湾 04 '
+  - '🇸🇬 新加坡 01 '
+  - '🇯🇵 日本 01 '
+  - '🇯🇵 日本 02 '
+  - '🇰🇷 韩国 01 '
+  - '🇰🇷 韩国 02 '
+  - '🇺🇸 美国 01 '
+  - '🇺🇸 美国 02 '
+  - '🇺🇸 美国 03 '
+  - '🇺🇸 美国 04 '
+  - '🇺🇸 美国 05 '
+  - '🇺🇸 美国 06 '
+  - '🇺🇸 美国 07 '
+  - '🇺🇸 美国 08 '
+  - '🇺🇸 美国 09 '
+  - '🇩🇪 德国 01 '
+  - '🇩🇪 德国 02 '
+  - '🇩🇪 德国 03 '
+  - '🇩🇪 德国 04 '
+  - '🇩🇪 德国 05 '
+  - '🇩🇪 德国 06 '
+  - '🇩🇪 德国 07 '
+  - '🇩🇪 德国 08 '
+  - '🇩🇪 德国 09 '
+  - '🇻🇳 越南 01 '
+  - '🇻🇳 越南 02 '
+  - '🇻🇳 越南 03 '
+  - '🇻🇳 越南 04 '
+  - '🇻🇳 越南 05 '
+  - '🇻🇳 越南 06 '
+  - '🇻🇳 越南 07 '
+  - '🇻🇳 越南 08 '
+  - '🇻🇳 越南 09 '
+  - '🇻🇳 越南 10 '
+  - '🇻🇳 越南 11 '
+  - '🇻🇳 越南 12 '
+  - '🇻🇳 越南 13 '
+  - '🇻🇳 越南 14 '
+  - '🇻🇳 越南 15 '
+  - '🇻🇳 越南 16 '
 - name: 🇭🇰 香港
-  type: url-test
-  url: http://www.gstatic.com/generate_204
-  interval: 300
+  type: select
   proxies:
-  - 🇭🇰 香港 01 @zmxooo
-  - 🇭🇰 香港 02 @zmxooo
-  - 🇭🇰 香港 03 @zmxooo
-  - 🇭🇰 香港 04 @zmxooo
-  - 🇭🇰 香港 05 @zmxooo
-  - 🇭🇰 香港 06 @zmxooo
-  - 🇭🇰 香港 07 @zmxooo
-  - 🇭🇰 香港 08 @zmxooo
-  - 🇭🇰 香港 09 @zmxooo
-  - 🇭🇰 香港 10 @zmxooo
-  - 🇭🇰 香港 11 @zmxooo
+  - '🇭🇰 香港 01 '
+  - '🇭🇰 香港 02 '
+  - '🇭🇰 香港 03 '
+  - '🇭🇰 香港 04 '
+  - '🇭🇰 香港 05 '
+  - '🇭🇰 香港 06 '
+  - '🇭🇰 香港 07 '
+  - '🇭🇰 香港 08 '
+  - '🇭🇰 香港 09 '
+  - '🇭🇰 香港 10 '
+  - '🇭🇰 香港 11 '
 - name: 🇹🇼 台湾
-  type: url-test
-  url: http://www.gstatic.com/generate_204
-  interval: 300
+  type: select
   proxies:
-  - 🇹🇼 台湾 01 @zmxooo
-  - 🇹🇼 台湾 02 @zmxooo
-  - 🇹🇼 台湾 03 @zmxooo
-  - 🇹🇼 台湾 04 @zmxooo
+  - '🇹🇼 台湾 01 '
+  - '🇹🇼 台湾 02 '
+  - '🇹🇼 台湾 03 '
+  - '🇹🇼 台湾 04 '
 - name: 🇸🇬 新加坡
-  type: url-test
-  url: http://www.gstatic.com/generate_204
-  interval: 300
+  type: select
   proxies:
-  - 🇸🇬 新加坡 01 @zmxooo
+  - '🇸🇬 新加坡 01 '
 - name: 🇯🇵 日本
-  type: url-test
-  url: http://www.gstatic.com/generate_204
-  interval: 300
+  type: select
   proxies:
-  - 🇯🇵 日本 01 @zmxooo
-  - 🇯🇵 日本 02 @zmxooo
+  - '🇯🇵 日本 01 '
+  - '🇯🇵 日本 02 '
 - name: 🇰🇷 韩国
-  type: url-test
-  url: http://www.gstatic.com/generate_204
-  interval: 300
+  type: select
   proxies:
-  - 🇰🇷 韩国 01 @zmxooo
-  - 🇰🇷 韩国 02 @zmxooo
+  - '🇰🇷 韩国 01 '
+  - '🇰🇷 韩国 02 '
 - name: 🇺🇸 美国
-  type: url-test
-  url: http://www.gstatic.com/generate_204
-  interval: 300
+  type: select
   proxies:
-  - 🇺🇸 美国 01 @zmxooo
-  - 🇺🇸 美国 02 @zmxooo
-  - 🇺🇸 美国 03 @zmxooo
-  - 🇺🇸 美国 04 @zmxooo
-  - 🇺🇸 美国 05 @zmxooo
-  - 🇺🇸 美国 06 @zmxooo
-  - 🇺🇸 美国 07 @zmxooo
-  - 🇺🇸 美国 08 @zmxooo
-  - 🇺🇸 美国 09 @zmxooo
+  - '🇺🇸 美国 01 '
+  - '🇺🇸 美国 02 '
+  - '🇺🇸 美国 03 '
+  - '🇺🇸 美国 04 '
+  - '🇺🇸 美国 05 '
+  - '🇺🇸 美国 06 '
+  - '🇺🇸 美国 07 '
+  - '🇺🇸 美国 08 '
+  - '🇺🇸 美国 09 '
 - name: 🇩🇪 德国
-  type: url-test
-  url: http://www.gstatic.com/generate_204
-  interval: 300
+  type: select
   proxies:
-  - 🇩🇪 德国 01 @zmxooo
-  - 🇩🇪 德国 02 @zmxooo
-  - 🇩🇪 德国 03 @zmxooo
-  - 🇩🇪 德国 04 @zmxooo
-  - 🇩🇪 德国 05 @zmxooo
-  - 🇩🇪 德国 06 @zmxooo
-  - 🇩🇪 德国 07 @zmxooo
-  - 🇩🇪 德国 08 @zmxooo
-  - 🇩🇪 德国 09 @zmxooo
+  - '🇩🇪 德国 01 '
+  - '🇩🇪 德国 02 '
+  - '🇩🇪 德国 03 '
+  - '🇩🇪 德国 04 '
+  - '🇩🇪 德国 05 '
+  - '🇩🇪 德国 06 '
+  - '🇩🇪 德国 07 '
+  - '🇩🇪 德国 08 '
+  - '🇩🇪 德国 09 '
 - name: 🇻🇳 越南
-  type: url-test
-  url: http://www.gstatic.com/generate_204
-  interval: 300
+  type: select
   proxies:
-  - 🇻🇳 越南 01 @zmxooo
-  - 🇻🇳 越南 02 @zmxooo
-  - 🇻🇳 越南 03 @zmxooo
-  - 🇻🇳 越南 04 @zmxooo
-  - 🇻🇳 越南 05 @zmxooo
-  - 🇻🇳 越南 06 @zmxooo
-  - 🇻🇳 越南 07 @zmxooo
-  - 🇻🇳 越南 08 @zmxooo
-  - 🇻🇳 越南 09 @zmxooo
-  - 🇻🇳 越南 10 @zmxooo
-  - 🇻🇳 越南 11 @zmxooo
-  - 🇻🇳 越南 12 @zmxooo
-  - 🇻🇳 越南 13 @zmxooo
-  - 🇻🇳 越南 14 @zmxooo
-  - 🇻🇳 越南 15 @zmxooo
-  - 🇻🇳 越南 16 @zmxooo
+  - '🇻🇳 越南 01 '
+  - '🇻🇳 越南 02 '
+  - '🇻🇳 越南 03 '
+  - '🇻🇳 越南 04 '
+  - '🇻🇳 越南 05 '
+  - '🇻🇳 越南 06 '
+  - '🇻🇳 越南 07 '
+  - '🇻🇳 越南 08 '
+  - '🇻🇳 越南 09 '
+  - '🇻🇳 越南 10 '
+  - '🇻🇳 越南 11 '
+  - '🇻🇳 越南 12 '
+  - '🇻🇳 越南 13 '
+  - '🇻🇳 越南 14 '
+  - '🇻🇳 越南 15 '
+  - '🇻🇳 越南 16 '
 rules:
 - MATCH,🚀 节点选择
