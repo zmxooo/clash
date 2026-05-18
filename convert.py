@@ -777,7 +777,19 @@ async def build():
 
     # 🚀 核心魔法：执行总列表最终洗牌，强制整齐排队
     clash_proxies.sort(key=proxy_sort_key)
+    
+    # ==================== 3. 🚀 小火箭总列表同步洗牌 ====================
+    def rocket_sort_key(link_str):
+        import urllib.parse  # 👈 局部导入，确保 100% 不会报 urllib 未定义错误
+        
+        # 提取出 # 后面的节点名字，并进行 URL 解码
+        name = urllib.parse.unquote(link_str.split("#")[-1]) if "#" in link_str else ""
+        
+        # 借用刚刚写好的完美字典排序逻辑
+        return proxy_sort_key({"name": name})
 
+    # 🚀 执行总列表排序（与上面的冲突修复保持相同的 4 空格缩进）
+    rocket_links.sort(key=rocket_sort_key)
     # ====== 生成最终的配置文件 ======
     config = {
         "mixed-port": 7890,
