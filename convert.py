@@ -170,25 +170,43 @@ class Parser:
 
     @staticmethod
     async def parse(session, link):
-        """核心分发器：判断协议类型并转交任务（已全面打通路由通道）"""
         try:
             link = link.strip()
-            if link.startswith("ss://"):
-                return await Parser.parse_ss(session, link)
-            elif link.startswith("vmess://"):
-                return await Parser.parse_vmess(session, link)
-            elif link.startswith("vless://"):
-                return await Parser.parse_vless(session, link)
-            elif link.startswith("trojan://"):
-                return await Parser.parse_trojan(session, link)
-            elif link.startswith("hy2://") or link.startswith("hysteria2://"):
-                return await Parser.parse_hy2(session, link)
-            elif link.startswith("tuic://"):
-                return await Parser.parse_tuic(session, link)
-        except Exception:
+            if "://" not in link:
+                return None
+                
+            scheme_part, content_part = link.split("://", 1)
+            scheme = scheme_part.lower() 
+            
+            # 修复双写错误：vmess://VMESS://... -> vmess://...
+            if content_part.lower().startswith(scheme + "://"):
+                content_part = content_part.split("://", 1)[1]
+                
+            # 协议别名归一化
+            if scheme == "hy2":
+                scheme = "hysteria2"
+                
+            normalized_link = f"{scheme}://{content_part}"
+            
+            # 映射表分发（可选：如果协议多了，用字典映射更优雅，目前这样也可以）
+            if scheme == "ss":
+                return await Parser.parse_ss(session, normalized_link)
+            elif scheme == "vmess":
+                return await Parser.parse_vmess(session, normalized_link)
+            elif scheme == "vless":
+                return await Parser.parse_vless(session, normalized_link)
+            elif scheme == "trojan":
+                return await Parser.parse_trojan(session, normalized_link)
+            elif scheme == "hysteria2":
+                return await Parser.parse_hy2(session, normalized_link)
+            elif scheme == "tuic":
+                return await Parser.parse_tuic(session, normalized_link)
+                
+        except Exception as e:
+            # 在生产环境建议使用 logger.error
+            print(f"❌ 路由分发器解析失败: {e}")
             return None
         return None
-
     @staticmethod
     async def parse_ss(session, link: str):
         """
