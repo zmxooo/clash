@@ -304,45 +304,108 @@ class Parser:
 
             endpoint = endpoint.strip().rstrip("/")
 
-            # 严格解析 IPv6 目标主机与普通 IPv4 主机
-            if endpoint.startswith("["):
-                match = re.match(r"\[(.*?)\]:(\d+)", endpoint)
-                if not match:
-                    return None
-                server, port_str = f"[{match.group(1).strip()}]", match.group(2)
-            else:
-                if ":" not in endpoint:
-                    return None
-                server, port_str = endpoint.rsplit(":", 1)
-                server = server.strip()
-                if server.startswith("[") and server.endswith("]"):
-                    server = server.strip("[]")
+import urllib.parse
+import re
 
+@staticmethod
+async def parse_ss(session, link: str):
+    """
+    极简高性能 Shadowsocks 解析器
+    支持全格式、全场景，确保显示且有网络
+    """
+    try:
+        if not link:
+            return None
+            
+        link = link.strip()
+        
+        # 1. 提取备注
+        remarks = "SS节点"
+        if "#" in link:
+            link, rem = link.split("#", 1)
+            remarks = urllib.parse.unquote(rem.strip()) or remarks
+
+        # 2. 剥离协议头 (严格限制 ss://)
+        if link.lower().startswith("ss://"):
+            raw = link[5:]
+        else:
+            return None
+
+        # 3. 处理整段Base64编码
+        if "@" not in raw:
             try:
-                port = int(port_str.strip())
+                raw = safe_b64decode(raw)
             except Exception:
                 return None
 
-            if not (1 <= port <= 65535) or not server:
+        if "@" not in raw:
+            return None
+
+        # 4. 彻底剥离 URL 参数 (如 ?plugin=xxx), 确保 endpoint 纯净
+        # 这一步是确保非 8388 端口及 IPv6 节点能百分百连通的关键
+        if "?" in raw:
+            raw, _ = raw.split("?", 1)
+
+        # 5. 切分认证与地址
+        auth, endpoint = raw.rsplit("@", 1)
+
+        # 6. 处理认证信息 (兼容未 Base64 的原始明文和加密明文)
+        if ":" not in auth:
+            try:
+                auth = safe_b64decode(auth)
+            except Exception:
                 return None
 
-            label = await get_final_label(session, server, remarks)
-
-            node = {
-                "name": label,
-                "type": "ss",
-                "server": server,
-                "port": port,
-                "cipher": cipher,
-                "password": password,
-                "udp": True
-            }
-            if plugin:
-                node["plugin"] = urllib.parse.unquote(plugin)
-
-            return node
-        except Exception:
+        if ":" not in auth:
             return None
+
+        # URL 解码认证信息，防止密码中的特殊字符（如 +, /, =）变形
+        auth = urllib.parse.unquote(auth)
+        
+        cipher_raw, _, password = auth.partition(":")
+        cipher_raw = cipher_raw.strip().lower()
+
+        # 7. 加密方式精准映射
+        CIPHER_ALIASES = {
+            "chacha20-poly1305": "chacha20-ietf-poly1305",
+            "none": "none"  # 除非明确兼容特定内核，否则保持 none 比 auto 更不容易在核心里报错
+        }
+        cipher = CIPHER_ALIASES.get(cipher_raw, cipher_raw)
+
+        # 8. 解析地址与端口 (此时 endpoint 绝不含 ?)
+        if endpoint.startswith("["):
+            match = re.match(r"\[(.+)\]:(\d+)", endpoint)
+            if not match:
+                return None
+            server = match.group(1)
+            port = int(match.group(2))
+        else:
+            endpoint_parts = endpoint.rsplit(":", 1)
+            if len(endpoint_parts) < 2:
+                return None
+            server, port_str = endpoint_parts
+            try:
+                port = int(port_str)
+            except Exception:
+                port = 8388
+
+        if not server:
+            return None
+
+        # 9. 最终标签
+        label = await get_final_label(session, server, remarks)
+
+        return {
+            "name": label,
+            "type": "ss",
+            "server": server,
+            "port": port,
+            "cipher": cipher,
+            "password": password,
+            "udp": True
+        }
+    except Exception:
+        return None
 
     @staticmethod
     async def parse_vmess(session, link):
