@@ -273,34 +273,117 @@ def validate(proxy):
 
 class Parser:
 
-    @staticmethod
-    async def parse(session, link):
-        try:
-            if link.startswith("vmess://"):
-                return await Parser.parse_vmess(session, link)
+@staticmethod
+async def parse_ss(session, link):
+    try:
+        remarks = "SS节点"
+        if "#" in link:
+            link, rem = link.split("#", 1)
+            remarks = urllib.parse.unquote(rem.strip())
 
-            if link.startswith("vless://"):
-                return await Parser.parse_vless(session, link)
+        raw = link[5:]
+        if not raw:
+            print(f"[SS内容为空] {link}")
+            return None
+        
+        if "@" not in raw:
+            try:
+                raw = safe_b64decode(raw)
+            except Exception as e:
+                print(f"[SS解码失败] {e} -> {link}")
+                return None
 
-            if link.startswith("trojan://"):
-                return await Parser.parse_trojan(session, link)
-
-            if link.startswith("ss://"):
-                return await Parser.parse_ss(session, link)
-
-            if (
-                link.startswith("hy2://")
-                or
-                link.startswith("hysteria2://")
-            ):
-                return await Parser.parse_hy2(session, link)
-
-            if link.startswith("tuic://"):
-                return await Parser.parse_tuic(session, link)
-
-        except Exception:
+        if not raw or "@" not in raw:
+            print(f"[SS无@分隔符] {link}")
             return None
 
+        parts = raw.rsplit("@", 1)
+        if len(parts) < 2:
+            print(f"[SS格式错误] {link}")
+            return None
+        auth, endpoint = parts[0], parts[1]
+
+        if ":" not in auth:
+            try:
+                auth = safe_b64decode(auth)
+            except Exception as e:
+                print(f"[SS认证信息解码失败] {e} -> {link}")
+                return None
+
+        if not auth or ":" not in auth:
+            print(f"[SS无加密/密码分隔符] {link}")
+            return None
+
+        # 修复：密码含冒号也能正确解析
+        cipher_raw, _, password = auth.partition(":")
+        if not cipher_raw or not password:
+            print(f"[SS加密/密码无效] {link}")
+            return None
+
+        if "?" in endpoint:
+            endpoint = endpoint.split("?", 1)[0]
+        if "/" in endpoint:
+            endpoint = endpoint.split("/", 1)[0]
+
+        server = ""
+        port = 8388
+        if endpoint.startswith("["):
+            match = re.match(r"\[(.+)\]:(\d+)", endpoint)
+            if not match:
+                print(f"[SS IPv6格式错误] {endpoint} -> {link}")
+                return None
+            server, port_str = match.group(1), match.group(2)
+            # 强制保留IPv6中括号
+            server = f"[{server}]"
+        else:
+            endpoint_parts = endpoint.rsplit(":", 1)
+            if len(endpoint_parts) < 2:
+                print(f"[SS无端口] {link}")
+                return None
+            server, port_str = endpoint_parts[0], endpoint_parts[1]
+            # 修复：IPv4地址去掉多余中括号
+            if server.startswith("[") and server.endswith("]"):
+                server = server.strip("[]")
+
+        try:
+            port = int(str(port_str).strip())
+        except Exception as e:
+            print(f"[SS端口错误] {e} -> {link}")
+            port = 8388
+            
+        if not server:
+            print(f"[SS无服务器] {link}")
+            return None
+
+        label = await get_final_label(session, server, remarks)
+
+        # 修复：加密方式只映射别名，不强制替换
+        CIPHER_ALIASES = {
+            "chacha20-poly1305": "chacha20-ietf-poly1305",
+            "aes-256-cfb": "aes-256-gcm"
+        }
+        SUPPORTED_CIPHERS = {
+            "auto", "aes-128-gcm", "chacha20-ietf-poly1305", "none",
+            "aes-256-gcm", "2022-blake3-aes-128-gcm", "2022-blake3-aes-256-gcm"
+        }
+        cipher_low = cipher_raw.lower().strip()
+        cipher = CIPHER_ALIASES.get(cipher_low, cipher_low)
+        if cipher not in SUPPORTED_CIPHERS:
+            cipher = "aes-256-gcm"
+            print(f"[SS加密方式降级] {cipher_raw} -> {cipher} -> {link}")
+
+        print(f"[SS解析成功] {server}:{port} 加密：{cipher}")
+        return {
+            "name": label,
+            "type": "ss",
+            "server": server,
+            "port": port,
+            "cipher": cipher,
+            "password": password,
+            "udp": True
+        }
+    except Exception as e:
+        print(f"[SS PARSE ERROR] {e} -> {link}")
         return None
 
     @staticmethod
