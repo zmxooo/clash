@@ -750,33 +750,33 @@ async def build():
                 print(f"✅ 成功加载节点: {proxy['name']}") 
             else:
                 print(f"❌ 节点未通过 validate() 核心校验 -> 解析出的数据为: {proxy}")
-# 🎯 智能多级自然排序（完美适配 "🇭🇰香港 01" 格式）
-import re  # 👈 局部导入，确保不与其他模块冲突
+    # 🎯 智能多级自然排序（完美适配 "🇭🇰香港 01" 格式）
+    import re  # 👈 局部导入，确保不与其他模块冲突
 
-def proxy_sort_key(x):
-    name = x.get("name") or x.get("remarks") or ""
-    
-    # 1. 优先级 1：公告提示节点置顶
-    is_info_keywords = ["📢", "📡", "提示", "流量", "到期", "剩余", "公告"]
-    is_info = 0 if any(k in name for k in is_info_keywords) else 1
-    
-    # 2. 优先级 2：国家/地区聚合
-    # 因为你的格式极其固定（如 🇭🇰香港 01），前几个字符必定包含国旗和国家名
-    # 我们直接取前 5 个字符作为国家聚合的 Key，既简单又绝对不会出错
-    country_key = name[:5]
-    
-    # 3. 优先级 3：自然排序（防止 10 排在 2 前面，且绝对防崩溃）
-    natural_parts = []
-    for c in re.split(r'(\d+)', name):
-        if c.isdigit():
-            natural_parts.append((1, int(c)))    # 数字段转整型（2 小于 10）
-        else:
-            natural_parts.append((0, c.lower()))  # 文本段转小写
-            
-    return (is_info, country_key, natural_parts)
+    def proxy_sort_key(x):
+        name = x.get("name") or x.get("remarks") or ""
+        
+        # 1. 优先级 1：公告提示节点置顶
+        is_info_keywords = ["📢", "📡", "提示", "流量", "到期", "剩余", "公告"]
+        is_info = 0 if any(k in name for k in is_info_keywords) else 1
+        
+        # 2. 优先级 2：国家/地区聚合
+        # 因为你的格式极其固定（如 🇭🇰香港 01），前几个字符必定包含国旗和国家名
+        # 我们直接取前 5 个字符作为国家聚合的 Key，既简单又绝对不会出错
+        country_key = name[:5]
+        
+        # 3. 优先级 3：自然排序（防止 10 排在 2 前面，且绝对防崩溃）
+        natural_parts = []
+        for c in re.split(r'(\d+)', name):
+            if c.isdigit():
+                natural_parts.append((1, int(c)))    # 数字段转整型（2 小于 10）
+            else:
+                natural_parts.append((0, c.lower()))  # 文本段转小写
+                
+        return (is_info, country_key, natural_parts)
 
-# 🚀 核心魔法：执行总列表最终洗牌，强制整齐排队
-clash_proxies.sort(key=proxy_sort_key)
+    # 🚀 核心魔法：执行总列表最终洗牌，强制整齐排队
+    clash_proxies.sort(key=proxy_sort_key)
 
     # ====== 生成最终的配置文件 ======
     config = {
