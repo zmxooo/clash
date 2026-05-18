@@ -362,6 +362,9 @@ class Parser:
 
             try:
                 port = int(str(port_str).strip())
+                     except Exception:
+                port = 8388
+            
     @staticmethod
     async def parse_ss(session, link):
         """
