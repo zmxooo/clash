@@ -138,13 +138,6 @@ proxies:
   sni: vpn-sg-003.fastervpn.world
   skip-cert-verify: true
 - name: 🇯🇵 日本 01
-  type: ss
-  server: 43.165.190.11
-  port: 42841
-  cipher: none
-  password: 59fc5f8c-5697-4eb8-acf2-8ae363f203a2
-  udp: true
-- name: 🇯🇵 日本 02
   type: trojan
   server: 43.168.16.112
   port: 443
@@ -467,7 +460,6 @@ proxy-groups:
   - 🇹🇼 台湾 04
   - 🇸🇬 新加坡 01
   - 🇯🇵 日本 01
-  - 🇯🇵 日本 02
   - 🇰🇷 韩国 01
   - 🇰🇷 韩国 02
   - 🇺🇸 美国 01
@@ -524,7 +516,6 @@ proxy-groups:
   - 🇹🇼 台湾 04
   - 🇸🇬 新加坡 01
   - 🇯🇵 日本 01
-  - 🇯🇵 日本 02
   - 🇰🇷 韩国 01
   - 🇰🇷 韩国 02
   - 🇺🇸 美国 01
@@ -590,7 +581,6 @@ proxy-groups:
   type: select
   proxies:
   - 🇯🇵 日本 01
-  - 🇯🇵 日本 02
 - name: 🇰🇷 韩国
   type: select
   proxies:
