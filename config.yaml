@@ -3,140 +3,13 @@ allow-lan: true
 mode: rule
 log-level: info
 proxies:
-- name: '🇭🇰 香港 01 '
-  type: hysteria2
-  server: 202.146.222.93
-  port: 443
-  password: qQe1z5kU8kN6SlKnDt9Ru3Qp
-  sni: https://t.me/zmxooo🇨🇳
-  skip-cert-verify: true
-- name: '🇭🇰 香港 02 '
-  type: hysteria2
-  server: 202.146.222.89
-  port: 443
-  password: qQe1z5kU8kN6SlKnDt9Ru3Qp
-  sni: https://t.me/zmxooo🇨🇳
-  skip-cert-verify: true
-- name: '🇭🇰 香港 03 '
-  type: hysteria2
-  server: 202.146.222.41
-  port: 443
-  password: qQe1z5kU8kN6SlKnDt9Ru3Qp
-  sni: https://t.me/zmxooo🇨🇳
-  skip-cert-verify: true
-- name: '🇭🇰 香港 04 '
-  type: hysteria2
-  server: 202.146.222.29
-  port: 443
-  password: qQe1z5kU8kN6SlKnDt9Ru3Qp
-  sni: https://t.me/zmxooo🇨🇳
-  skip-cert-verify: true
-- name: '🇭🇰 香港 05 '
-  type: hysteria2
-  server: 202.146.222.16
-  port: 443
-  password: qQe1z5kU8kN6SlKnDt9Ru3Qp
-  sni: https://t.me/zmxooo🇨🇳
-  skip-cert-verify: true
-- name: '🇭🇰 香港 06 '
-  type: vless
-  server: hk.chinablog.xyz
-  port: 8080
-  uuid: 360f1d71-f8dd-4c71-aa4f-347486312dca
-  network: tcp
-  tls: true
-  servername: www.liblib.art
-  client-fingerprint: chrome
-  skip-cert-verify: true
-  reality-opts:
-    public-key: bXstTdAgEyOn8LEMM_K2gIOw7T2iKhr6l-lXcrF4PlM
-    short-id: ''
-- name: '🇭🇰 香港 07 '
-  type: hysteria2
-  server: 202.146.222.13
-  port: 443
-  password: qQe1z5kU8kN6SlKnDt9Ru3Qp
-  sni: https://t.me/zmxooo🇨🇳
-  skip-cert-verify: true
-- name: '🇭🇰 香港 08 '
-  type: hysteria2
-  server: 202.146.222.11
-  port: 443
-  password: qQe1z5kU8kN6SlKnDt9Ru3Qp
-  sni: https://t.me/zmxooo🇨🇳
-  skip-cert-verify: true
-- name: '🇭🇰 香港 09 '
-  type: vless
-  server: hk01zl.lovetutujiejie.com
-  port: 443
-  uuid: 99c7eda6-3815-4bb4-8e3e-ea82e42aaf66
-  network: tcp
-  tls: true
-  servername: php.net
-  client-fingerprint: ios
-  skip-cert-verify: true
-  reality-opts:
-    public-key: Csew0d2GnhUKWv4TADPkJp1FJ8mPI_omJVHZetrcnWA
-    short-id: 7d70069a4058
-- name: '🇭🇰 香港 10 '
-  type: vless
-  server: 83.229.126.127
-  port: 32237
-  uuid: 73bcd72f-9545-4cb8-8daf-7d004501880d
-  network: ws
-  tls: true
-  servername: dcsrzh.ccwu.cc
-  client-fingerprint: chrome
-  skip-cert-verify: true
-  ws-opts:
-    path: /?ed=2560&https://t.me/WangCai2🇨🇳
-    headers:
-      Host: dcsrzh.ccwu.cc
-- name: '🇭🇰 香港 11 '
-  type: vmess
-  server: v10.hdacd.com
-  port: 30807
-  uuid: cbb3f877-d1fb-344c-87a9-d153bffd5484
-  alterId: 2
-  cipher: auto
-  network: tcp
-  tls: false
-  skip-cert-verify: true
 - name: '🇹🇼 台湾 01 '
-  type: hysteria2
-  server: 160.187.100.109
-  port: 443
-  password: qQe1z5kU8kN6SlKnDt9Ru3Qp
-  sni: https://t.me/zmxooo🇨🇳
-  skip-cert-verify: true
-- name: '🇹🇼 台湾 02 '
   type: ss
   server: r3mrcg007147vhp.cybervena.com
   port: 50099
   cipher: aes-256-gcm
   password: 7e731ec3-f8e1-43f6-92cf-3978d14705c4
   udp: true
-- name: '🇹🇼 台湾 03 '
-  type: trojan
-  server: 125.227.86.48
-  port: 443
-  password: 3f5bc61547b1f0d9
-  sni: 125.227.86.48
-  skip-cert-verify: true
-- name: '🇹🇼 台湾 04 '
-  type: trojan
-  server: 125.227.86.45
-  port: 443
-  password: 0a9f1f5a397bd427
-  sni: 125.227.86.45
-  skip-cert-verify: true
-- name: '🇸🇬 新加坡 01 '
-  type: hysteria2
-  server: vpn-sg-003.fastervpn.world
-  port: 443
-  password: qQe1z5kU8kN6SlKnDt9Ru3Qp
-  sni: vpn-sg-003.fastervpn.world
-  skip-cert-verify: true
 - name: '🇯🇵 日本 01 '
   type: ss
   server: 43.165.190.11
@@ -144,180 +17,27 @@ proxies:
   cipher: none
   password: 59fc5f8c-5697-4eb8-acf2-8ae363f203a2
   udp: true
-- name: '🇯🇵 日本 02 '
-  type: trojan
-  server: 43.168.16.112
-  port: 443
-  password: 8r%3C%5B9%27l6hAO%238ZQi
-  sni: 43.168.16.112
-  skip-cert-verify: true
 - name: '🇰🇷 韩国 01 '
-  type: hysteria2
-  server: vpn-kr-001.fastervpn.world
-  port: 443
-  password: qQe1z5kU8kN6SlKnDt9Ru3Qp
-  sni: vpn-kr-001.fastervpn.world
-  skip-cert-verify: true
-- name: '🇰🇷 韩国 02 '
   type: ss
   server: 211.178.105.134
   port: 6123
   cipher: aes-256-gcm
   password: qwerREWQ@@
   udp: true
-- name: '🇺🇸 美国 01 '
-  type: vmess
-  server: 82.198.246.233
-  port: 180
-  uuid: d13fc2f5-3e05-4795-81eb-44143a09e552
-  alterId: 0
-  cipher: auto
-  network: tcp
-  tls: false
-  skip-cert-verify: true
-- name: '🇺🇸 美国 02 '
-  type: vmess
-  server: 82.198.246.250
-  port: 180
-  uuid: d13fc2f5-3e05-4795-81eb-44143a09e552
-  alterId: 0
-  cipher: auto
-  network: tcp
-  tls: false
-  skip-cert-verify: true
-- name: '🇺🇸 美国 03 '
-  type: vmess
-  server: 82.198.246.37
-  port: 180
-  uuid: d13fc2f5-3e05-4795-81eb-44143a09e552
-  alterId: 0
-  cipher: auto
-  network: tcp
-  tls: false
-  skip-cert-verify: true
-- name: '🇺🇸 美国 04 '
-  type: vless
-  server: r1.mizulina.top
-  port: 22231
-  uuid: afcac633-0e1a-46c3-bef2-cc01cc0097c8
-  network: tcp
-  tls: true
-  servername: r1.mizulina.top
-  client-fingerprint: edge
-  skip-cert-verify: true
-- name: '🇺🇸 美国 05 '
-  type: hysteria2
-  server: 23.144.12.162
-  port: 443
-  password: qQe1z5kU8kN6SlKnDt9Ru3Qp
-  sni: https://t.me/zmxooo🇨🇳
-  skip-cert-verify: true
-- name: '🇺🇸 美国 06 '
-  type: vless
-  server: 144.31.157.163
-  port: 443
-  uuid: ae8ddd8e-00af-48e5-bd57-05074a1bbffb
-  network: tcp
-  tls: true
-  servername: www.deepl.com
-  client-fingerprint: chrome
-  skip-cert-verify: true
-  reality-opts:
-    public-key: ZHEMPjSWslk6_qD2JNQzd5enUPz8nY9mYRRuM6NkZmU
-    short-id: 0123456789abcdef
-- name: '🇺🇸 美国 07 '
-  type: trojan
-  server: 154.17.225.73
-  port: 443
-  password: 8r%3C%5B9%27l6hAO%238ZQi
-  sni: 154.17.225.73
-  skip-cert-verify: true
-- name: '🇺🇸 美国 08 '
-  type: vmess
-  server: 82.198.246.214
-  port: 180
-  uuid: d13fc2f5-3e05-4795-81eb-44143a09e552
-  alterId: 0
-  cipher: aes-128-gcm
-  network: tcp
-  tls: false
-  skip-cert-verify: true
-- name: '🇺🇸 美国 09 '
-  type: vmess
-  server: 82.198.246.97
-  port: 180
-  uuid: d13fc2f5-3e05-4795-81eb-44143a09e552
-  alterId: 0
-  cipher: auto
-  network: tcp
-  tls: false
-  skip-cert-verify: true
 - name: '🇩🇪 德国 01 '
-  type: trojan
-  server: 159.89.207.154
-  port: 443
-  password: 8r%3C%5B9%27l6hAO%238ZQi
-  sni: 159.89.207.154
-  skip-cert-verify: true
-- name: '🇩🇪 德国 02 '
-  type: trojan
-  server: 125.227.86.46
-  port: 443
-  password: 3f5bc61547b1f0d9
-  sni: 125.227.86.46
-  skip-cert-verify: true
-- name: '🇩🇪 德国 03 '
-  type: trojan
-  server: 125.227.86.47
-  port: 443
-  password: 0a9f1f5a397bd427
-  sni: 125.227.86.47
-  skip-cert-verify: true
-- name: '🇩🇪 德国 04 '
   type: ss
   server: 103.186.154.214
   port: 38388
   cipher: aes-256-gcm
   password: Xn8jKdmDM00IeO%#$#fJAMtsEAEUOpH/YWYtYqDFnT0SV
   udp: true
-- name: '🇩🇪 德国 05 '
+- name: '🇩🇪 德国 02 '
   type: ss
   server: 103.186.154.24
   port: 38388
   cipher: aes-256-gcm
   password: Xn8jKdmDM00IeO%#$#fJAMtsEAEUOpH/YWYtYqDFnT0SV
   udp: true
-- name: '🇩🇪 德国 06 '
-  type: vmess
-  server: 82.198.246.9
-  port: 180
-  uuid: d13fc2f5-3e05-4795-81eb-44143a09e552
-  alterId: 0
-  cipher: auto
-  network: tcp
-  tls: false
-  skip-cert-verify: true
-- name: '🇩🇪 德国 07 '
-  type: trojan
-  server: 72.56.110.162
-  port: 443
-  password: 8r%3C%5B9%27l6hAO%238ZQi
-  sni: 72.56.110.162
-  skip-cert-verify: true
-- name: '🇩🇪 德国 08 '
-  type: trojan
-  server: 152.42.169.132
-  port: 443
-  password: 8r%3C%5B9%27l6hAO%238ZQi
-  sni: 152.42.169.132
-  skip-cert-verify: true
-- name: '🇩🇪 德国 09 '
-  type: trojan
-  server: 172.64.149.54
-  port: 2096
-  password: 8r%3C%5B9%27l6hAO%238ZQi
-  sni: 172.64.149.54
-  skip-cert-verify: true
 - name: '🇻🇳 越南 01 '
   type: ss
   server: 103.186.155.223
@@ -436,12 +156,9 @@ proxy-groups:
   proxies:
   - 🎬 自动选择
   - 🎯 手动选择
-  - 🇭🇰 香港
   - 🇹🇼 台湾
-  - 🇸🇬 新加坡
   - 🇯🇵 日本
   - 🇰🇷 韩国
-  - 🇺🇸 美国
   - 🇩🇪 德国
   - 🇻🇳 越南
   - DIRECT
@@ -450,44 +167,11 @@ proxy-groups:
   url: http://www.gstatic.com/generate_204
   interval: 300
   proxies:
-  - '🇭🇰 香港 01 '
-  - '🇭🇰 香港 02 '
-  - '🇭🇰 香港 03 '
-  - '🇭🇰 香港 04 '
-  - '🇭🇰 香港 05 '
-  - '🇭🇰 香港 06 '
-  - '🇭🇰 香港 07 '
-  - '🇭🇰 香港 08 '
-  - '🇭🇰 香港 09 '
-  - '🇭🇰 香港 10 '
-  - '🇭🇰 香港 11 '
   - '🇹🇼 台湾 01 '
-  - '🇹🇼 台湾 02 '
-  - '🇹🇼 台湾 03 '
-  - '🇹🇼 台湾 04 '
-  - '🇸🇬 新加坡 01 '
   - '🇯🇵 日本 01 '
-  - '🇯🇵 日本 02 '
   - '🇰🇷 韩国 01 '
-  - '🇰🇷 韩国 02 '
-  - '🇺🇸 美国 01 '
-  - '🇺🇸 美国 02 '
-  - '🇺🇸 美国 03 '
-  - '🇺🇸 美国 04 '
-  - '🇺🇸 美国 05 '
-  - '🇺🇸 美国 06 '
-  - '🇺🇸 美国 07 '
-  - '🇺🇸 美国 08 '
-  - '🇺🇸 美国 09 '
   - '🇩🇪 德国 01 '
   - '🇩🇪 德国 02 '
-  - '🇩🇪 德国 03 '
-  - '🇩🇪 德国 04 '
-  - '🇩🇪 德国 05 '
-  - '🇩🇪 德国 06 '
-  - '🇩🇪 德国 07 '
-  - '🇩🇪 德国 08 '
-  - '🇩🇪 德国 09 '
   - '🇻🇳 越南 01 '
   - '🇻🇳 越南 02 '
   - '🇻🇳 越南 03 '
@@ -507,44 +191,11 @@ proxy-groups:
 - name: 🎯 手动选择
   type: select
   proxies:
-  - '🇭🇰 香港 01 '
-  - '🇭🇰 香港 02 '
-  - '🇭🇰 香港 03 '
-  - '🇭🇰 香港 04 '
-  - '🇭🇰 香港 05 '
-  - '🇭🇰 香港 06 '
-  - '🇭🇰 香港 07 '
-  - '🇭🇰 香港 08 '
-  - '🇭🇰 香港 09 '
-  - '🇭🇰 香港 10 '
-  - '🇭🇰 香港 11 '
   - '🇹🇼 台湾 01 '
-  - '🇹🇼 台湾 02 '
-  - '🇹🇼 台湾 03 '
-  - '🇹🇼 台湾 04 '
-  - '🇸🇬 新加坡 01 '
   - '🇯🇵 日本 01 '
-  - '🇯🇵 日本 02 '
   - '🇰🇷 韩国 01 '
-  - '🇰🇷 韩国 02 '
-  - '🇺🇸 美国 01 '
-  - '🇺🇸 美国 02 '
-  - '🇺🇸 美国 03 '
-  - '🇺🇸 美国 04 '
-  - '🇺🇸 美国 05 '
-  - '🇺🇸 美国 06 '
-  - '🇺🇸 美国 07 '
-  - '🇺🇸 美国 08 '
-  - '🇺🇸 美国 09 '
   - '🇩🇪 德国 01 '
   - '🇩🇪 德国 02 '
-  - '🇩🇪 德国 03 '
-  - '🇩🇪 德国 04 '
-  - '🇩🇪 德国 05 '
-  - '🇩🇪 德国 06 '
-  - '🇩🇪 德国 07 '
-  - '🇩🇪 德国 08 '
-  - '🇩🇪 德国 09 '
   - '🇻🇳 越南 01 '
   - '🇻🇳 越南 02 '
   - '🇻🇳 越南 03 '
@@ -561,65 +212,23 @@ proxy-groups:
   - '🇻🇳 越南 14 '
   - '🇻🇳 越南 15 '
   - '🇻🇳 越南 16 '
-- name: 🇭🇰 香港
-  type: select
-  proxies:
-  - '🇭🇰 香港 01 '
-  - '🇭🇰 香港 02 '
-  - '🇭🇰 香港 03 '
-  - '🇭🇰 香港 04 '
-  - '🇭🇰 香港 05 '
-  - '🇭🇰 香港 06 '
-  - '🇭🇰 香港 07 '
-  - '🇭🇰 香港 08 '
-  - '🇭🇰 香港 09 '
-  - '🇭🇰 香港 10 '
-  - '🇭🇰 香港 11 '
 - name: 🇹🇼 台湾
   type: select
   proxies:
   - '🇹🇼 台湾 01 '
-  - '🇹🇼 台湾 02 '
-  - '🇹🇼 台湾 03 '
-  - '🇹🇼 台湾 04 '
-- name: 🇸🇬 新加坡
-  type: select
-  proxies:
-  - '🇸🇬 新加坡 01 '
 - name: 🇯🇵 日本
   type: select
   proxies:
   - '🇯🇵 日本 01 '
-  - '🇯🇵 日本 02 '
 - name: 🇰🇷 韩国
   type: select
   proxies:
   - '🇰🇷 韩国 01 '
-  - '🇰🇷 韩国 02 '
-- name: 🇺🇸 美国
-  type: select
-  proxies:
-  - '🇺🇸 美国 01 '
-  - '🇺🇸 美国 02 '
-  - '🇺🇸 美国 03 '
-  - '🇺🇸 美国 04 '
-  - '🇺🇸 美国 05 '
-  - '🇺🇸 美国 06 '
-  - '🇺🇸 美国 07 '
-  - '🇺🇸 美国 08 '
-  - '🇺🇸 美国 09 '
 - name: 🇩🇪 德国
   type: select
   proxies:
   - '🇩🇪 德国 01 '
   - '🇩🇪 德国 02 '
-  - '🇩🇪 德国 03 '
-  - '🇩🇪 德国 04 '
-  - '🇩🇪 德国 05 '
-  - '🇩🇪 德国 06 '
-  - '🇩🇪 德国 07 '
-  - '🇩🇪 德国 08 '
-  - '🇩🇪 德国 09 '
 - name: 🇻🇳 越南
   type: select
   proxies:
