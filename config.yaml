@@ -436,13 +436,13 @@ proxy-groups:
   proxies:
   - 🎬 自动选择
   - 🎯 手动选择
+  - 🇩🇪 德国
   - 🇭🇰 香港
-  - 🇹🇼 台湾
-  - 🇸🇬 新加坡
   - 🇯🇵 日本
   - 🇰🇷 韩国
+  - 🇸🇬 新加坡
+  - 🇹🇼 台湾
   - 🇺🇸 美国
-  - 🇩🇪 德国
   - 🇻🇳 越南
   - DIRECT
 - name: 🎬 自动选择
@@ -561,6 +561,18 @@ proxy-groups:
   - 🇻🇳 越南 14
   - 🇻🇳 越南 15
   - 🇻🇳 越南 16
+- name: 🇩🇪 德国
+  type: select
+  proxies:
+  - 🇩🇪 德国 01
+  - 🇩🇪 德国 02
+  - 🇩🇪 德国 03
+  - 🇩🇪 德国 04
+  - 🇩🇪 德国 05
+  - 🇩🇪 德国 06
+  - 🇩🇪 德国 07
+  - 🇩🇪 德国 08
+  - 🇩🇪 德国 09
 - name: 🇭🇰 香港
   type: select
   proxies:
@@ -575,17 +587,6 @@ proxy-groups:
   - 🇭🇰 香港 09
   - 🇭🇰 香港 10
   - 🇭🇰 香港 11
-- name: 🇹🇼 台湾
-  type: select
-  proxies:
-  - 🇹🇼 台湾 01
-  - 🇹🇼 台湾 02
-  - 🇹🇼 台湾 03
-  - 🇹🇼 台湾 04
-- name: 🇸🇬 新加坡
-  type: select
-  proxies:
-  - 🇸🇬 新加坡 01
 - name: 🇯🇵 日本
   type: select
   proxies:
@@ -596,6 +597,17 @@ proxy-groups:
   proxies:
   - 🇰🇷 韩国 01
   - 🇰🇷 韩国 02
+- name: 🇸🇬 新加坡
+  type: select
+  proxies:
+  - 🇸🇬 新加坡 01
+- name: 🇹🇼 台湾
+  type: select
+  proxies:
+  - 🇹🇼 台湾 01
+  - 🇹🇼 台湾 02
+  - 🇹🇼 台湾 03
+  - 🇹🇼 台湾 04
 - name: 🇺🇸 美国
   type: select
   proxies:
@@ -608,18 +620,6 @@ proxy-groups:
   - 🇺🇸 美国 07
   - 🇺🇸 美国 08
   - 🇺🇸 美国 09
-- name: 🇩🇪 德国
-  type: select
-  proxies:
-  - 🇩🇪 德国 01
-  - 🇩🇪 德国 02
-  - 🇩🇪 德国 03
-  - 🇩🇪 德国 04
-  - 🇩🇪 德国 05
-  - 🇩🇪 德国 06
-  - 🇩🇪 德国 07
-  - 🇩🇪 德国 08
-  - 🇩🇪 德国 09
 - name: 🇻🇳 越南
   type: select
   proxies:
