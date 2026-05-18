@@ -207,6 +207,7 @@ class Parser:
             print(f"❌ 路由分发器解析失败: {e}")
             return None
         return None
+        
     @staticmethod
     async def parse_ss(session, link: str):
         """
@@ -678,6 +679,121 @@ async def build():
                 "proxies": info_names + proxies
             })
 
+    yaml_text = yaml.safe_dump(config, allow_unicode=True, sort_keys=False)
+    atomic_write(CONFIG_FILE, yaml_text)
+
+async def build():
+    load_cache()
+    path = Path("nodes.txt")
+    if not path.exists():
+        print("❌ 致命错误: nodes.txt 文件不存在，请检查路径！")
+        return
+
+    links = [line.strip() for line in path.read_text(encoding="utf-8", errors="ignore").splitlines() if line.strip()]
+    if not links:
+        print("⚠️ 警告: nodes.txt 文件存在，但里面没有任何链接（空文件）！")
+        return
+
+    region_map = defaultdict(list)
+    clash_proxies = []
+    rocket_links = []
+    seen = set()
+    used_names = set()
+
+    connector = aiohttp.TCPConnector(ssl=False, limit=50)
+    async with aiohttp.ClientSession(connector=connector) as session:
+        # 🚀 高并发优化：一次性创建所有任务，充分释放网络性能
+        tasks = [Parser.parse(session, link) for link in links]
+        parsed_results = await asyncio.gather(*tasks)
+        
+        for link, proxy in zip(links, parsed_results):
+            # 【埋点 1】检查解析是否成功
+            if not proxy:
+                print(f"❌ 解析失败(子解析器返回None) -> 原始链接开头: {link[:35]}...")
+                continue
+
+            # 指纹去重（server+port+type+uuid/password）
+            fp = (proxy.get("server"), proxy.get("port"), proxy.get("type"), proxy.get("uuid"), proxy.get("password"))
+            if fp in seen:
+                print(f"⚠️ 去重拦截，跳过完全重复的节点 -> {proxy.get('server')}:{proxy.get('port')}")
+                continue
+            seen.add(fp)
+
+            # 🚨 修复提示节点误伤：使用原始名字或备注来识别
+            raw_remarks = proxy.get("remarks") or proxy["name"]
+            if is_info_node(raw_remarks):
+                proxy["name"] = raw_remarks.strip()
+                clash_proxies.append(proxy)
+                rocket_links.append(f"{link.split('#')[0]}#{urllib.parse.quote(proxy['name'])}")
+                continue
+
+            # 【埋点 2】核心校验（只有通过校验，才正式为其分配国家组和编号）
+            if validate(proxy):
+                label = proxy["name"] # 此时 label 是 get_final_label 提取的带 Emoji 地区名
+                idx = len(region_map[label]) + 1
+                base_name = f"{label} {idx:02d}"
+                proxy["name"] = base_name
+                
+                # 重名自愈逻辑
+                port_val = proxy.get("port", 443)
+                loop_idx = 1
+                while proxy["name"] in used_names:
+                    proxy["name"] = f"{base_name}-{port_val}-{loop_idx}"
+                    loop_idx += 1
+                
+                used_names.add(proxy["name"])
+                clash_proxies.append(proxy)
+                region_map[label].append(proxy["name"])
+                
+                # 保持小火箭节点命名和 Clash 一致
+                rocket_links.append(f"{link.split('#')[0]}#{urllib.parse.quote(proxy['name'])}")
+                print(f"✅ 成功加载节点: {proxy['name']}") 
+            else:
+                print(f"❌ 节点未通过 validate() 核心校验 -> 解析出的数据为: {proxy}")
+
+    # ====== 生成最终的配置文件 ======
+    config = {
+        "mixed-port": 7890,
+        "allow-lan": True,
+        "mode": "rule",
+        "log-level": "info",
+        "proxies": clash_proxies,
+        "proxy-groups": [
+            {
+                "name": "🚀 节点选择",
+                "type": "select",
+                # 对核心国家策略组按 A-Z 自动排序
+                "proxies": ["🎬 自动选择", "🎯 手动选择"] + sorted(list(region_map.keys())) + ["DIRECT"]
+            },
+            {
+                "name": "🎬 自动选择",
+                "type": "url-test",
+                "url": TEST_URL,
+                "interval": 300,
+                "proxies": [x["name"] for x in clash_proxies if not is_info_node(x["name"])]
+            },
+            {
+                "name": "🎯 手动选择",
+                "type": "select",
+                "proxies": [x["name"] for x in clash_proxies]
+            }
+        ],
+        "rules": ["MATCH,🚀 节点选择"]
+    }
+    
+    info_names = [x["name"] for x in clash_proxies if is_info_node(x["name"])]
+    
+    # 动态地区策略组，同样按 A-Z 顺序优雅呈现
+    for region in sorted(region_map.keys()):
+        proxies = region_map[region]
+        if proxies:
+            config["proxy-groups"].append({
+                "name": region,
+                "type": "select",
+                "proxies": info_names + proxies
+            })
+
+    # 原子化安全写入文件
     yaml_text = yaml.safe_dump(config, allow_unicode=True, sort_keys=False)
     atomic_write(CONFIG_FILE, yaml_text)
 
