@@ -463,11 +463,113 @@ class Parser:
             # method:password
             # 密码允许包含 :
             # =========================
+    @staticmethod
+    async def parse_ss(session, link):
+        """
+        Shadowsocks (SS) 节点完整全兼容解析函数
+        支持:
+        - SIP002
+        - 老版 SS URI
+        - URLSafe Base64
+        - IPv6
+        - plugin
+        - remark
+        - 密码包含 @
+        - 密码包含 :
+        """
+
+        try:
+            # =========================
+            # 协议校验
+            # =========================
+            if not link.startswith("ss://"):
+                return None
+
+            # =========================
+            # 提取 remarks
+            # =========================
+            remarks = "SS节点"
+
+            if "#" in link:
+                link, rem = link.split("#", 1)
+                remarks = urllib.parse.unquote(
+                    rem.strip()
+                )
+
+            # =========================
+            # 去除协议头
+            # =========================
+            raw = link[5:]
+
+            if not raw:
+                return None
+
+            # =========================
+            # 老版 SS:
+            # ss://BASE64(method:password@host:port)
+            # =========================
+            if "@" not in raw:
+                try:
+                    raw = safe_b64decode(raw)
+                except Exception:
+                    return None
+
+            if not raw or "@" not in raw:
+                return None
+
+            # =========================
+            # 从右往左切分 @
+            # 防止密码中包含 @
+            # =========================
+            parts = raw.rsplit("@", 1)
+
+            if len(parts) != 2:
+                return None
+
+            auth, endpoint = parts
+
+            # =========================
+            # endpoint query/plugin 解析
+            # =========================
+            plugin = None
+
+            if "?" in endpoint:
+                endpoint, query = endpoint.split("?", 1)
+
+                params = urllib.parse.parse_qs(query)
+
+                if "plugin" in params:
+                    plugin = params["plugin"][0]
+
+            # 去除尾部 /
+            endpoint = endpoint.strip().rstrip("/")
+
+            if not endpoint:
+                return None
+
+            # =========================
+            # SIP002:
+            # method:password 被单独 Base64
+            # =========================
+            if ":" not in auth:
+                try:
+                    auth = safe_b64decode(auth)
+                except Exception:
+                    return None
+
+            if not auth or ":" not in auth:
+                return None
+
+            # =========================
+            # method:password
+            # 密码允许包含 :
+            # =========================
             auth_parts = auth.split(":", 1)
 
             if len(auth_parts) != 2:
                 return None
 
+            # 🛠️ 已精准恢复你原本的索引 [0]
             cipher = (
                 auth_parts[0]
                 .strip()
@@ -475,6 +577,7 @@ class Parser:
                 .replace("_", "-")
             )
 
+            # 🛠️ 已精准恢复你原本的索引 [1]
             password = auth_parts[1]
 
             if not cipher or not password:
@@ -557,7 +660,6 @@ class Parser:
 
         except Exception:
             return None
-
 
     @staticmethod
     async def parse_vmess(session, link):
