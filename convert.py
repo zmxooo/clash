@@ -40,7 +40,7 @@ SEM = asyncio.Semaphore(20)
 EMOJI_MAP = {
     "香港": "🇭🇰", "台湾": "🇹🇼", "美国": "🇺🇸", "英国": "🇬🇧", "韩国": "🇰🇷",
     "日本": "🇯🇵", "新加坡": "🇸🇬", "德国": "🇩🇪", "法国": "🇫🇷", "加拿大": "🇨🇦",
-    "越南": "🇻🇳", "荷兰": "🇳🇱", "俄罗斯" : "🇷🇺", "俄罗斯联邦": "🇷🇺",
+    "越南": "🇻🇳", "荷兰": "🇳🇱", "俄罗斯": "🇷🇺", "俄罗斯联邦": "🇷🇺",
     "马来西亚": "🇲🇾", "泰国": "🇹🇭", "菲律宾": "🇵🇭", "印度": "🇮🇳",
     "印度尼西亚": "🇮🇩", "柬埔寨": "🇰🇭", "澳门": "🇲🇴", "巴基斯坦": "🇵🇰",
     "哈萨克斯坦": "🇰🇿", "土耳其": "🇹🇷", "意大利": "🇮🇹", "西班牙": "🇪🇸",
@@ -114,14 +114,14 @@ async def query_country(session, server):
     if not server:
         return "🌍 其它地区"
         
-    # 【修复：无损清洗 IPv6 的中括号，防止 DNS 与 IP 查询崩溃】
+    # 清洗 IPv6 的中括号，防止 DNS 与 IP 查询因格式报错而崩溃
     clean_server = server.strip("[]")
     
     if clean_server in IP_CACHE:
         return IP_CACHE[clean_server]
 
     try:
-        # 【修复：将同步阻塞的 socket 转换为异步线程池执行，解放事件循环】
+        # 将同步阻塞的 socket 转换放入线程池异步执行，释放高并发下的事件循环
         loop = asyncio.get_event_loop()
         await loop.run_in_executor(None, socket.gethostbyname, clean_server)
     except Exception:
@@ -167,9 +167,10 @@ def validate(proxy):
 
 
 class Parser:
+
     @staticmethod
     async def parse(session, link):
-        """核心分发器：【已全面打通，支持全协议分发路由】"""
+        """核心分发器：判断协议类型并转交任务（已全面打通路由通道）"""
         try:
             link = link.strip()
             if link.startswith("ss://"):
@@ -189,82 +190,9 @@ class Parser:
         return None
 
     @staticmethod
-    async def parse_ss(session, link):
-        """
-        Shadowsocks (SS) 节点核心解析函数【已统一整合精简，完美支持 SIP002、复杂密码与插件】
-        """
-        try:
-            remarks = "SS节点"
-            if "#" in link:
-                link, rem = link.split("#", 1)
-                remarks = urllib.parse.unquote(rem.strip())
-
-            raw = link[5:].strip()
-            if not raw:
-                return None
-
-            # 兼容处理 Legacy 全加密旧格式
-            if "@" not in raw:
-                try:
-                    raw = safe_b64decode(raw)
-                except Exception:
-                    return None
-
-            if not raw or "@" not in raw:
-                return None
-
-            # 从右往左切分 @ 字符，隔离防止用户密码中包含 @
-            auth, endpoint = raw.rsplit("@", 1)
-
-            # 解析 SIP002 独立加密的 Userinfo
-            if ":" not in auth:
-                try:
-                    auth = safe_b64decode(auth)
-                except Exception:
-                    return None
-
-            if not auth or ":" not in auth:
-                return None
-
-            # 分离加密方法与密码，支持密码中含有冒号
-            auth_parts = auth.split(":", 1)
-            if len(auth_parts) != 2:
-                return None
-            cipher, password = auth_parts[0].strip().lower().replace("_", "-"), auth_parts[1]
-
-            if not cipher or not password:
-                return None
-
-            # 加密算法白名单安全清洗
-            if cipher not in {"aes-128-gcm", "aes-256-gcm", "chacha20-poly1305", "chacha20-ietf-poly1305", "none", "2022-blake3-aes-128-gcm", "2022-blake3-aes-256-gcm"}:
-                cipher = "aes-256-gcm"
-
-            # 剥离 Query 与 Path 参数并安全提取 plugin
-            plugin = None
-            if "?" in endpoint:
-                endpoint, query = endpoint.split("?", 1)
-                params = urllib.parse.parse_qs(query)
-                if "plugin" in params:
-                    plugin = params["plugin"][0]
-            if "/" in endpoint:
-                endpoint = endpoint.split("/", 1)[0]
-
-            endpoint = endpoint.strip().rstrip("/")
-
-            # 严格解析 IPv6 目标主机与普通 IPv4 主机
-            if endpoint.startswith("["):
-                match = re.match(r"\[(.*?)\]:(\d+)", endpoint)
-                if not match:
-                    return None
-                server, port_str = f"[{match.group(1).strip()}]", match.group(2)
-            else:
-                if ":" not in endpoint:
-                    return None
-                server, port_str = endpoint.rsplit(":", 1)
-    @staticmethod
     async def parse_ss(session, link: str):
         """
-        极简高性能 Shadowsocks 解析器
+        极简高性能 Shadowsocks 解析器（生产加固类内缩进校准版）
         支持全格式、全场景，确保显示且有网络
         """
         try:
@@ -295,12 +223,21 @@ class Parser:
             if "@" not in raw:
                 return None
 
-            # 4. 彻底剥离 URL 参数 (如 ?plugin=xxx), 确保 endpoint 纯净
+            # 4. 安全提取 URL 参数 (如 plugin), 而不粗暴丢弃导致特殊节点失效
+            plugin_raw = None
             if "?" in raw:
-                raw, _ = raw.split("?", 1)
+                raw, query_part = raw.split("?", 1)
+                params = urllib.parse.parse_qs(query_part)
+                if "plugin" in params:
+                    plugin_raw = params["plugin"][0]
 
             # 5. 切分认证与地址
             auth, endpoint = raw.rsplit("@", 1)
+
+            # 过滤清除 endpoint 尾部残留的斜杠，防止干扰后续的端口纯整型转换
+            if "/" in endpoint:
+                endpoint = endpoint.split("/", 1)[0]
+            endpoint = endpoint.strip()
 
             # 6. 处理认证信息 (兼容未 Base64 的原始明文和加密明文)
             if ":" not in auth:
@@ -312,7 +249,7 @@ class Parser:
             if ":" not in auth:
                 return None
 
-            # URL 解码认证信息，防止密码中的特殊字符变形
+            # URL 解码认证信息，防止密码中的特殊字符（如 +, /, =）变形
             auth = urllib.parse.unquote(auth)
             
             cipher_raw, _, password = auth.partition(":")
@@ -325,7 +262,7 @@ class Parser:
             }
             cipher = CIPHER_ALIASES.get(cipher_raw, cipher_raw)
 
-            # 8. 解析地址与端口
+            # 8. 解析地址与端口 (此时 endpoint 绝对纯净，不含 ? 和 /)
             if endpoint.startswith("["):
                 match = re.match(r"\[(.+)\]:(\d+)", endpoint)
                 if not match:
@@ -348,7 +285,7 @@ class Parser:
             # 9. 最终标签
             label = await get_final_label(session, server, remarks)
 
-            return {
+            node = {
                 "name": label,
                 "type": "ss",
                 "server": server,
@@ -357,23 +294,17 @@ class Parser:
                 "password": password,
                 "udp": True
             }
+
+            if plugin_raw:
+                node["plugin"] = urllib.parse.unquote(plugin_raw)
+
+            return node
         except Exception:
             return None
 
     @staticmethod
     async def parse_vmess(session, link):
-        """
-        VMess 解析器
-        """
-        try:
-            _orig_link = str(link)
-            # 这里继续写你原本的 vmess 剩余逻辑
-            return None
-        except Exception:
-            return None
-
-    @staticmethod
-    async def parse_vmess(session, link):
+        """核心全兼容防丢优化版：防御脏节点，无损对接流派二明文格式"""
         _orig_link = str(link)
         try:
             link = str(link).strip().replace("vmess://vmess://", "vmess://")
