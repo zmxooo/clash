@@ -154,16 +154,69 @@ async def get_final_label(session, server, remarks):
 def validate(proxy):
     if not isinstance(proxy, dict):
         return False
-    if not proxy.get("server") or not proxy.get("port"):
+    
+    # 基础必填项校验
+    server = proxy.get("server")
+    port = proxy.get("port")
+    if not server or not port:
         return False
+    # 补充端口合法性校验：避免非数字/无效端口
+    try:
+        port_num = int(port)
+        if not (1 <= port_num <= 65535):
+            return False
+    except (ValueError, TypeError):
+        return False
+    
     ptype = proxy.get("type")
-    if ptype in ["vmess", "vless", "tuic"]:
-        return bool(proxy.get("uuid"))
-    if ptype in ["trojan", "hysteria2"]:
+    
+    # VMess协议：补充关键参数校验
+    if ptype == "vmess":
+        if not proxy.get("uuid"):
+            return False
+        # 网络类型为ws/grpc时，补充对应必填项
+        network = proxy.get("network", "tcp").lower()
+        if network == "ws" and not proxy.get("ws-opts", {}).get("path"):
+            return False
+        if network == "grpc" and not proxy.get("grpc-opts", {}).get("grpc-service-name"):
+            return False
+        return True
+    
+    # VLESS协议：Reality模式补充公钥校验
+    elif ptype == "vless":
+        if not proxy.get("uuid"):
+            return False
+        if proxy.get("security") == "reality" and not proxy.get("reality-opts", {}).get("public-key"):
+            return False
+        return True
+    
+    # TUIC协议：补充必填参数
+    elif ptype == "tuic":
+        return bool(proxy.get("uuid") and proxy.get("password"))
+    
+    # Trojan/Hysteria2协议：基础校验
+    elif ptype in ["trojan", "hysteria2"]:
         return bool(proxy.get("password"))
-    if ptype == "ss":
-        return bool(proxy.get("cipher") and proxy.get("password"))
-    return True
+    
+    # SS协议：加密方式白名单+参数完整性
+    elif ptype == "ss":
+        cipher = proxy.get("cipher")
+        password = proxy.get("password")
+        if not (cipher and password):
+            return False
+        # 拦截明显无效的加密方式，避免配置后连不上
+        SUPPORTED_SS_CIPHERS = {
+            "auto", "aes-128-gcm", "aes-256-gcm",
+            "chacha20-poly1305", "chacha20-ietf-poly1305",
+            "2022-blake3-aes-128-gcm", "2022-blake3-aes-256-gcm"
+        }
+        if cipher.lower() not in SUPPORTED_SS_CIPHERS:
+            print(f"[校验不通过] SS加密方式不支持：{cipher}")
+            return False
+        return True
+    
+    # 未知协议直接不通过
+    return False
 
 
 class Parser:
