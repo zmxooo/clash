@@ -470,6 +470,8 @@ class Parser:
             # method:password
             # 密码允许包含 :
             # =========================
+        except Exception:
+            return None   
     @staticmethod
     async def parse_ss(session, link):
         """
