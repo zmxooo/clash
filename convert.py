@@ -362,7 +362,7 @@ class Parser:
 
             try:
                 port = int(str(port_str).strip())
-             except Exception:
+            except Exception:
                 port = 8388
             
         @staticmethod
