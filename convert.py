@@ -197,7 +197,7 @@ class Parser:
                 return await Parser.parse_vless(session, normalized_link)
             elif scheme == "trojan":
                 return await Parser.parse_trojan(session, normalized_link)
-            elif scheme == "hysteria2":
+            elif scheme in ["hysteria2", "hysteria", "hy2"]:
                 return await Parser.parse_hy2(session, normalized_link)
             elif scheme == "tuic":
                 return await Parser.parse_tuic(session, normalized_link)
