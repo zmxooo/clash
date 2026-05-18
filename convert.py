@@ -362,198 +362,202 @@ class Parser:
 
             try:
                 port = int(str(port_str).strip())
-            except Exception as e:
-                print(f"[SS端口错误] {e} -> {link}")
-                port = 8388
-                
+    @staticmethod
+    async def parse_ss(session, link):
+        """
+        Shadowsocks (SS) 节点完整全兼容解析函数
+        支持:
+        - SIP002
+        - 老版 SS URI
+        - URLSafe Base64
+        - IPv6
+        - plugin
+        - remark
+        - 密码包含 @
+        - 密码包含 :
+        """
+
+        try:
+            # =========================
+            # 协议校验
+            # =========================
+            if not link.startswith("ss://"):
+                return None
+
+            # =========================
+            # 提取 remarks
+            # =========================
+            remarks = "SS节点"
+
+            if "#" in link:
+                link, rem = link.split("#", 1)
+                remarks = urllib.parse.unquote(
+                    rem.strip()
+                )
+
+            # =========================
+            # 去除协议头
+            # =========================
+            raw = link[5:]
+
+            if not raw:
+                return None
+
+            # =========================
+            # 老版 SS:
+            # ss://BASE64(method:password@host:port)
+            # =========================
+            if "@" not in raw:
+                try:
+                    raw = safe_b64decode(raw)
+                except Exception:
+                    return None
+
+            if not raw or "@" not in raw:
+                return None
+
+            # =========================
+            # 从右往左切分 @
+            # 防止密码中包含 @
+            # =========================
+            parts = raw.rsplit("@", 1)
+
+            if len(parts) != 2:
+                return None
+
+            auth, endpoint = parts
+
+            # =========================
+            # endpoint query/plugin 解析
+            # =========================
+            plugin = None
+
+            if "?" in endpoint:
+                endpoint, query = endpoint.split("?", 1)
+
+                params = urllib.parse.parse_qs(query)
+
+                if "plugin" in params:
+                    plugin = params["plugin"][0]
+
+            # 去除尾部 /
+            endpoint = endpoint.strip().rstrip("/")
+
+            if not endpoint:
+                return None
+
+            # =========================
+            # SIP002:
+            # method:password 被单独 Base64
+            # =========================
+            if ":" not in auth:
+                try:
+                    auth = safe_b64decode(auth)
+                except Exception:
+                    return None
+
+            if not auth or ":" not in auth:
+                return None
+
+            # =========================
+            # method:password
+            # 密码允许包含 :
+            # =========================
+            auth_parts = auth.split(":", 1)
+
+            if len(auth_parts) != 2:
+                return None
+
+            cipher = (
+                auth_parts[0]
+                .strip()
+                .lower()
+                .replace("_", "-")
+            )
+
+            password = auth_parts[1]
+
+            if not cipher or not password:
+                return None
+
+            # =========================
+            # IPv6:
+            # [2001:db8::1]:443
+            # =========================
+            ipv6_match = re.match(
+                r"^\[(.*?)\]:(\d+)$",
+                endpoint
+            )
+
+            if ipv6_match:
+                server = ipv6_match.group(1).strip()
+
+                try:
+                    port = int(ipv6_match.group(2))
+                except Exception:
+                    return None
+
+            else:
+                # 普通 host:port
+                if ":" not in endpoint:
+                    return None
+
+                server, port_str = endpoint.rsplit(":", 1)
+
+                server = server.strip()
+
+                try:
+                    port = int(port_str.strip())
+                except Exception:
+                    return None
+
+            # =========================
+            # 端口范围校验
+            # =========================
+            if port <= 0 or port > 65535:
+                return None
+
+            # =========================
+            # server 校验
+            # =========================
             if not server:
-                print(f"[SS无服务器] {link}")
                 return None
 
-            label = await get_final_label(session, server, remarks)
+            # =========================
+            # 获取最终标签
+            # =========================
+            label = await get_final_label(
+                session,
+                server,
+                remarks
+            )
 
-            # 修复：加密方式只映射别名，不强制替换
-            CIPHER_ALIASES = {
-                "chacha20-poly1305": "chacha20-ietf-poly1305",
-                "aes-256-cfb": "aes-256-gcm"
+            # =========================
+            # 构建节点
+            # =========================
+            node = {
+                "name": label,
+                "type": "ss",
+                "server": server,
+                "port": port,
+                "cipher": cipher,
+                "password": password,
+                "udp": True
             }
-@staticmethod
-async def parse_ss(session, link):
-    """
-    Shadowsocks (SS) 全兼容解析器
-    支持:
-    - SIP002
-    - 老版 SS URI
-    - URLSafe Base64
-    - IPv6
-    - plugin
-    - remark
-    - 密码包含 @ 与 :
-    """
 
-    try:
-        if not link.startswith("ss://"):
+            # =========================
+            # plugin
+            # =========================
+            if plugin:
+                node["plugin"] = urllib.parse.unquote(
+                    plugin
+                )
+
+            return node
+
+        except Exception:
             return None
 
-        # =========================
-        # 解析 URI
-        # =========================
-        parsed = urllib.parse.urlparse(link)
-
-        remarks = (
-            urllib.parse.unquote(parsed.fragment).strip()
-            if parsed.fragment
-            else "SS节点"
-        )
-
-        raw = link[5:]
-
-        # 去除 fragment
-        if "#" in raw:
-            raw = raw.split("#", 1)[0]
-
-        if not raw:
-            return None
-
-        plugin = None
-
-        # =========================
-        # 老版 URI:
-        # ss://BASE64(method:password@host:port)
-        # =========================
-        if "@" not in raw:
-            try:
-                raw = safe_b64decode(raw)
-            except Exception:
-                return None
-
-        if not raw or "@" not in raw:
-            return None
-
-        # =========================
-        # 分离 query
-        # =========================
-        if "?" in raw:
-            raw, query = raw.split("?", 1)
-
-            params = urllib.parse.parse_qs(query)
-
-            if "plugin" in params:
-                plugin = params["plugin"][0]
-
-        # =========================
-        # 从右往左切分 @
-        # 防止密码包含 @
-        # =========================
-        parts = raw.rsplit("@", 1)
-
-        if len(parts) != 2:
-            return None
-
-        auth, endpoint = parts
-
-        # =========================
-        # SIP002:
-        # auth 单独 Base64
-        # =========================
-        if ":" not in auth:
-            try:
-                auth = safe_b64decode(auth)
-            except Exception:
-                return None
-
-        if ":" not in auth:
-            return None
-
-        # =========================
-        # method:password
-        # 密码允许包含 :
-        # =========================
-        cipher, password = auth.split(":", 1)
-
-        cipher = (
-            cipher.strip()
-            .lower()
-            .replace("_", "-")
-        )
-
-        password = password.strip()
-
-        if not cipher or not password:
-            return None
-
-        # =========================
-        # 清洗 endpoint
-        # =========================
-        endpoint = endpoint.strip().rstrip("/")
-
-        if not endpoint:
-            return None
-
-        # =========================
-        # IPv6:
-        # [2001:db8::1]:443
-        # =========================
-        ipv6_match = re.match(
-            r"^\[(.*?)\]:(\d+)$",
-            endpoint
-        )
-
-        if ipv6_match:
-            server = ipv6_match.group(1).strip()
-            port = int(ipv6_match.group(2))
-
-        else:
-            if ":" not in endpoint:
-                return None
-
-            server, port_str = endpoint.rsplit(":", 1)
-
-            server = server.strip()
-
-            try:
-                port = int(port_str.strip())
-            except Exception:
-                return None
-
-        # =========================
-        # 基础校验
-        # =========================
-        if not server:
-            return None
-
-        if port <= 0 or port > 65535:
-            return None
-
-        # =========================
-        # 获取最终标签
-        # =========================
-        label = await get_final_label(
-            session,
-            server,
-            remarks
-        )
-
-        node = {
-            "name": label,
-            "type": "ss",
-            "server": server,
-            "port": port,
-            "cipher": cipher,
-            "password": password,
-            "udp": True
-        }
-
-        # =========================
-        # plugin
-        # =========================
-        if plugin:
-            node["plugin"] = urllib.parse.unquote(plugin)
-
-        return node
-
-    except Exception:
-        return None
 
     @staticmethod
     async def parse_vmess(session, link):
