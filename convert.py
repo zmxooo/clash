@@ -362,11 +362,11 @@ class Parser:
 
             try:
                 port = int(str(port_str).strip())
-                     except Exception:
+             except Exception:
                 port = 8388
             
-    @staticmethod
-    async def parse_ss(session, link):
+        @staticmethod
+        async def parse_ss(session, link):
         """
         Shadowsocks (SS) 节点完整全兼容解析函数
         支持:
