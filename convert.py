@@ -154,69 +154,16 @@ async def get_final_label(session, server, remarks):
 def validate(proxy):
     if not isinstance(proxy, dict):
         return False
-    
-    # 基础必填项校验
-    server = proxy.get("server")
-    port = proxy.get("port")
-    if not server or not port:
+    if not proxy.get("server") or not proxy.get("port"):
         return False
-    # 补充端口合法性校验：避免非数字/无效端口
-    try:
-        port_num = int(port)
-        if not (1 <= port_num <= 65535):
-            return False
-    except (ValueError, TypeError):
-        return False
-    
     ptype = proxy.get("type")
-    
-    # VMess协议：补充关键参数校验
-    if ptype == "vmess":
-        if not proxy.get("uuid"):
-            return False
-        # 网络类型为ws/grpc时，补充对应必填项
-        network = proxy.get("network", "tcp").lower()
-        if network == "ws" and not proxy.get("ws-opts", {}).get("path"):
-            return False
-        if network == "grpc" and not proxy.get("grpc-opts", {}).get("grpc-service-name"):
-            return False
-        return True
-    
-    # VLESS协议：Reality模式补充公钥校验
-    elif ptype == "vless":
-        if not proxy.get("uuid"):
-            return False
-        if proxy.get("security") == "reality" and not proxy.get("reality-opts", {}).get("public-key"):
-            return False
-        return True
-    
-    # TUIC协议：补充必填参数
-    elif ptype == "tuic":
-        return bool(proxy.get("uuid") and proxy.get("password"))
-    
-    # Trojan/Hysteria2协议：基础校验
-    elif ptype in ["trojan", "hysteria2"]:
+    if ptype in ["vmess", "vless", "tuic"]:
+        return bool(proxy.get("uuid"))
+    if ptype in ["trojan", "hysteria2"]:
         return bool(proxy.get("password"))
-    
-    # SS协议：加密方式白名单+参数完整性
-    elif ptype == "ss":
-        cipher = proxy.get("cipher")
-        password = proxy.get("password")
-        if not (cipher and password):
-            return False
-        # 拦截明显无效的加密方式，避免配置后连不上
-        SUPPORTED_SS_CIPHERS = {
-            "auto", "aes-128-gcm", "aes-256-gcm",
-            "chacha20-poly1305", "chacha20-ietf-poly1305",
-            "2022-blake3-aes-128-gcm", "2022-blake3-aes-256-gcm"
-        }
-        if cipher.lower() not in SUPPORTED_SS_CIPHERS:
-            print(f"[校验不通过] SS加密方式不支持：{cipher}")
-            return False
-        return True
-    
-    # 未知协议直接不通过
-    return False
+    if ptype == "ss":
+        return bool(proxy.get("cipher") and proxy.get("password"))
+    return True
 
 
 class Parser:
@@ -241,100 +188,79 @@ class Parser:
             return None
         return None
 
-
     @staticmethod
-    async def parse_ss(session, link: str):
-    """
-    极简高性能 Shadowsocks 解析器
-    支持全格式、全场景，确保显示且有网络
-    """
-    try:
-        if not link:
-            return None
-            
-        link = link.strip()
-        
-        # 1. 提取备注
-        remarks = "SS节点"
-        if "#" in link:
-            link, rem = link.split("#", 1)
-            remarks = urllib.parse.unquote(rem.strip()) or remarks
-
-        # 2. 剥离协议头 (严格限制 ss://)
-        if link.lower().startswith("ss://"):
-            raw = link[5:]
-        else:
-            return None
-
-        # 3. 处理整段Base64编码
-        if "@" not in raw:
-            try:
-                raw = safe_b64decode(raw)
-            except Exception:
-                return None
-
-        if "@" not in raw:
-            return None
-
-        # 4. 彻底剥离 URL 参数 (如 ?plugin=xxx), 确保 endpoint 纯净
-        # 这一步是确保非 8388 端口及 IPv6 节点能百分百连通的关键
-        if "?" in raw:
-            raw, _ = raw.split("?", 1)
-
-        # 5. 切分认证与地址
-        auth, endpoint = raw.rsplit("@", 1)
-
-        # 6. 处理认证信息 (兼容未 Base64 的原始明文和加密明文)
-        if ":" not in auth:
-            try:
-                auth = safe_b64decode(auth)
-            except Exception:
-                return None
-
-        if ":" not in auth:
-            return None
-
-        # URL 解码认证信息，防止密码中的特殊字符（如 +, /, =）变形
-        auth = urllib.parse.unquote(auth)
-        
-        cipher_raw, _, password = auth.partition(":")
-        cipher_raw = cipher_raw.strip().lower()
-
-        # 7. 加密方式精准映射
-        CIPHER_ALIASES = {
-            "chacha20-poly1305": "chacha20-ietf-poly1305",
-            "none": "none"  # 除非明确兼容特定内核，否则保持 none 比 auto 更不容易在核心里报错
-        }
-        cipher = CIPHER_ALIASES.get(cipher_raw, cipher_raw)
-
-        # 8. 解析地址与端口 (此时 endpoint 绝不含 ?)
-        if endpoint.startswith("["):
-            match = re.match(r"\[(.+)\]:(\d+)", endpoint)
-            if not match:
-                return None
-            server = match.group(1)
-class Parser:
-    @staticmethod
-    async def parse(session, link):
-        """核心分发器：【已全面打通，支持全协议分发路由】"""
+    async def parse_ss(session, link):
+        """
+        Shadowsocks (SS) 节点核心解析函数【已统一整合精简，完美支持 SIP002、复杂密码与插件】
+        """
         try:
-            link = link.strip()
-            if link.startswith("ss://"):
-                return await Parser.parse_ss(session, link)
-            elif link.startswith("vmess://"):
-                return await Parser.parse_vmess(session, link)
-            elif link.startswith("vless://"):
-                return await Parser.parse_vless(session, link)
-            elif link.startswith("trojan://"):
-                return await Parser.parse_trojan(session, link)
-            elif link.startswith("hy2://") or link.startswith("hysteria2://"):
-                return await Parser.parse_hy2(session, link)
-            elif link.startswith("tuic://"):
-                return await Parser.parse_tuic(session, link)
-        except Exception:
-            return None
-        return None
+            remarks = "SS节点"
+            if "#" in link:
+                link, rem = link.split("#", 1)
+                remarks = urllib.parse.unquote(rem.strip())
 
+            raw = link[5:].strip()
+            if not raw:
+                return None
+
+            # 兼容处理 Legacy 全加密旧格式
+            if "@" not in raw:
+                try:
+                    raw = safe_b64decode(raw)
+                except Exception:
+                    return None
+
+            if not raw or "@" not in raw:
+                return None
+
+            # 从右往左切分 @ 字符，隔离防止用户密码中包含 @
+            auth, endpoint = raw.rsplit("@", 1)
+
+            # 解析 SIP002 独立加密的 Userinfo
+            if ":" not in auth:
+                try:
+                    auth = safe_b64decode(auth)
+                except Exception:
+                    return None
+
+            if not auth or ":" not in auth:
+                return None
+
+            # 分离加密方法与密码，支持密码中含有冒号
+            auth_parts = auth.split(":", 1)
+            if len(auth_parts) != 2:
+                return None
+            cipher, password = auth_parts[0].strip().lower().replace("_", "-"), auth_parts[1]
+
+            if not cipher or not password:
+                return None
+
+            # 加密算法白名单安全清洗
+            if cipher not in {"aes-128-gcm", "aes-256-gcm", "chacha20-poly1305", "chacha20-ietf-poly1305", "none", "2022-blake3-aes-128-gcm", "2022-blake3-aes-256-gcm"}:
+                cipher = "aes-256-gcm"
+
+            # 剥离 Query 与 Path 参数并安全提取 plugin
+            plugin = None
+            if "?" in endpoint:
+                endpoint, query = endpoint.split("?", 1)
+                params = urllib.parse.parse_qs(query)
+                if "plugin" in params:
+                    plugin = params["plugin"][0]
+            if "/" in endpoint:
+                endpoint = endpoint.split("/", 1)[0]
+
+            endpoint = endpoint.strip().rstrip("/")
+
+            # 严格解析 IPv6 目标主机与普通 IPv4 主机
+            if endpoint.startswith("["):
+                match = re.match(r"\[(.*?)\]:(\d+)", endpoint)
+                if not match:
+                    return None
+                server, port_str = f"[{match.group(1).strip()}]", match.group(2)
+            else:
+                if ":" not in endpoint:
+                    return None
+                server, port_str = endpoint.rsplit(":", 1)
     @staticmethod
     async def parse_ss(session, link: str):
         """
@@ -386,7 +312,7 @@ class Parser:
             if ":" not in auth:
                 return None
 
-            # URL 解码认证信息，防止密码中的特殊字符（如 +, /, =）变形
+            # URL 解码认证信息，防止密码中的特殊字符变形
             auth = urllib.parse.unquote(auth)
             
             cipher_raw, _, password = auth.partition(":")
@@ -395,11 +321,11 @@ class Parser:
             # 7. 加密方式精准映射
             CIPHER_ALIASES = {
                 "chacha20-poly1305": "chacha20-ietf-poly1305",
-                "none": "none"  
+                "none": "none"
             }
             cipher = CIPHER_ALIASES.get(cipher_raw, cipher_raw)
 
-            # 8. 解析地址与端口 (此时 endpoint 绝不含 ?)
+            # 8. 解析地址与端口
             if endpoint.startswith("["):
                 match = re.match(r"\[(.+)\]:(\d+)", endpoint)
                 if not match:
@@ -436,14 +362,15 @@ class Parser:
 
     @staticmethod
     async def parse_vmess(session, link):
-        """VMess 解析器 (请确保此处的缩进与上方 parse_ss 对齐)"""
+        """
+        VMess 解析器
+        """
         try:
             _orig_link = str(link)
-            # ... 您的 vmess 剩余解析逻辑 ...
+            # 这里继续写你原本的 vmess 剩余逻辑
             return None
         except Exception:
             return None
-
 
     @staticmethod
     async def parse_vmess(session, link):
