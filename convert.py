@@ -279,6 +279,8 @@ class Parser:
         try:
             if link.startswith("ss://"):
                 return await Parser.parse_ss(session, link)
+        except Exception:
+            return None
                 
             # 如果后续有其他协议（如 vmess, vless），可以在这里添加对应的 if 判断
 
@@ -295,6 +297,8 @@ class Parser:
             if "#" in link:
                 link, rem = link.split("#", 1)
                 remarks = urllib.parse.unquote(rem.strip())
+        except Exception:
+            pass
 
             raw = link[5:]
             if not raw:
