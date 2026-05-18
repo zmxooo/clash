@@ -241,8 +241,6 @@ class Parser:
             return None
         return None
 
-import urllib.parse
-import re
 
 @staticmethod
 async def parse_ss(session, link: str):
