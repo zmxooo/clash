@@ -3,6 +3,20 @@ allow-lan: true
 mode: rule
 log-level: info
 proxies:
+- name: 📡 电报:t.me/zmxooo
+  type: ss
+  server: 0.0.0.0
+  port: 2
+  cipher: aes-256-gcm
+  password: '123456'
+  udp: true
+- name: 📢 每日更新:防失联↓↓↓
+  type: ss
+  server: 0.0.0.0
+  port: 1
+  cipher: aes-256-gcm
+  password: '123456'
+  udp: true
 - name: 🇩🇪 德国 01
   type: trojan
   server: 159.89.207.154
@@ -430,6 +444,13 @@ proxies:
   cipher: aes-256-cfb
   password: Xn8jKdmDM00IeO%#$#fJAMtsEAEUOpH/YWYtYqDFnT0SV
   udp: true
+- name: 🌐 订阅网址:zmxoo.xyz
+  type: ss
+  server: 0.0.0.0
+  port: 3
+  cipher: aes-256-gcm
+  password: '123456'
+  udp: true
 proxy-groups:
 - name: 🚀 节点选择
   type: select
@@ -507,6 +528,8 @@ proxy-groups:
 - name: 🎯 手动选择
   type: select
   proxies:
+  - 📡 电报:t.me/zmxooo
+  - 📢 每日更新:防失联↓↓↓
   - 🇩🇪 德国 01
   - 🇩🇪 德国 02
   - 🇩🇪 德国 03
@@ -561,9 +584,13 @@ proxy-groups:
   - 🇻🇳 越南 14
   - 🇻🇳 越南 15
   - 🇻🇳 越南 16
+  - 🌐 订阅网址:zmxoo.xyz
 - name: 🇩🇪 德国
   type: select
   proxies:
+  - 📡 电报:t.me/zmxooo
+  - 📢 每日更新:防失联↓↓↓
+  - 🌐 订阅网址:zmxoo.xyz
   - 🇩🇪 德国 01
   - 🇩🇪 德国 02
   - 🇩🇪 德国 03
@@ -576,6 +603,9 @@ proxy-groups:
 - name: 🇭🇰 香港
   type: select
   proxies:
+  - 📡 电报:t.me/zmxooo
+  - 📢 每日更新:防失联↓↓↓
+  - 🌐 订阅网址:zmxoo.xyz
   - 🇭🇰 香港 01
   - 🇭🇰 香港 02
   - 🇭🇰 香港 03
@@ -590,20 +620,32 @@ proxy-groups:
 - name: 🇯🇵 日本
   type: select
   proxies:
+  - 📡 电报:t.me/zmxooo
+  - 📢 每日更新:防失联↓↓↓
+  - 🌐 订阅网址:zmxoo.xyz
   - 🇯🇵 日本 01
   - 🇯🇵 日本 02
 - name: 🇰🇷 韩国
   type: select
   proxies:
+  - 📡 电报:t.me/zmxooo
+  - 📢 每日更新:防失联↓↓↓
+  - 🌐 订阅网址:zmxoo.xyz
   - 🇰🇷 韩国 01
   - 🇰🇷 韩国 02
 - name: 🇸🇬 新加坡
   type: select
   proxies:
+  - 📡 电报:t.me/zmxooo
+  - 📢 每日更新:防失联↓↓↓
+  - 🌐 订阅网址:zmxoo.xyz
   - 🇸🇬 新加坡 01
 - name: 🇹🇼 台湾
   type: select
   proxies:
+  - 📡 电报:t.me/zmxooo
+  - 📢 每日更新:防失联↓↓↓
+  - 🌐 订阅网址:zmxoo.xyz
   - 🇹🇼 台湾 01
   - 🇹🇼 台湾 02
   - 🇹🇼 台湾 03
@@ -611,6 +653,9 @@ proxy-groups:
 - name: 🇺🇸 美国
   type: select
   proxies:
+  - 📡 电报:t.me/zmxooo
+  - 📢 每日更新:防失联↓↓↓
+  - 🌐 订阅网址:zmxoo.xyz
   - 🇺🇸 美国 01
   - 🇺🇸 美国 02
   - 🇺🇸 美国 03
@@ -623,6 +668,9 @@ proxy-groups:
 - name: 🇻🇳 越南
   type: select
   proxies:
+  - 📡 电报:t.me/zmxooo
+  - 📢 每日更新:防失联↓↓↓
+  - 🌐 订阅网址:zmxoo.xyz
   - 🇻🇳 越南 01
   - 🇻🇳 越南 02
   - 🇻🇳 越南 03
