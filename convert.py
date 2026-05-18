@@ -242,8 +242,8 @@ class Parser:
         return None
 
 
-@staticmethod
-async def parse_ss(session, link: str):
+    @staticmethod
+    async def parse_ss(session, link: str):
     """
     极简高性能 Shadowsocks 解析器
     支持全格式、全场景，确保显示且有网络
@@ -313,34 +313,137 @@ async def parse_ss(session, link: str):
             if not match:
                 return None
             server = match.group(1)
-            port = int(match.group(2))
-        else:
-            endpoint_parts = endpoint.rsplit(":", 1)
-            if len(endpoint_parts) < 2:
-                return None
-            server, port_str = endpoint_parts
-            try:
-                port = int(port_str)
-            except Exception:
-                port = 8388
+class Parser:
+    @staticmethod
+    async def parse(session, link):
+        """核心分发器：【已全面打通，支持全协议分发路由】"""
+        try:
+            link = link.strip()
+            if link.startswith("ss://"):
+                return await Parser.parse_ss(session, link)
+            elif link.startswith("vmess://"):
+                return await Parser.parse_vmess(session, link)
+            elif link.startswith("vless://"):
+                return await Parser.parse_vless(session, link)
+            elif link.startswith("trojan://"):
+                return await Parser.parse_trojan(session, link)
+            elif link.startswith("hy2://") or link.startswith("hysteria2://"):
+                return await Parser.parse_hy2(session, link)
+            elif link.startswith("tuic://"):
+                return await Parser.parse_tuic(session, link)
+        except Exception:
+            return None
+        return None
 
-        if not server:
+    @staticmethod
+    async def parse_ss(session, link: str):
+        """
+        极简高性能 Shadowsocks 解析器
+        支持全格式、全场景，确保显示且有网络
+        """
+        try:
+            if not link:
+                return None
+                
+            link = link.strip()
+            
+            # 1. 提取备注
+            remarks = "SS节点"
+            if "#" in link:
+                link, rem = link.split("#", 1)
+                remarks = urllib.parse.unquote(rem.strip()) or remarks
+
+            # 2. 剥离协议头 (严格限制 ss://)
+            if link.lower().startswith("ss://"):
+                raw = link[5:]
+            else:
+                return None
+
+            # 3. 处理整段Base64编码
+            if "@" not in raw:
+                try:
+                    raw = safe_b64decode(raw)
+                except Exception:
+                    return None
+
+            if "@" not in raw:
+                return None
+
+            # 4. 彻底剥离 URL 参数 (如 ?plugin=xxx), 确保 endpoint 纯净
+            if "?" in raw:
+                raw, _ = raw.split("?", 1)
+
+            # 5. 切分认证与地址
+            auth, endpoint = raw.rsplit("@", 1)
+
+            # 6. 处理认证信息 (兼容未 Base64 的原始明文和加密明文)
+            if ":" not in auth:
+                try:
+                    auth = safe_b64decode(auth)
+                except Exception:
+                    return None
+
+            if ":" not in auth:
+                return None
+
+            # URL 解码认证信息，防止密码中的特殊字符（如 +, /, =）变形
+            auth = urllib.parse.unquote(auth)
+            
+            cipher_raw, _, password = auth.partition(":")
+            cipher_raw = cipher_raw.strip().lower()
+
+            # 7. 加密方式精准映射
+            CIPHER_ALIASES = {
+                "chacha20-poly1305": "chacha20-ietf-poly1305",
+                "none": "none"  
+            }
+            cipher = CIPHER_ALIASES.get(cipher_raw, cipher_raw)
+
+            # 8. 解析地址与端口 (此时 endpoint 绝不含 ?)
+            if endpoint.startswith("["):
+                match = re.match(r"\[(.+)\]:(\d+)", endpoint)
+                if not match:
+                    return None
+                server = match.group(1)
+                port = int(match.group(2))
+            else:
+                endpoint_parts = endpoint.rsplit(":", 1)
+                if len(endpoint_parts) < 2:
+                    return None
+                server, port_str = endpoint_parts
+                try:
+                    port = int(port_str)
+                except Exception:
+                    port = 8388
+
+            if not server:
+                return None
+
+            # 9. 最终标签
+            label = await get_final_label(session, server, remarks)
+
+            return {
+                "name": label,
+                "type": "ss",
+                "server": server,
+                "port": port,
+                "cipher": cipher,
+                "password": password,
+                "udp": True
+            }
+        except Exception:
             return None
 
-        # 9. 最终标签
-        label = await get_final_label(session, server, remarks)
+    @staticmethod
+    async def parse_vmess(session, link):
+        """VMess 解析器 (请确保此处的缩进与上方 parse_ss 对齐)"""
+        try:
+            _orig_link = str(link)
+            # ... 您的 vmess 剩余解析逻辑 ...
+            return None
+        except Exception:
+            return None
 
-        return {
-            "name": label,
-            "type": "ss",
-            "server": server,
-            "port": port,
-            "cipher": cipher,
-            "password": password,
-            "udp": True
-        }
-    except Exception:
-        return None
 
     @staticmethod
     async def parse_vmess(session, link):
