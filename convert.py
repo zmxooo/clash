@@ -1,7 +1,10 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
 import sys
 import os
 
-# 自动修复 GitHub Actions 环境隔离导致的 ModuleNotFoundError 错误
+# 自动修复 GitHub Actions 环境隔离导致的 ModuleNotFoundError 错误（已移动至合法位置）
 try:
     import aiohttp
 except ModuleNotFoundError:
@@ -12,15 +15,10 @@ except ModuleNotFoundError:
         if os.path.exists(executable) and sys.executable != executable:
             os.execv(executable, [executable] + sys.argv)
 
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-
 import asyncio
-import aiohttp
 import base64
 import hashlib
 import json
-import os
 import re
 import socket
 import time
@@ -53,7 +51,7 @@ EMOJI_MAP = {
     "法国": "🇫🇷",
     "加拿大": "🇨🇦",
     
-    # 针对你截图精准补充的地区
+    # 地区补充
     "越南": "🇻🇳",
     "荷兰": "🇳🇱",
     "俄罗斯联邦": "🇷🇺",
@@ -100,7 +98,7 @@ EMOJI_MAP = {
 
 REGION_RULES = [
     ("香港", r"hk|hongkong|香港|🇭🇰"),
-    ("台湾", r"tw|taiwan|台湾|臺灣|台灣|中华民国|中華民國|🇹🇼|🇨🇳tw"),
+    ("台湾", r"tw|taiwan|台湾|臺灣|台湾|中华民国|中華民國|🇹🇼|🇨🇳tw"),
     ("日本", r"jp|japan|日本|东京|東京|大阪|🇯🇵"),
     ("新加坡", r"sg|singapore|新加坡|星加坡|狮城|🇸🇬"),
     ("美国", r"us|unitedstates|美国|美國|美利坚|🇺🇸"),
@@ -110,7 +108,7 @@ REGION_RULES = [
     ("法国", r"fr|france|法国|法國|巴黎|🇫🇷"),
     ("加拿大", r"ca|canada|加拿大|🇨🇦"),
     ("越南", r"vn|vietnam|越南|🇻🇳"),
-    ("荷兰", r"nl|netherlands|荷兰|荷蘭|阿姆斯特丹|🇳🇱"),
+    ("荷兰", r"nl|netherlands|荷兰|荷蘭|阿姆sterdam|🇳🇱"),
     ("俄罗斯", r"ru|russia|俄罗斯|俄羅斯|莫斯科|俄罗斯联邦|俄羅斯聯邦|🇷🇺"),
     ("澳大利亚", r"au|australia|澳洲|澳大利亚|澳大利亞|悉尼|🇦🇺"),
     ("中国", r"cn|china|中国|中國|内陆|內陸|回国|回國|广东|廣東|🇨🇳")
@@ -128,6 +126,11 @@ NOISE_WORDS = [
 ]
 
 IP_CACHE = {}
+INFO_MARKERS = [
+    "📢",
+    "📡",
+    "🌐"
+]
 
 
 def load_cache():
@@ -169,6 +172,13 @@ def safe_b64decode(text: str):
         return ""
 
 
+def is_info_node(name: str):
+    return any(
+        x in (name or "")
+        for x in INFO_MARKERS
+    )
+
+
 def clean_name(name: str):
     text = urllib.parse.unquote(name or "")
 
@@ -181,7 +191,6 @@ def clean_name(name: str):
 
 
 async def query_country(session, server):
-
     if not server:
         return "🌍 其它地区"
 
@@ -205,7 +214,6 @@ async def query_country(session, server):
                 data = await resp.json()
 
                 if data.get("status") == "success":
-
                     country = data.get("country", "其它地区")
 
                     emoji = EMOJI_MAP.get(
@@ -226,11 +234,11 @@ async def query_country(session, server):
 
 
 async def get_final_label(session, server, remarks):
-
+    if is_info_node(remarks):
+        return remarks.strip()
     text = clean_name(remarks).lower()
 
     for region, pattern in REGION_RULES:
-
         if re.search(pattern, text):
             return f"{EMOJI_MAP.get(region, '🌍')} {region}"
 
@@ -238,7 +246,6 @@ async def get_final_label(session, server, remarks):
 
 
 def validate(proxy):
-
     if not isinstance(proxy, dict):
         return False
 
@@ -268,9 +275,7 @@ class Parser:
 
     @staticmethod
     async def parse(session, link):
-
         try:
-
             if link.startswith("vmess://"):
                 return await Parser.parse_vmess(session, link)
 
@@ -300,67 +305,215 @@ class Parser:
 
     @staticmethod
     async def parse_vmess(session, link):
+        """核心全兼容防丢优化版：防御脏节点，无损对接流派二明文格式"""
+        _orig_link = str(link)
+        try:
+            link = str(link).strip().replace("vmess://vmess://", "vmess://")
+            if not link.startswith("vmess://"):
+                return None
 
-        link = link.replace(
-            "vmess://vmess://",
-            "vmess://"
-        )
+            link_main_part = link[8:]
+            url_part, _, fragment_part = link_main_part.partition("#")
+            raw_part = url_part.strip()
+            if not raw_part:
+                return None
 
-        raw = link[8:].split("#")[0]
+            decoded = ""
+            is_json_vmess = False
+            data = {}
 
-        data = json.loads(
-            safe_b64decode(raw)
-        )
+            # 智能安全解密提取
+            try:
+                decoded = safe_b64decode(raw_part).strip()
+                if decoded.startswith("{") and decoded.endswith("}"):
+                    is_json_vmess = True
+                    data = json.loads(decoded)
+            except Exception:
+                pass
 
-        server = data.get("add")
+            # ========================================================
+            # 流派一：传统 BASE64(JSON) 
+            # ========================================================
+            if is_json_vmess and data:
+                server = str(data.get("add") or data.get("server") or "").strip()
+                if not server:
+                    return None
 
-        label = await get_final_label(
-            session,
-            server,
-            data.get("ps")
-        )
+                uuid = str(data.get("id") or data.get("uuid") or "").strip()
+                if not uuid:
+                    return None
 
-        network = data.get("net", "tcp")
+                network = str(data.get("net") or data.get("type") or "tcp").lower().strip()
+                if network not in {"tcp", "ws", "grpc", "http", "h2"}:
+                    network = "tcp"
 
-        proxy = {
-            "name": label,
-            "type": "vmess",
-            "server": server,
-            "port": int(data.get("port", 443)),
-            "uuid": data.get("id"),
-            "alterId": int(data.get("aid", 0)),
-            "cipher": data.get("scy", "auto"),
-            "network": network,
-            "tls": str(data.get("tls")).lower() in ["tls", "1", "true"],
-            "skip-cert-verify": True
-        }
+                try:
+                    port = int(data.get("port") or 443)
+                except Exception:
+                    port = 443
 
-        host = (
-            data.get("host")
-            or
-            data.get("sni")
-            or
-            server
-        )
+                try:
+                    aid = int(data.get("aid") or 0)
+                except Exception:
+                    aid = 0
 
-        if network == "ws":
-            proxy["ws-opts"] = {
-                "path": data.get("path", "/"),
-                "headers": {
-                    "Host": host
+                tls_raw = data.get("security") or data.get("tls") or ""
+                tls = str(tls_raw).lower() in ("1", "true", "tls", "on", "reality")
+
+                sni = str(data.get("sni") or data.get("host") or "").strip()
+                host = str(data.get("host") or data.get("sni") or server).strip()
+                path = urllib.parse.unquote(str(data.get("path") or "/"))
+                remarks = str(data.get("ps") or "VMess节点").strip()
+
+                label = await get_final_label(session, server, remarks)
+
+                # 【修复优化：Cipher 白名单过滤】
+                raw_cipher = str(data.get("scy") or data.get("cipher") or "auto").strip().lower()
+                if raw_cipher not in {"auto", "aes-128-gcm", "chacha20-poly1305", "none"}:
+                    final_cipher = "auto"
+                else:
+                    final_cipher = raw_cipher
+
+                proxy = {
+                    "name": label,
+                    "type": "vmess",
+                    "server": server,
+                    "port": port,
+                    "uuid": uuid,
+                    "alterId": aid,
+                    "cipher": final_cipher,
+                    "network": network,
+                    "tls": tls,
+                    "skip-cert-verify": True
                 }
+
+                if sni:
+                    proxy["sni"] = sni
+
+                if network == "ws":
+                    if not path.startswith("/"):
+                        path = "/" + path
+                    headers = {}
+                    if host and host.lower() != server.lower():
+                        headers["Host"] = host
+                    proxy["ws-opts"] = {"path": path}
+                    if headers:
+                        proxy["ws-opts"]["headers"] = headers
+
+                elif network == "grpc":
+                    service_name = (data.get("serviceName") or data.get("servicename") or data.get("service-name") or data.get("ns") or "").strip()
+                    if not service_name:
+                        path_value = str(data.get("path") or "").strip()
+                        if path_value and not path_value.startswith("/"):
+                            service_name = path_value
+                    if service_name:
+                        proxy["grpc-opts"] = {"grpc-service-name": service_name}
+
+                if data.get("flow"):
+                    proxy["flow"] = data["flow"]
+
+                return proxy
+
+            # ========================================================
+            # 流派二：现代 URI 传参模式（修复：使用未受污染的 raw_part 防止丢失）
+            # ========================================================
+            u = urllib.parse.urlparse(f"vmess://{raw_part}")
+            
+            # 套娃多层加密边界情况深度防跨域丢失兜底
+            if not u.hostname:
+                try:
+                    retry_decode = safe_b64decode(raw_part).strip()
+                    if retry_decode and not (retry_decode.startswith("{") and retry_decode.endswith("}")):
+                        u = urllib.parse.urlparse(f"vmess://{retry_decode}")
+                except Exception:
+                    pass
+
+            hostname = str(u.hostname or "").strip()
+            if not hostname:
+                return None
+
+            uuid = str(u.username or "").strip()
+            if not uuid:
+                return None
+
+            remarks = urllib.parse.unquote(fragment_part or "VMess节点").strip()
+            q = {k.lower(): v for k, v in urllib.parse.parse_qsl(u.query, keep_blank_values=True)}
+
+            port = None
+            try:
+                port = u.port
+            except ValueError:
+                pass
+
+            if port is None:
+                try:
+                    port = int(u.netloc.rsplit(":", 1)[-1].split("/")[0])
+                except Exception:
+                    port = 443
+
+            network = str(q.get("type") or q.get("net") or "tcp").lower().strip()
+            tls_raw = q.get("security") or q.get("tls") or ""
+            tls = str(tls_raw).lower() in ("1", "true", "tls", "on", "reality")
+
+            sni = str(q.get("sni") or q.get("host") or "").strip()
+            host = str(q.get("host") or q.get("sni") or hostname).strip()
+            path = urllib.parse.unquote(str(q.get("path") or "/"))
+
+            label = await get_final_label(session, hostname, remarks)
+
+            # 【修复优化：Cipher 白名单过滤】
+            raw_cipher = str(q.get("scy") or q.get("cipher") or "auto").strip().lower()
+            if raw_cipher not in {"auto", "aes-128-gcm", "chacha20-poly1305", "none"}:
+                final_cipher = "auto"
+            else:
+                final_cipher = raw_cipher
+
+            proxy = {
+                "name": label,
+                "type": "vmess",
+                "server": hostname,
+                "port": port,
+                "uuid": uuid,
+                "alterId": 0,
+                "cipher": final_cipher,
+                "network": network,
+                "tls": tls,
+                "skip-cert-verify": True
             }
 
-        if network == "grpc":
-            proxy["grpc-opts"] = {
-                "grpc-service-name": data.get("path", "")
-            }
+            if sni:
+                proxy["sni"] = sni
 
-        return proxy
+            if network == "ws":
+                if not path.startswith("/"):
+                    path = "/" + path
+                headers = {}
+                if host and host.lower() != hostname.lower():
+                    headers["Host"] = host
+                proxy["ws-opts"] = {"path": path}
+                if headers:
+                    proxy["ws-opts"]["headers"] = headers
+
+            elif network == "grpc":
+                service_name = (q.get("servicename") or q.get("service_name") or q.get("service-name") or q.get("ns") or "").strip()
+                if not service_name:
+                    path_value = str(q.get("path") or "").strip()
+                    if path_value and not path_value.startswith("/"):
+                        service_name = path_value
+                if service_name:
+                    proxy["grpc-opts"] = {"grpc-service-name": service_name}
+
+            if q.get("flow"):
+                proxy["flow"] = q["flow"]
+
+            return proxy
+
+        except Exception as e:
+            print(f"[VMESS PARSE ERROR] {e} -> {_orig_link}")
+            return None
 
     @staticmethod
     async def parse_vless(session, link):
-
         u = urllib.parse.urlparse(link)
 
         q = dict(
@@ -419,7 +572,6 @@ class Parser:
 
     @staticmethod
     async def parse_trojan(session, link):
-
         u = urllib.parse.urlparse(link)
 
         label = await get_final_label(
@@ -440,39 +592,16 @@ class Parser:
 
     @staticmethod
     async def parse_ss(session, link):
-
-        raw = link[5:].split("#")[0]
-
-        if "@" not in raw:
-            raw = safe_b64decode(raw)
-
-        if "@" not in raw:
-            return None
-
-        auth, endpoint = raw.rsplit("@", 1)
-
-        if ":" not in auth:
-            auth = safe_b64decode(auth)
-
-        if ":" not in auth:
-            return None
-
-        cipher, password = auth.split(":", 1)
-    @staticmethod
-    async def parse_ss(session, link):
         try:
-            # 优先提取真正带有国家/数字编号信息的节点备注名
             remarks = "SS节点"
             if "#" in link:
                 link, rem = link.split("#", 1)
                 remarks = urllib.parse.unquote(rem.strip())
 
-            # 此时 link 已经没有 # 符号了，安全截取协议头后面的核心数据
             raw = link[5:]
             if not raw:
                 return None
             
-            # 兼容老规范：如果整段不含 @，说明整体进行了 Base64 编码
             if "@" not in raw:
                 try:
                     raw = safe_b64decode(raw)
@@ -482,13 +611,11 @@ class Parser:
             if not raw or "@" not in raw:
                 return None
 
-            # 从右往左切分，剥离出最后一处 @ 后面的地址部分，防止密码或用户名中包含 @ 符号
             parts = raw.rsplit("@", 1)
             if len(parts) < 2:
                 return None
             auth, endpoint = parts[0], parts[1]
 
-            # 兼容新规范(SIP002)：如果 auth 部分不含冒号，说明它是单独的 Base64 编码
             if ":" not in auth:
                 try:
                     auth = safe_b64decode(auth)
@@ -498,19 +625,16 @@ class Parser:
             if not auth or ":" not in auth:
                 return None
 
-            # 密码部分可能包含冒号，因此只切分第一处冒号作为加密方式
             auth_parts = auth.split(":", 1)
             if len(auth_parts) < 2:
                 return None
             cipher, password = auth_parts[0], auth_parts[1]
 
-            # 核心清洗：移除 endpoint 可能附带的 query 或 path (如 ?plugin=...)
             if "?" in endpoint:
                 endpoint = endpoint.split("?", 1)[0]
             if "/" in endpoint:
                 endpoint = endpoint.split("/", 1)[0]
 
-            # 解析 endpoint 端口与服务器（兼容 IPv6 格式）
             if endpoint.startswith("["):
                 match = re.match(r"\[(.+)\]:(\d+)", endpoint)
                 if not match:
@@ -531,6 +655,12 @@ class Parser:
                 return None
 
             label = await get_final_label(session, server, remarks)
+
+            # 【优化：SS Cipher 兼容同步保护】
+            if cipher.lower() not in {"auto", "aes-128-gcm", "chacha20-poly1305", "none"}:
+                if cipher.lower() not in {"aes-256-gcm", "2022-blake3-aes-128-gcm", "2022-blake3-aes-256-gcm"}:
+                    cipher = "aes-256-gcm"
+
             return {
                 "name": label,
                 "type": "ss",
@@ -545,13 +675,11 @@ class Parser:
 
     @staticmethod
     async def parse_hy2(session, link):
-        """全面标准支持 Hysteria 2 (Hy2) 协议（全防御加固版）"""
         try:
             if link.startswith("hy2://"):
                 link = link.replace("hy2://", "hysteria2://", 1)
 
             u = urllib.parse.urlparse(link)
-            # 核心修复：统一将 query 的键转为小写，防止因机场大小写不规范导致无法识别参数的 Bug
             q = {k.lower(): v for k, v in urllib.parse.parse_qsl(u.query)}
             remarks = urllib.parse.unquote(u.fragment or "Hysteria2节点")
             
@@ -563,7 +691,6 @@ class Parser:
 
             label = await get_final_label(session, hostname, remarks)
 
-            # 核心修复：安全提取端口，防止直接访问 u.port 抛出 ValueError 导致丢节点
             try:
                 port = u.port
             except ValueError:
@@ -596,7 +723,6 @@ class Parser:
 
     @staticmethod
     async def parse_tuic(session, link):
-        """全面标准支持 TUIC v5 协议（彻底修复数据类型与赋值 Bug）"""
         try:
             u = urllib.parse.urlparse(link)
             q = {k.lower(): v for k, v in urllib.parse.parse_qsl(u.query)}
@@ -621,11 +747,9 @@ class Parser:
                 else:
                     port = 443
 
-            # 核心修复：还原为安全的单字符串解析，拒绝输出 List 格式类型
             uuid_str = u.username or ""
             password_str = u.password or q.get("pass") or ""
 
-            # 如果 urlparse 原生没解析出来，则通过 netloc 进行手工高容错切分
             if not uuid_str and u.netloc and "@" in u.netloc:
                 user_info = u.netloc.rsplit("@", 1)[0]
                 if ":" in user_info:
@@ -654,7 +778,6 @@ class Parser:
 
 
 async def build():
-
     load_cache()
 
     path = Path("nodes.txt")
@@ -669,19 +792,17 @@ async def build():
         encoding="utf-8",
         errors="ignore"
     ).splitlines():
-
         line = line.strip()
-
         if line:
             links.append(line)
 
     region_map = defaultdict(list)
-
     clash_proxies = []
-
     rocket_links = []
+    info_proxies = []
 
     seen = set()
+    used_names = set()  # 【修复优化：引全域节点重名强校验盾牌】
 
     connector = aiohttp.TCPConnector(
         ssl=False,
@@ -693,7 +814,6 @@ async def build():
     ) as session:
 
         for link in links:
-
             proxy = await Parser.parse(
                 session,
                 link
@@ -705,7 +825,9 @@ async def build():
             fp = (
                 proxy.get("server"),
                 proxy.get("port"),
-                proxy.get("type")
+                proxy.get("type"),
+                proxy.get("uuid"),
+                proxy.get("password")
             )
 
             if fp in seen:
@@ -714,6 +836,15 @@ async def build():
             seen.add(fp)
 
             label = proxy["name"]
+            
+            if is_info_node(proxy["name"]):
+                info_proxies.append(proxy)
+                clash_proxies.append(proxy)
+                rocket_links.append(
+                    f"{link.split('#')[0]}"
+                    f"#{urllib.parse.quote(proxy['name'])}"
+                )
+                continue
 
             idx = (
                 len(region_map[label])
@@ -723,11 +854,23 @@ async def build():
             proxy["name"] = (
                 f"{label} "
                 f"{idx:02d} "
-                f"{CHANNEL_MARK}"
             )
 
             if validate(proxy):
-
+                # 【修复优化：动态防止同名覆盖，检测到重名及编号完全相同时追加端口】
+                base_name = proxy["name"]
+                port_val = proxy.get("port", 443)
+                
+                if proxy["name"] in used_names:
+                    proxy["name"] = f"{base_name.strip()}-{port_val}"
+                
+                # 特殊长尾巧合下的自增动态保护
+                loop_idx = 1
+                while proxy["name"] in used_names:
+                    proxy["name"] = f"{base_name.strip()}-{port_val}-{loop_idx}"
+                    loop_idx += 1
+                
+                used_names.add(proxy["name"])
                 clash_proxies.append(proxy)
 
                 region_map[label].append(
@@ -765,6 +908,7 @@ async def build():
                 "proxies": [
                     x["name"]
                     for x in clash_proxies
+                    if not is_info_node(x["name"])
                 ]
             },
             {
@@ -777,23 +921,24 @@ async def build():
             }
         ],
         "rules": [
-            "MATCH,🚀 节点选择"
+           "MATCH,🚀 节点选择"
         ]
     }
+    info_names = [x["name"] for x in clash_proxies if is_info_node(x["name"])]
 
     for region, proxies in region_map.items():
-
         if not proxies:
-           continue
-        
+            continue
+
         config["proxy-groups"].append({
             "name": region,
-            "type": "url-test",
-            "url": TEST_URL,
-            "interval": 300,
-            "proxies": proxies
+            "type": "select",
+            "proxies": info_names + proxies
         })
 
+
+
+    # 【优化维护：安全导出参数，规避 Emoji 或特殊文字截断隐患】
     yaml_text = yaml.safe_dump(
         config,
         allow_unicode=True,
